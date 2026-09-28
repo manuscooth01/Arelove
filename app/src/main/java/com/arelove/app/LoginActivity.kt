@@ -11,6 +11,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityLoginBinding
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.launch
 
@@ -34,6 +35,8 @@ class LoginActivity : AppCompatActivity() {
 
     private fun configurarBotones() {
         binding.btnLogin.setOnClickListener { iniciarSesion() }
+
+        binding.btnGoogle.setOnClickListener { iniciarSesionConGoogle() }
 
         binding.tvGoRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -62,6 +65,34 @@ class LoginActivity : AppCompatActivity() {
         }
         binding.etPassword.setSelection(binding.etPassword.text?.length ?: 0)
         binding.ivTogglePassword.alpha = if (passwordVisible) 1.0f else 0.4f
+    }
+
+    /**
+     * Abre el navegador con el OAuth de Google.
+     * La sesión vuelve por deep link y la procesa MainActivity.
+     */
+    private fun iniciarSesionConGoogle() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.btnGoogle.isEnabled = false
+        Toast.makeText(this, R.string.login_google_loading, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            try {
+                SupabaseClient.client.auth.signInWith(
+                    Google,
+                    redirectUrl = "com.arelove.app://auth/callback"
+                )
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@LoginActivity,
+                    AuthErrorMapper.traducir(e.message),
+                    Toast.LENGTH_LONG
+                ).show()
+            } finally {
+                binding.progressBar.visibility = View.GONE
+                binding.btnGoogle.isEnabled = true
+            }
+        }
     }
 
     private fun iniciarSesion() {

@@ -244,4 +244,7 @@
         <item>@string/report_reason_other</item>
     </string-array>
 
+    <string name="error_google_login">No se pudo iniciar sesión con Google</string>
+    <string name="login_google_loading">Conectando con Google...</string>
+
 </resources>
