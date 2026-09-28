@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================== GENERAL ==================== -->
+    <string name="app_name">Arelove</string>
+    <string name="app_slogan">Conecta con personas reales</string>
+    <string name="logo_description">Logotipo de Arelove</string>
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Eliminar</string>
+    <string name="continue_btn">Continuar</string>
+    <string name="back">Atrás</string>
+    <string name="next">Siguiente</string>
+    <string name="skip">Omitir</string>
+    <string name="loading">Cargando…</string>
+    <string name="error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="error_connection">Sin conexión a internet. Revisa tu red.</string>
+
+    <!-- ==================== BIENVENIDA ==================== -->
+    <string name="btn_iniciar_sesion">Iniciar sesión</string>
+    <string name="btn_registrarse">Registrarse</string>
+    <string name="terminos_y_condiciones">Al continuar aceptas los Términos y condiciones y la Política de privacidad.</string>
+    <string name="terminos">Términos y condiciones</string>
+    <string name="politica_privacidad">Política de privacidad</string>
+
+    <!-- ==================== AUTENTICACIÓN ==================== -->
+    <string name="login_title">Bienvenido de nuevo</string>
+    <string name="login_subtitle">Inicia sesión para continuar</string>
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_subtitle">Solo necesitas un correo y una contraseña</string>
+    <string name="field_email">Correo electrónico</string>
+    <string name="field_password">Contraseña</string>
+    <string name="field_confirm_password">Confirmar contraseña</string>
+    <string name="hint_email">tucorreo@ejemplo.com</string>
+    <string name="btn_login">Iniciar sesión</string>
+    <string name="btn_register">Crear cuenta</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="reset_password">Restablecer contraseña</string>
+    <string name="no_account">¿No tienes cuenta? Regístrate</string>
+    <string name="have_account">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="verification_email_sent">Te enviamos un correo de verificación. Revisa tu bandeja de entrada.</string>
+    <string name="resend_verification">Reenviar correo de verificación</string>
+    <string name="error_invalid_email">Introduce un correo válido</string>
+    <string name="error_short_password">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <string name="error_email_in_use">Este correo ya está registrado</string>
+    <string name="error_wrong_credentials">Correo o contraseña incorrectos</string>
+    <string name="error_email_not_verified">Debes verificar tu correo antes de continuar</string>
+
+    <!-- ==================== PERFIL OBLIGATORIO ==================== -->
+    <string name="profile_setup_title">Crea tu perfil</string>
+    <string name="profile_setup_subtitle">Los campos obligatorios están marcados con *</string>
+    <string name="field_nickname">Apodo</string>
+    <string name="field_age">Edad</string>
+    <string name="field_place">Lugar</string>
+    <string name="field_interests">Intereses</string>
+    <string name="field_looking_for">Busco</string>
+    <string name="looking_pareja">Pareja</string>
+    <string name="looking_amistades">Amistades</string>
+    <string name="looking_ambos">Ambos</string>
+    <string name="photo_min_2">Sube al menos 2 fotos</string>
+    <string name="interests_min_3">Elige al menos 3 intereses</string>
+    <string name="age_min_18">Debes tener 18 años o más</string>
+    <string name="required_field">Este campo es obligatorio</string>
+    <string name="verification_selfie_title">Verifica tu identidad</string>
+    <string name="verification_selfie_subtitle">Toma un selfie siguiendo el gesto que aparece en pantalla</string>
+    <string name="btn_take_selfie">Hacer selfie</string>
+    <string name="verification_pending">Verificación en revisión</string>
+    <string name="verification_ok">Perfil verificado</string>
+    <string name="verification_rejected">Verificación rechazada. Inténtalo de nuevo.</string>
+
+    <!-- ==================== PERFIL OPCIONAL ==================== -->
+    <string name="profile_optional_title">Completa tu perfil</string>
+    <string name="profile_optional_subtitle">Es opcional, pero ayuda a que te conozcan mejor</string>
+    <string name="field_bio">Biografía</string>
+    <string name="field_height">Altura</string>
+    <string name="field_weight">Peso</string>
+    <string name="field_zodiac_sign">Signo zodiacal</string>
+    <string name="field_occupation">Ocupación</string>
+    <string name="field_favorite_music">Música favorita</string>
+    <string name="btn_skip_for_now">Omitir por ahora</string>
+
+    <!-- ==================== NAVEGACIÓN ==================== -->
+    <string name="nav_swipe">Descubrir</string>
+    <string name="nav_feed">Feed</string>
+    <string name="nav_likes">Me gusta</string>
+    <string name="nav_chats">Chats</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="tab_para_ti">Para ti</string>
+    <string name="tab_seguidos">Seguidos</string>
+    <string name="tab_compartidos">Compartidos</string>
+
+    <!-- ==================== SWIPE Y MATCH ==================== -->
+    <string name="swipe_like">Me gusta</string>
+    <string name="swipe_nope">No me gusta</string>
+    <string name="match_title">¡Es un match!</string>
+    <string name="match_subtitle">También le gustaste. ¡Empiecen a hablar!</string>
+    <string name="match_btn_chat">Enviar mensaje</string>
+    <string name="like_expires_in">Este like expira en %1$s</string>
+    <string name="likes_expires_24h">Los likes expiran en 24 horas</string>
+    <string name="no_more_profiles">No hay más personas cerca por ahora</string>
+    <string name="boost_title">Boost activado</string>
+    <string name="boost_subtitle">Tu perfil será visible durante 20 minutos</string>
+    <string name="btn_boost">Boost · 30 diamantes</string>
+    <string name="direct_message_title">Enviar mensaje directo</string>
+    <string name="direct_message_cost">Cuesta 10 diamantes · una vez por persona</string>
+
+    <!-- ==================== FOTOS ==================== -->
+    <string name="photos_locked_title">Fotos bloqueadas</string>
+    <string name="photos_locked_subtitle">Sube fotos para desbloquear más fotos de %1$s</string>
+    <string name="photo_of_total">%1$d de %2$d</string>
+    <string name="add_photo">Añadir foto</string>
+    <string name="delete_photo">Eliminar foto</string>
+    <string name="photos_under_review">Algunas fotos están en revisión</string>
+
+    <!-- ==================== HISTORIAS ==================== -->
+    <string name="stories_title">Historias</string>
+    <string name="stories_my">Tu historia</string>
+    <string name="stories_add">Añadir historia</string>
+    <string name="stories_expiry">Desaparece en 24 horas</string>
+    <string name="stories_only_matches">Solo tus matches pueden verla</string>
+    <string name="no_stories">Ningún match tiene historias activas</string>
+
+    <!-- ==================== FEED ==================== -->
+    <string name="feed_empty">Todavía no hay publicaciones</string>
+    <string name="post_comment_placeholder">Escribe un comentario…</string>
+    <string name="post_share">Compartir</string>
+    <string name="post_shared">Publicación compartida</string>
+    <string name="comments_title">Comentarios</string>
+    <string name="no_comments">Sé el primero en comentar</string>
+
+    <!-- ==================== CHAT ==================== -->
+    <string name="chat_write_message">Escribe un mensaje…</string>
+    <string name="chat_send_photo">Foto</string>
+    <string name="chat_photo_once">Foto de una sola vez</string>
+    <string name="chat_voice_note">Nota de voz</string>
+    <string name="chat_stickers">Stickers</string>
+    <string name="chat_online">En línea</string>
+    <string name="chat_typing">Escribiendo…</string>
+    <string name="chat_last_seen">Última vez hace %1$s</string>
+    <string name="chat_custom_title">Personalizar chat</string>
+    <string name="chat_nickname">Apodo del chat</string>
+    <string name="chat_background">Fondo</string>
+    <string name="chat_bubble_color">Color de las nubes</string>
+    <string name="chat_empty">Aún no hay mensajes. ¡Saluda!</string>
+    <string name="photo_once_warning">Esta foto solo se puede ver una vez</string>
+    <string name="photo_once_opened">Foto vista</string>
+    <string name="voice_recording">Grabando…</string>
+
+    <!-- ==================== LLAMADAS ==================== -->
+    <string name="call_audio">Llamada</string>
+    <string name="call_video">Videollamada</string>
+    <string name="call_cost_audio">Llamada · 12 diamantes</string>
+    <string name="call_cost_video">Videollamada · 15 diamantes</string>
+    <string name="call_free_hint">Gratis si habláis bastante</string>
+    <string name="call_confirm_audio">Llamar por 12 diamantes</string>
+    <string name="call_confirm_video">Videollamar por 15 diamantes</string>
+    <string name="call_insufficient_diamonds">No tienes suficientes diamantes</string>
+    <string name="call_ending">Terminando llamada…</string>
+    <string name="call_missed">Llamada perdida</string>
+
+    <!-- ==================== DIAMANTES ==================== -->
+    <string name="diamonds_balance">Diamantes: %1$d</string>
+    <string name="diamonds_title">Tus diamantes</string>
+    <string name="diamonds_watch_ad">Ver anuncio · +3 diamantes</string>
+    <string name="diamonds_achievements">Logros</string>
+    <string name="diamonds_recharge">Recargar diamantes</string>
+    <string name="diamonds_earned">Has ganado %1$d diamantes</string>
+    <string name="diamonds_ad_cooldown">Ya viste el anuncio. Vuelve más tarde.</string>
+    <string name="diamonds_insufficient">No tienes suficientes diamantes</string>
+    <string name="diamonds_go_recharge">Ir a recargar</string>
+
+    <!-- ==================== LIKES Y VISITAS ==================== -->
+    <string name="likes_visits_title">Quien te gustó</string>
+    <string name="likes_visits_subtitle">Personas que te dieron like o visitaron tu perfil</string>
+    <string name="likes_empty">Nadie te ha dado like todavía</string>
+    <string name="visits_empty">Todavía no tienes visitas</string>
+    <string name="new_visit">Nueva visita</string>
+
+    <!-- ==================== SEGURIDAD ==================== -->
+    <string name="safety_title">Seguridad</string>
+    <string name="block_user">Bloquear usuario</string>
+    <string name="block_confirm">¿Bloquear a %1$s? No podréis veros ni contactaros.</string>
+    <string name="blocked_successfully">Usuario bloqueado</string>
+    <string name="report_user">Reportar usuario</string>
+    <string name="report_reason_title">Motivo del reporte</string>
+    <string name="report_reason_fake">Perfil falso</string>
+    <string name="report_reason_inappropriate">Contenido inapropiado</string>
+    <string name="report_reason_harassment">Acoso o insultos</string>
+    <string name="report_reason_spam">Spam</string>
+    <string name="report_reason_minor">Menor de edad</string>
+    <string name="report_reason_other">Otro motivo</string>
+    <string name="report_sent">Reporte enviado. Gracias por cuidar la comunidad.</string>
+    <string name="unblock_user">Desbloquear</string>
+    <string name="blocked_list">Usuarios bloqueados</string>
+
+    <!-- ==================== CUENTA Y AJUSTES ==================== -->
+    <string name="settings">Ajustes</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="logout_confirm">¿Quieres cerrar sesión?</string>
+    <string name="delete_account">Eliminar cuenta</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="change_photos">Cambiar fotos</string>
+    <string name="notification_new_match">Tienes un match nuevo</string>
+    <string name="notification_new_message">Nuevo mensaje de %1$s</string>
+
+    <!-- ==================== LISTAS ==================== -->
+    <string-array name="zodiac_signs">
+        <item>Aries</item>
+        <item>Tauro</item>
+        <item>Géminis</item>
+        <item>Cáncer</item>
+        <item>Leo</item>
+        <item>Virgo</item>
+        <item>Libra</item>
+        <item>Escorpio</item>
+        <item>Sagitario</item>
+        <item>Capricornio</item>
+        <item>Acuario</item>
+        <item>Piscis</item>
+    </string-array>
+
+    <string-array name="report_reasons">
+        <item>@string/report_reason_fake</item>
+        <item>@string/report_reason_inappropriate</item>
+        <item>@string/report_reason_harassment</item>
+        <item>@string/report_reason_spam</item>
+        <item>@string/report_reason_minor</item>
+        <item>@string/report_reason_other</item>
+    </string-array>
+
+</resources>

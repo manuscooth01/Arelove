@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================== MARCA ==================== -->
+    <color name="arelove_red">#E53935</color>
+    <color name="arelove_red_dark">#C62828</color>
+    <color name="arelove_red_light">#FF6F61</color>
+
+    <!-- ==================== MATERIAL 3 - MODO CLARO ==================== -->
+    <color name="primary">#E53935</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#FFDAD5</color>
+    <color name="on_primary_container">#410002</color>
+
+    <color name="secondary">#775756</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#FFDAD5</color>
+    <color name="on_secondary_container">#2C1514</color>
+
+    <color name="background">#FFF8F7</color>
+    <color name="on_background">#201A1A</color>
+
+    <color name="surface">#FFF8F7</color>
+    <color name="on_surface">#201A1A</color>
+    <color name="surface_variant">#F5DDDB</color>
+    <color name="on_surface_variant">#534343</color>
+
+    <color name="error">#BA1A1A</color>
+    <color name="on_error">#FFFFFF</color>
+
+    <color name="outline">#857372</color>
+    <color name="outline_variant">#D8C2C0</color>
+
+    <!-- ==================== COLORES FUNCIONALES ==================== -->
+    <color name="heart_red">#E53935</color>
+    <color name="cross_grey">#BDBDBD</color>
+    <color name="diamond_blue">#29B6F6</color>
+    <color name="online_green">#43A047</color>
+    <color name="boost_purple">#AB47BC</color>
+    <color name="match_color">#26A69A</color>
+
+    <color name="chat_background">#FFFFFF</color>
+    <color name="chat_cloud_in">#FFFFFF</color>
+    <color name="chat_cloud_out">#E53935</color>
+    <color name="chat_text_in">#201A1A</color>
+    <color name="chat_text_out">#FFFFFF</color>
+
+    <color name="divider">#E0E0E0</color>
+    <color name="photo_placeholder">#EEEEEE</color>
+    <color name="photo_blur_overlay">#66000000</color>
+    <color name="scrim">#99000000</color>
+    <color name="ripple">#33E53935</color>
+
+</resources>

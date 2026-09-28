@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================== MATERIAL 3 - MODO OSCURO ==================== -->
+    <!-- El rojo de marca se mantiene igual en ambos modos -->
+    <color name="primary">#E53935</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#7A1F1C</color>
+    <color name="on_primary_container">#FFDAD5</color>
+
+    <color name="secondary">#E7BDBC</color>
+    <color name="on_secondary">#442929</color>
+    <color name="secondary_container">#5D3F3E</color>
+    <color name="on_secondary_container">#FFDAD6</color>
+
+    <color name="background">#141010</color>
+    <color name="on_background">#F0DEDC</color>
+
+    <color name="surface">#141010</color>
+    <color name="on_surface">#F0DEDC</color>
+    <color name="surface_variant">#534343</color>
+    <color name="on_surface_variant">#D8C2C0</color>
+
+    <color name="error">#FFB4AB</color>
+    <color name="on_error">#690005</color>
+
+    <color name="outline">#A08C8B</color>
+    <color name="outline_variant">#534343</color>
+
+    <!-- ==================== COLORES FUNCIONALES - MODO OSCURO ==================== -->
+    <color name="chat_background">#1A1414</color>
+    <color name="chat_cloud_in">#2C2424</color>
+    <color name="chat_cloud_out">#E53935</color>
+    <color name="chat_text_in">#F0DEDC</color>
+    <color name="chat_text_out">#FFFFFF</color>
+
+    <color name="divider">#2C2C2C</color>
+    <color name="photo_placeholder">#2A2A2A</color>
+    <color name="photo_blur_overlay">#99000000</color>
+
+</resources>
