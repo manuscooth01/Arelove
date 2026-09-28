@@ -135,6 +135,15 @@
             app:backgroundTint="@color/primary"
             app:cornerRadius="26dp" />
 
+        <!-- Indicador de carga -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
         <!-- Separador "o continúa con" -->
         <LinearLayout
             android:layout_width="match_parent"

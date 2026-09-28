@@ -34,6 +34,13 @@
     <string name="login_register">Regístrate</string>
     <string name="login_coming_soon">Login próximamente</string>
     <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_welcome">Bienvenido</string>
+    <string name="register_subtitle_connect">Empieza a conectar con personas reales</string>
+    <string name="register_accept_terms">Acepto los Términos y Condiciones</string>
+    <string name="register_have_account">¿Ya tienes cuenta?</string>
+    <string name="register_success">Cuenta creada. Revisa tu correo</string>
+    <string name="error_accept_terms">Debes aceptar los Términos y Condiciones</string>
+    <string name="home_welcome">¡Bienvenido a Arelove!</string>
     <string name="register_title">Crea tu cuenta</string>
     <string name="register_subtitle">Solo necesitas un correo y una contraseña</string>
     <string name="field_email">Correo electrónico</string>

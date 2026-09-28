@@ -2,9 +2,9 @@ package com.arelove.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.arelove.app.databinding.ActivityMainBinding
+import io.github.jan.supabase.gotrue.auth
 
 /**
  * Pantalla de bienvenida de Arelove.
@@ -19,6 +19,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+            return
+        }
+
         configurarBotones()
     }
 
@@ -28,8 +34,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.buttonRegister.setOnClickListener {
-            // TODO: abrir la pantalla de registro
-            Toast.makeText(this, R.string.btn_registrarse, Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 }
