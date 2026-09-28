@@ -4,6 +4,9 @@ build/
 app/build/
 local.properties
 
+# APKs descargados
+apk/
+
 # Android Studio / IntelliJ
 .idea/
 *.iml
