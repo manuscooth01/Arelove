@@ -30,9 +30,6 @@ object SupabaseClient {
             install(Auth) { // registro, login y verificación por correo
                 // Guarda la sesión en SharedPreferences para sobrevivir reinicios
                 sessionManager = SettingsSessionManager()
-                // Deep link propio para volver del OAuth (Google)
-                scheme = "com.arelove.app"
-                host = "auth"
             }
             install(Postgrest) // consultas a las tablas
             install(Realtime)  // chat, indicador de actividad y likes en vivo

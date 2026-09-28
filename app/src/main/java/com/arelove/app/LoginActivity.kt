@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +13,7 @@ import com.arelove.app.ui.AreloveDialog
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.gotrue.providers.builtin.IDToken
 import kotlinx.coroutines.launch
 
 /**
@@ -69,26 +69,49 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Abre el navegador con el OAuth de Google.
-     * La sesión vuelve por deep link y la procesa MainActivity.
+     * Inicia sesión con Google usando Credential Manager (ventana nativa).
+     * Se obtiene el ID Token y Supabase crea la sesión con él.
      */
     private fun iniciarSesionConGoogle() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnGoogle.isEnabled = false
-        Toast.makeText(this, R.string.login_google_loading, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
             try {
-                SupabaseClient.client.auth.signInWith(
-                    Google,
-                    redirectUrl = "com.arelove.app://auth/callback"
+                val idToken = GoogleAuthHelper.obtenerIdToken(this@LoginActivity)
+
+                if (idToken == null) {
+                    AreloveDialog.show(
+                        this@LoginActivity,
+                        AreloveDialog.Tipo.ERROR,
+                        getString(R.string.dialog_error_title),
+                        "No se obtuvo el token"
+                    )
+                    return@launch
+                }
+
+                SupabaseClient.client.auth.signInWith(IDToken) {
+                    this.idToken = idToken
+                    this.provider = Google
+                }
+
+                AreloveDialog.show(
+                    this@LoginActivity,
+                    AreloveDialog.Tipo.SUCCESS,
+                    getString(R.string.dialog_success_title),
+                    getString(R.string.dialog_login_success_msg),
+                    onPositive = {
+                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                        finish()
+                    }
                 )
             } catch (e: Exception) {
-                Toast.makeText(
+                AreloveDialog.show(
                     this@LoginActivity,
-                    AuthErrorMapper.traducir(e.message),
-                    Toast.LENGTH_LONG
-                ).show()
+                    AreloveDialog.Tipo.ERROR,
+                    getString(R.string.dialog_error_title),
+                    AuthErrorMapper.traducir(e.message)
+                )
             } finally {
                 binding.progressBar.visibility = View.GONE
                 binding.btnGoogle.isEnabled = true

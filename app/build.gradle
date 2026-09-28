@@ -73,6 +73,11 @@ dependencies {
     // Persistencia de sesión entre reinicios (SettingsSessionManager)
     implementation 'com.russhwolf:multiplatform-settings-no-arg:1.1.1'
 
+    // Credential Manager (login nativo Google)
+    implementation 'androidx.credentials:credentials:1.3.0'
+    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
+
     // Ktor cliente (necesario para Supabase)
     implementation 'io.ktor:ktor-client-android:2.3.7'
     implementation 'io.ktor:ktor-client-core:2.3.7'
