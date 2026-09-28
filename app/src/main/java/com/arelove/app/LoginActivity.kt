@@ -2,9 +2,12 @@ package com.arelove.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityLoginBinding
 import io.github.jan.supabase.gotrue.auth
@@ -13,11 +16,12 @@ import kotlinx.coroutines.launch
 
 /**
  * Pantalla de inicio de sesión de Arelove.
- * Valida los campos y autentica con Supabase Auth (signInWith Email).
+ * Valida los campos (errores inline) y autentica con Supabase Auth.
  */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private var passwordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         configurarBotones()
+        configurarCampos()
     }
 
     private fun configurarBotones() {
@@ -33,14 +38,46 @@ class LoginActivity : AppCompatActivity() {
         binding.tvGoRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+
+        binding.ivTogglePassword.alpha = 0.4f
+        binding.ivTogglePassword.setOnClickListener { alternarPassword() }
+    }
+
+    private fun configurarCampos() {
+        binding.etEmail.doAfterTextChanged { binding.tilEmail.error = null }
+        binding.etPassword.doAfterTextChanged { binding.tilPassword.error = null }
+    }
+
+    private fun alternarPassword() {
+        passwordVisible = !passwordVisible
+        binding.etPassword.inputType = if (passwordVisible) {
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+        } else {
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+        binding.etPassword.transformationMethod = if (passwordVisible) {
+            null
+        } else {
+            PasswordTransformationMethod.getInstance()
+        }
+        binding.etPassword.setSelection(binding.etPassword.text?.length ?: 0)
+        binding.ivTogglePassword.alpha = if (passwordVisible) 1.0f else 0.4f
     }
 
     private fun iniciarSesion() {
         val emailValue = binding.etEmail.text?.toString()?.trim().orEmpty()
         val passwordValue = binding.etPassword.text?.toString().orEmpty()
 
-        if (emailValue.isEmpty() || passwordValue.isEmpty()) {
-            Toast.makeText(this, R.string.required_field, Toast.LENGTH_SHORT).show()
+        binding.tilEmail.error = null
+        binding.tilPassword.error = null
+
+        if (emailValue.isEmpty()) {
+            binding.tilEmail.error = "Campo obligatorio"
+            return
+        }
+
+        if (passwordValue.isEmpty()) {
+            binding.tilPassword.error = "Campo obligatorio"
             return
         }
 
@@ -60,7 +97,7 @@ class LoginActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Toast.makeText(
                     this@LoginActivity,
-                    e.message ?: getString(R.string.error_generic),
+                    AuthErrorMapper.traducir(e.message),
                     Toast.LENGTH_LONG
                 ).show()
             } finally {
