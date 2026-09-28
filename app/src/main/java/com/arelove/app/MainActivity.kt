@@ -1,5 +1,6 @@
 package com.arelove.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,8 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun configurarBotones() {
         binding.buttonLogin.setOnClickListener {
-            // TODO: abrir la pantalla de inicio de sesión
-            Toast.makeText(this, R.string.btn_iniciar_sesion, Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.buttonRegister.setOnClickListener {

@@ -27,6 +27,13 @@
     <!-- ==================== AUTENTICACIÓN ==================== -->
     <string name="login_title">Bienvenido de nuevo</string>
     <string name="login_subtitle">Inicia sesión para continuar</string>
+    <string name="login_welcome_back">Bienvenido de vuelta</string>
+    <string name="login_or_continue">o continúa con</string>
+    <string name="login_google">Continuar con Google</string>
+    <string name="login_no_account">¿No tienes cuenta?</string>
+    <string name="login_register">Regístrate</string>
+    <string name="login_coming_soon">Login próximamente</string>
+    <string name="login_show_password">Mostrar contraseña</string>
     <string name="register_title">Crea tu cuenta</string>
     <string name="register_subtitle">Solo necesitas un correo y una contraseña</string>
     <string name="field_email">Correo electrónico</string>
