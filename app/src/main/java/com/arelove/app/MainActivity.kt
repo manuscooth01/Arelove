@@ -3,8 +3,10 @@ package com.arelove.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityMainBinding
 import io.github.jan.supabase.gotrue.auth
+import kotlinx.coroutines.launch
 
 /**
  * Pantalla de bienvenida de Arelove.
@@ -19,13 +21,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
-            startActivity(Intent(this, HomeActivity::class.java))
-            finish()
-            return
-        }
+        lifecycleScope.launch {
+            // Espera a que GoTrue termine de cargar la sesión guardada en disco
+            SupabaseClient.client.auth.awaitInitialization()
 
-        configurarBotones()
+            if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
+                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                finish()
+                return@launch
+            }
+
+            configurarBotones()
+        }
     }
 
     private fun configurarBotones() {

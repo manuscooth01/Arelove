@@ -2,6 +2,7 @@ package com.arelove.app
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.SettingsSessionManager
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
@@ -26,7 +27,10 @@ object SupabaseClient {
             supabaseUrl = SUPABASE_URL,
             supabaseKey = SUPABASE_ANON_KEY
         ) {
-            install(Auth)      // registro, login y verificación por correo
+            install(Auth) { // registro, login y verificación por correo
+                // Guarda la sesión en SharedPreferences para sobrevivir reinicios
+                sessionManager = SettingsSessionManager()
+            }
             install(Postgrest) // consultas a las tablas
             install(Realtime)  // chat, indicador de actividad y likes en vivo
             install(Storage)   // fotos, historias y notas de voz

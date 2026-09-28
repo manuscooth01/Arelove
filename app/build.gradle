@@ -57,6 +57,9 @@ dependencies {
     implementation 'io.github.jan-tennert.supabase:storage-kt'
     implementation 'io.github.jan-tennert.supabase:realtime-kt'
 
+    // Persistencia de sesión entre reinicios (SettingsSessionManager)
+    implementation 'com.russhwolf:multiplatform-settings-no-arg:1.1.1'
+
     // Ktor cliente (necesario para Supabase)
     implementation 'io.ktor:ktor-client-android:2.3.7'
     implementation 'io.ktor:ktor-client-core:2.3.7'
