@@ -34,9 +34,9 @@ class AreloveDialog(
         window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         // Márgenes laterales de 24dp alineados al diseño
-        val margenPx = (24 * resources.displayMetrics.density).toInt()
+        val margenPx = (24 * context.resources.displayMetrics.density).toInt()
         window?.setLayout(
-            resources.displayMetrics.widthPixels - margenPx * 2,
+            context.resources.displayMetrics.widthPixels - margenPx * 2,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
