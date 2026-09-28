@@ -28,8 +28,23 @@ jobs:
       - name: Dar permisos al wrapper
         run: chmod +x gradlew
 
+      - name: Decodificar keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > arelove.keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
       - name: Compilar APK de debug
         run: ./gradlew assembleDebug --stacktrace
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/arelove.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Limpiar keystore
+        if: always()
+        run: rm -f arelove.keystore
 
       - name: Subir APK como artifact
         uses: actions/upload-artifact@v4

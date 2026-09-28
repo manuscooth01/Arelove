@@ -17,6 +17,7 @@ captures/
 # Claves y secretos
 *.jks
 *.keystore
+*.base64
 keystore.properties
 secrets.properties
 
