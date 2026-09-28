@@ -247,4 +247,14 @@
     <string name="error_google_login">No se pudo iniciar sesión con Google</string>
     <string name="login_google_loading">Conectando con Google...</string>
 
+    <!-- Diálogos personalizados Arelove -->
+    <string name="dialog_accept">Aceptar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_error_title">Algo salió mal</string>
+    <string name="dialog_warning_title">Atención</string>
+    <string name="dialog_success_title">¡Listo!</string>
+    <string name="dialog_info_title">Información</string>
+    <string name="dialog_login_success_msg">¡Bienvenido a Arelove!</string>
+    <string name="dialog_register_success_msg">Tu cuenta se creó correctamente</string>
+
 </resources>

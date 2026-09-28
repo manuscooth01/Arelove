@@ -2,10 +2,10 @@ package com.arelove.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityHomeBinding
+import com.arelove.app.ui.AreloveDialog
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.launch
 
@@ -31,18 +31,25 @@ class HomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 SupabaseClient.client.auth.signOut()
+                irAInicio()
             } catch (e: Exception) {
-                Toast.makeText(
+                AreloveDialog.show(
                     this@HomeActivity,
-                    e.message ?: getString(R.string.error_generic),
-                    Toast.LENGTH_SHORT
-                ).show()
+                    AreloveDialog.Tipo.ERROR,
+                    getString(R.string.dialog_error_title),
+                    AuthErrorMapper.traducir(e.message),
+                    onPositive = { irAInicio() }
+                )
             }
-            val intent = Intent(this@HomeActivity, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            }
-            startActivity(intent)
-            finish()
         }
+    }
+
+    /** Vuelve a la pantalla de bienvenida. */
+    private fun irAInicio() {
+        val intent = Intent(this@HomeActivity, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        startActivity(intent)
+        finish()
     }
 }

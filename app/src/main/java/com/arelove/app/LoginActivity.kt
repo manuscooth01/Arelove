@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityLoginBinding
+import com.arelove.app.ui.AreloveDialog
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.Email
@@ -121,16 +122,23 @@ class LoginActivity : AppCompatActivity() {
                     this.email = emailValue
                     this.password = passwordValue
                 }
-                Toast.makeText(this@LoginActivity, R.string.login_welcome, Toast.LENGTH_SHORT)
-                    .show()
-                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                finish()
-            } catch (e: Exception) {
-                Toast.makeText(
+                AreloveDialog.show(
                     this@LoginActivity,
-                    AuthErrorMapper.traducir(e.message),
-                    Toast.LENGTH_LONG
-                ).show()
+                    AreloveDialog.Tipo.SUCCESS,
+                    getString(R.string.dialog_success_title),
+                    getString(R.string.dialog_login_success_msg),
+                    onPositive = {
+                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                        finish()
+                    }
+                )
+            } catch (e: Exception) {
+                AreloveDialog.show(
+                    this@LoginActivity,
+                    AreloveDialog.Tipo.ERROR,
+                    getString(R.string.dialog_error_title),
+                    AuthErrorMapper.traducir(e.message)
+                )
             } finally {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true

@@ -51,4 +51,10 @@
     <color name="scrim">#99000000</color>
     <color name="ripple">#33E53935</color>
 
+    <!-- ==================== DIÁLOGOS ==================== -->
+    <color name="dialog_error">#E53935</color>
+    <color name="dialog_warning">#F57C00</color>
+    <color name="dialog_success">#43A047</color>
+    <color name="dialog_info">#1E88E5</color>
+
 </resources>
