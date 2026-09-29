@@ -51,6 +51,9 @@ class SwipeFragment : Fragment() {
 
     private val photoLoadJobs = mutableMapOf<String, Job>()
 
+    // Debug
+    private val debugTexto = StringBuilder()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,6 +76,15 @@ class SwipeFragment : Fragment() {
         _binding = null
     }
 
+    private fun debugAdd(linea: String) {
+        debugTexto.append(linea).append("\n")
+        val b = _binding
+        if (b != null) {
+            b.tvDebugSwipe.text = debugTexto.toString()
+            b.tvDebugSwipe.visibility = View.VISIBLE
+        }
+    }
+
     private fun configurarBotones() {
         binding.btnLike.setOnClickListener {
             if (AntiSpam.esDobleTap("btnLike")) return@setOnClickListener
@@ -93,15 +105,19 @@ class SwipeFragment : Fragment() {
         b.progressBar.visibility = View.VISIBLE
         b.tvEmpty.visibility = View.GONE
         b.cardProfile.visibility = View.GONE
+        debugAdd("Cargando perfiles...")
 
         lifecycleScope.launch {
             try {
                 val session = SupabaseClient.client.auth.currentSessionOrNull()
-                currentUserId = session?.user?.id
-                if (currentUserId == null) {
+                val userId = session?.user?.id
+                if (userId == null) {
+                    debugAdd("Sin sesi\u00f3n: userId=null")
                     mostrarError(getString(R.string.profile_error_no_session))
                     return@launch
                 }
+                currentUserId = userId
+                debugAdd("Usuario actual: $userId")
 
                 // SELECT id, nickname, age, location, looking_for, bio, verified
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
@@ -109,7 +125,7 @@ class SwipeFragment : Fragment() {
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
                     columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "created_at")
                 ) {
-                    filter { neq("id", currentUserId!!) }
+                    filter { neq("id", userId) }
                     filter { eq("profile_completed", true) }
                     order("verified", Order.DESCENDING)
                     order("created_at", Order.DESCENDING)
@@ -118,20 +134,25 @@ class SwipeFragment : Fragment() {
 
                 val sinVista = _binding ?: return@launch
                 sinVista.progressBar.visibility = View.GONE
+                debugAdd("Perfiles devueltos por query: ${filas.size}")
 
                 profiles.clear()
                 profiles.addAll(filas.mapNotNull { parseProfile(it) })
 
+                debugAdd("Perfiles parseados: ${profiles.size}")
                 if (profiles.isEmpty()) {
                     sinVista.tvEmpty.visibility = View.VISIBLE
+                    debugAdd("Lista vac\u00eda -> tvEmpty VISIBLE")
                 } else {
                     currentIndex = 0
                     sinVista.cardProfile.visibility = View.VISIBLE
+                    debugAdd("Mostrando primer perfil: ${profiles[0].nickname}")
                     mostrarPerfilActual()
                     precargarSiguiente()
                 }
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error cargando perfiles", e)
+                debugAdd("ERROR: ${e.message}")
                 mostrarError(
                     getString(
                         R.string.profile_error_save_detail,
@@ -171,14 +192,17 @@ class SwipeFragment : Fragment() {
         if (currentIndex >= profiles.size) {
             b.tvEmpty.visibility = View.VISIBLE
             b.cardProfile.visibility = View.GONE
+            debugAdd("currentIndex (${currentIndex}) >= profiles.size (${profiles.size}) -> tvEmpty VISIBLE")
             return
         }
 
         val perfil = profiles[currentIndex]
+        debugAdd("Mostrando perfil: ${perfil.nickname}, fotos=${perfil.fotos.size}, verified=${perfil.verified}")
         b.tvName.text = buildNameString(perfil)
         b.tvLocation.text = perfil.location ?: ""
         b.tvBio.text = perfil.bio ?: ""
         b.ivVerified.visibility = if (perfil.verified) View.VISIBLE else View.GONE
+        b.cardProfile.visibility = View.VISIBLE
 
         // Configurar ViewPager2 con las fotos
         if (perfil.fotos.isEmpty()) {
@@ -199,6 +223,7 @@ class SwipeFragment : Fragment() {
     private fun cargarFotosDePerfil(perfil: SwipeProfile) {
         val b = _binding ?: return
         val userId = perfil.userId
+        debugAdd("Cargando fotos para ${perfil.nickname} (userId=$userId)")
 
         lifecycleScope.launch {
             try {
@@ -214,6 +239,7 @@ class SwipeFragment : Fragment() {
 
                 val sinVista = _binding ?: return@launch
                 val urls = filas.mapNotNull { textoDe(it, "url") }
+                debugAdd("${perfil.nickname}: ${urls.size} fotos")
 
                 // Actualizar el perfil en la lista con las fotos
                 if (currentIndex < profiles.size) {
@@ -223,6 +249,7 @@ class SwipeFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error cargando fotos de $userId", e)
+                debugAdd("ERROR fotos ${perfil.nickname}: ${e.message}")
                 val sinVista = _binding ?: return@launch
                 setupPhotoPager(emptyList())
             }
@@ -232,6 +259,7 @@ class SwipeFragment : Fragment() {
     /** Configura el ViewPager2 con las URLs de fotos. */
     private fun setupPhotoPager(urls: List<String>) {
         val b = _binding ?: return
+        debugAdd("setupPhotoPager: ${urls.size} URLs")
         val adapter = PhotoPagerAdapter(urls)
         b.photoPager.adapter = adapter
         TabLayoutMediator(b.photoIndicator, b.photoPager) { tab, position ->
@@ -382,10 +410,12 @@ class SwipeFragment : Fragment() {
     private fun pasarPerfil() {
         val b = _binding ?: return
         currentIndex++
+        debugAdd("pasarPerfil -> currentIndex=$currentIndex, profiles.size=${profiles.size}")
 
         if (currentIndex >= profiles.size) {
             b.tvEmpty.visibility = View.VISIBLE
             b.cardProfile.visibility = View.GONE
+            debugAdd("No m\u00e1s perfiles -> tvEmpty VISIBLE")
         } else {
             mostrarPerfilActual()
             precargarSiguiente()
