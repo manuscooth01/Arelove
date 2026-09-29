@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.arelove.app.ErrorSanitizer
 import com.arelove.app.LocationHelper
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -283,7 +284,7 @@ class Step1BasicFragment : Fragment() {
                 if (_binding == null) return@launch
                 mostrarDialogo(
                     AreloveDialog.Tipo.ERROR,
-                    e.message ?: contexto.getString(R.string.location_error)
+                    ErrorSanitizer.limpiar(e.message ?: contexto.getString(R.string.location_error))
                 )
             }
         }
@@ -448,7 +449,7 @@ class Step1BasicFragment : Fragment() {
                     getString(
                         R.string.profile_error_save_detail,
                         getString(R.string.profile_error_save),
-                        e.message ?: e.toString()
+                        ErrorSanitizer.limpiar(e.message ?: e.toString())
                     )
                 )
             } finally {

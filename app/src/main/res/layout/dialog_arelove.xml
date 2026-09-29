@@ -32,14 +32,24 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvMessage"
-            android:layout_width="wrap_content"
+        <!-- Mensaje con scroll y tope de líneas: los errores técnicos largos
+             no deben desbordar el diálogo -->
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxHeight="200dp"
+                android:maxLines="6"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="14sp" />
+        </ScrollView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPositive"

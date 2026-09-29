@@ -34,7 +34,8 @@ object AuthErrorMapper {
             mensaje.contains("rate limit", ignoreCase = true) ->
                 context.getString(R.string.error_rate_limit)
 
-            else -> mensaje
+            // Errores no traducidos: se limpian para no mostrar URLs, headers ni body
+            else -> ErrorSanitizer.limpiar(mensaje)
         }
     }
 }
