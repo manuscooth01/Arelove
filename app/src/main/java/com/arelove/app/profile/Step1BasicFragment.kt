@@ -6,10 +6,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -99,12 +99,9 @@ class Step1BasicFragment : Fragment() {
         _binding = null
     }
 
-    /** Sugerencias de ciudades más comunes de Venezuela. */
+    /** Sugerencias de ciudades más comunes de Venezuela (con el item de Material). */
     private fun configurarCiudades() {
-        val ciudades = resources.getStringArray(R.array.venezuela_cities)
-        binding.etLocation.setAdapter(
-            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, ciudades)
-        )
+        binding.etLocation.setSimpleItems(resources.getStringArray(R.array.venezuela_cities))
     }
 
     /** Pre-llena el apodo con el user_metadata.nickname del usuario. */
@@ -445,7 +442,15 @@ class Step1BasicFragment : Fragment() {
                 SupabaseClient.client.postgrest["profiles"].upsert(fila)
                 onSuccess()
             } catch (e: Exception) {
-                onError(getString(R.string.profile_error_save))
+                // Stacktrace completo en logcat para diagnosticar la causa real
+                Log.e(TAG_LOG, "Error guardando perfil", e)
+                onError(
+                    getString(
+                        R.string.profile_error_save_detail,
+                        getString(R.string.profile_error_save),
+                        e.message ?: e.toString()
+                    )
+                )
             } finally {
                 // Siempre se libera el bloqueo para poder reintentar
                 guardando = false
@@ -454,6 +459,9 @@ class Step1BasicFragment : Fragment() {
     }
 
     private companion object {
+        /** Etiqueta para el log de errores de guardado. */
+        const val TAG_LOG = "Step1Basic"
+
         const val EDAD_MINIMA = 18
         const val EDAD_MAXIMA = 100
         const val EDAD_SUGERIDA = 25

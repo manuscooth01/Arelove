@@ -118,6 +118,7 @@
     <string name="profile_error_age_range">Introduce una edad entre 18 y 100</string>
     <string name="profile_error_looking_for">Elige qué buscas en Arelove</string>
     <string name="profile_error_save">No se pudo guardar tu perfil. Inténtalo de nuevo.</string>
+    <string name="profile_error_save_detail">%1$s\n\nDetalle técnico: %2$s</string>
     <string name="profile_error_no_session">Tu sesión ya no es válida. Cierra sesión y vuelve a entrar.</string>
 
     <!-- Ciudades más comunes de Venezuela (autocompletado del paso 1) -->
