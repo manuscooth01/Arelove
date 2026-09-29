@@ -145,8 +145,28 @@
     <string name="error_delete_photo">No se pudo eliminar la foto. Inténtalo de nuevo.</string>
     <string name="error_camera_permission">No tienes permiso para usar la cámara. Puedes elegir una foto de la galería.</string>
 
-    <string name="profile_step_placeholder">Paso %1$d</string>
-    <string name="profile_step_placeholder_subtitle">Este paso se completará más adelante</string>
+    <!-- Paso 4 del asistente: perfil opcional -->
+    <string name="profile_step4_title">Completa tu perfil</string>
+    <string name="profile_step4_subtitle">Opcional. Puedes saltar este paso.</string>
+    <string name="field_zodiac">Signo zodiacal</string>
+    <string name="suffix_cm">" cm"</string>
+    <string name="suffix_kg">" kg"</string>
+    <string name="validation_height_range">Debe estar entre 100 y 250 cm</string>
+    <string name="validation_weight_range">Debe estar entre 30 y 300 kg</string>
+
+    <!-- Paso 5 del asistente: selfie de verificación -->
+    <string name="profile_step5_title">Verifica tu identidad</string>
+    <string name="profile_step5_subtitle">Sube una selfie para que otros sepan que eres real. Solo la verás tú y el equipo de Arelove.</string>
+    <string name="profile_step5_explanation">Tu selfie se compara con tus fotos de perfil. No se muestra a nadie.</string>
+    <string name="profile_step5_take_selfie">Tomar selfie</string>
+    <string name="profile_step5_pick_gallery">Elegir de la galería</string>
+    <string name="profile_step5_status_pending">Sin verificar</string>
+    <string name="profile_step5_status_unverified">Sin verificar</string>
+    <string name="profile_step5_status_review">Verificación en revisión</string>
+    <string name="profile_step5_skip">Saltar por ahora</string>
+    <string name="profile_step5_skip_warning">Sin verificar, tu perfil aparecerá sin insignia verde. ¿Quieres continuar de todas formas?</string>
+    <string name="error_upload_verification">No pudimos subir tu selfie. Inténtalo de nuevo.</string>
+
     <string name="profile_error_age_range">Introduce una edad entre 18 y 100</string>
     <string name="profile_error_looking_for">Elige qué buscas en Arelove</string>
     <string name="profile_error_save">No se pudo guardar tu perfil. Inténtalo de nuevo.</string>
@@ -195,7 +215,7 @@
     <!-- ==================== PERFIL OPCIONAL ==================== -->
     <string name="profile_optional_title">Completa tu perfil</string>
     <string name="profile_optional_subtitle">Es opcional, pero ayuda a que te conozcan mejor</string>
-    <string name="field_bio">Biografía</string>
+    <string name="field_bio">Bio</string>
     <string name="field_height">Altura</string>
     <string name="field_weight">Peso</string>
     <string name="field_zodiac_sign">Signo zodiacal</string>
@@ -364,5 +384,10 @@
     <string name="dialog_info_title">Información</string>
     <string name="dialog_login_success_msg">¡Bienvenido a Arelove!</string>
     <string name="dialog_register_success_msg">Tu cuenta se creó correctamente</string>
+
+    <!-- Asistente de perfil -->
+    <string name="setup_abandon_warning">Si sales ahora, podrás continuar tu perfil cuando vuelvas. ¿Seguro que quieres salir?</string>
+    <string name="setup_continue">Continuar</string>
+    <string name="setup_exit">Salir</string>
 
 </resources>

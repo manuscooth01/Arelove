@@ -506,6 +506,14 @@ class Step3PhotosFragment : Fragment() {
                     return@launch
                 }
 
+                // Los 3 pasos están completos: marcamos el perfil como terminado
+                // para que Home y el futuro swipe solo vean perfiles completos
+                SupabaseClient.client.postgrest["profiles"].update(
+                    buildJsonObject { put("profile_completed", true) }
+                ) {
+                    filter { eq("id", userId) }
+                }
+
                 onSuccess()
             } finally {
                 guardando = false

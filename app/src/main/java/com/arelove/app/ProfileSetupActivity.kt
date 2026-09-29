@@ -1,6 +1,8 @@
 package com.arelove.app
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +13,10 @@ import com.arelove.app.databinding.ActivityProfileSetupBinding
 import com.arelove.app.profile.Step1BasicFragment
 import com.arelove.app.profile.Step2InterestsFragment
 import com.arelove.app.profile.Step3PhotosFragment
-import com.arelove.app.profile.Step4Fragment
-import com.arelove.app.profile.Step5Fragment
+import com.arelove.app.profile.Step4OptionalFragment
+import com.arelove.app.profile.Step5VerificationFragment
 import com.arelove.app.ui.AreloveDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
  * Asistente de creación de perfil de Arelove.
@@ -22,11 +25,21 @@ import com.arelove.app.ui.AreloveDialog
  *  - Paso 1: datos básicos (se validan y se guardan en Supabase antes de avanzar)
  *  - Paso 2: intereses (también se guardan antes de avanzar)
  *  - Paso 3: fotos de perfil (hay que subir al menos 2)
- *  - Pasos 4 y 5: placeholders (los guardaremos más adelante)
+ *  - Paso 4: perfil opcional (altura, peso, bio… se guarda antes de avanzar)
+ *  - Paso 5: selfie de verificación (se puede saltar; termina el asistente)
  */
 class ProfileSetupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileSetupBinding
+
+    /** Preferencias donde se guarda el paso del asistente para retomarlo. */
+    private lateinit var prefs: SharedPreferences
+
+    /** Clave del paso actual dentro de las preferencias del asistente. */
+    private val claveUltimoPaso = "setup_last_step"
+
+    /** Nombre de las preferencias del asistente. */
+    private val prefsName = "arelove_prefs"
 
     /** Número total de pasos del asistente. */
     private val totalPasos = 5
@@ -36,7 +49,22 @@ class ProfileSetupActivity : AppCompatActivity() {
         binding = ActivityProfileSetupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        prefs = getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+
+        // El paso 5 pide avanzar cuando se pulsa "Saltar por ahora"
+        supportFragmentManager.setFragmentResultListener(
+            Step5VerificationFragment.CLAVE_AVANZAR,
+            this
+        ) { _, _ -> avanzarPaso() }
+
         configurarViewPager()
+
+        // Retoma el paso donde se quedó la última vez (si sigue en rango)
+        val ultimoPaso = prefs.getInt(claveUltimoPaso, -1)
+        if (ultimoPaso in 0 until totalPasos) {
+            binding.viewPager.currentItem = ultimoPaso
+        }
+
         configurarBotones()
         actualizarIndicador(binding.viewPager.currentItem)
     }
@@ -51,6 +79,8 @@ class ProfileSetupActivity : AppCompatActivity() {
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
+                // Recuerda el paso para retomarlo si el usuario sale a medias
+                prefs.edit().putInt(claveUltimoPaso, position).apply()
                 actualizarIndicador(position)
             }
         })
@@ -133,11 +163,43 @@ class ProfileSetupActivity : AppCompatActivity() {
                 )
             }
 
-            // Paso 5 (último): terminamos el asistente
-            actual >= totalPasos - 1 -> irAHome()
+            // Paso 4: perfil opcional (se valida y se guarda antes de avanzar)
+            actual == 3 -> {
+                val paso4 = supportFragmentManager.fragments
+                    .filterIsInstance<Step4OptionalFragment>()
+                    .firstOrNull() ?: return
 
-            // Paso 4: por ahora solo avanzamos (lo guardaremos después)
-            else -> pasarSiguientePaso()
+                paso4.validarYGuardar(
+                    onSuccess = { pasarSiguientePaso() },
+                    onError = { mensaje ->
+                        AreloveDialog.show(
+                            this@ProfileSetupActivity,
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.dialog_error_title),
+                            mensaje
+                        )
+                    }
+                )
+            }
+
+            // Paso 5 (último): selfie de verificación; termina el asistente
+            actual == 4 -> {
+                val paso5 = supportFragmentManager.fragments
+                    .filterIsInstance<Step5VerificationFragment>()
+                    .firstOrNull() ?: return
+
+                paso5.validarYGuardar(
+                    onSuccess = { irAHome() },
+                    onError = { mensaje ->
+                        AreloveDialog.show(
+                            this@ProfileSetupActivity,
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.dialog_error_title),
+                            mensaje
+                        )
+                    }
+                )
+            }
         }
     }
 
@@ -146,8 +208,29 @@ class ProfileSetupActivity : AppCompatActivity() {
     }
 
     private fun irAHome() {
+        // Perfil terminado: el asistente ya no tiene nada que retomar
+        prefs.edit().remove(claveUltimoPaso).apply()
         startActivity(Intent(this, HomeActivity::class.java))
         finish()
+    }
+
+    /**
+     * Botón "Atrás" del sistema: dentro del asistente retrocede un paso;
+     * en el paso 1 pide confirmación para salir sin terminar el perfil.
+     */
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        val actual = binding.viewPager.currentItem
+        if (actual > 0) {
+            binding.viewPager.currentItem = actual - 1
+        } else {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.dialog_warning_title))
+                .setMessage(getString(R.string.setup_abandon_warning))
+                .setPositiveButton(getString(R.string.setup_exit)) { _, _ -> finishAffinity() }
+                .setNegativeButton(getString(R.string.setup_continue)) { _, _ -> }
+                .show()
+        }
     }
 
     /**
@@ -169,8 +252,8 @@ class ProfileSetupActivity : AppCompatActivity() {
             0 -> Step1BasicFragment()
             1 -> Step2InterestsFragment()
             2 -> Step3PhotosFragment()
-            3 -> Step4Fragment()
-            else -> Step5Fragment()
+            3 -> Step4OptionalFragment()
+            else -> Step5VerificationFragment()
         }
     }
 }

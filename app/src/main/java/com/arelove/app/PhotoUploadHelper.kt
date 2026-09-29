@@ -11,7 +11,9 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 /**
- * Lectura, subida y borrado de las fotos de perfil del paso 3.
+ * Lectura, subida y borrado de las fotos subidas por la app:
+ * las fotos de perfil (paso 3, bucket "avatars") y la selfie de
+ * verificación (paso 5, bucket "verification").
  *
  * Todas las operaciones de red y de disco se hacen en [Dispatchers.IO];
  * el resto de la app solo espera el resultado (bytes leídos, URL pública
@@ -22,7 +24,7 @@ object PhotoUploadHelper {
     /** Etiqueta para el log de errores. */
     private const val TAG_LOG = "PhotoUploadHelper"
 
-    /** Bucket público de Supabase Storage donde viven las fotos de perfil. */
+    /** Bucket por defecto de Supabase Storage: las fotos de perfil. */
     private const val BUCKET = "avatars"
 
     /** Ancho máximo de la foto que se sube (en píxeles). */
@@ -82,19 +84,21 @@ object PhotoUploadHelper {
         }
 
     /**
-     * Sube los [bytes] al bucket y devuelve la URL pública.
+     * Sube los [bytes] al bucket indicado y devuelve la URL pública.
      *
      * @param userId id del usuario; la foto se guarda en `{userId}/{archivo}`
+     * @param bucket bucket de Supabase Storage donde se guarda la foto
+     *   (por defecto "avatars"; el paso 5 usa "verification")
      * @return la URL pública o null si la subida falló
      */
-    suspend fun subirFoto(userId: String, bytes: ByteArray): String? =
+    suspend fun subirFoto(userId: String, bytes: ByteArray, bucket: String = BUCKET): String? =
         withContext(Dispatchers.IO) {
             try {
                 val nombre = "${System.currentTimeMillis()}_${(1000..9999).random()}.jpg"
                 val path = "$userId/$nombre"
-                val bucket = SupabaseClient.client.storage[BUCKET]
-                bucket.upload(path, bytes)
-                val url = bucket.publicUrl(path)
+                val almacen = SupabaseClient.client.storage[bucket]
+                almacen.upload(path, bytes)
+                val url = almacen.publicUrl(path)
                 Log.d(TAG_LOG, "Foto subida, URL: $url")
                 url
             } catch (e: Exception) {
@@ -106,17 +110,18 @@ object PhotoUploadHelper {
     /**
      * Borra el archivo del bucket a partir de su URL pública.
      *
+     * @param bucket bucket donde está el archivo (por defecto "avatars")
      * @return true si el archivo se borró, false si la URL no se reconoce o falla la petición
      */
-    suspend fun borrarFoto(url: String): Boolean =
+    suspend fun borrarFoto(url: String, bucket: String = BUCKET): Boolean =
         withContext(Dispatchers.IO) {
             try {
-                val path = extraerPath(url)
+                val path = extraerPath(url, bucket)
                 if (path == null) {
                     Log.e(TAG_LOG, "No se reconoce la ruta de la foto: $url")
                     return@withContext false
                 }
-                SupabaseClient.client.storage[BUCKET].delete(path)
+                SupabaseClient.client.storage[bucket].delete(path)
                 true
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error borrando la foto", e)
@@ -128,8 +133,8 @@ object PhotoUploadHelper {
      * Extrae la ruta interna (`{userId}/{archivo}`) de una URL pública.
      * Ejemplo: `.../object/public/avatars/abc/1.jpg` -> `abc/1.jpg`.
      */
-    private fun extraerPath(url: String): String? {
-        val marca = "/object/public/$BUCKET/"
+    private fun extraerPath(url: String, bucket: String): String? {
+        val marca = "/object/public/$bucket/"
         val indice = url.indexOf(marca)
         if (indice < 0) return null
         return url.substring(indice + marca.length).ifEmpty { null }
