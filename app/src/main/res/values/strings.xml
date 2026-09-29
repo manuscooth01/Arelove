@@ -129,6 +129,22 @@
         <item quantity="one">%1$d seleccionado</item>
         <item quantity="other">%1$d seleccionados</item>
     </plurals>
+
+    <!-- Paso 3 del asistente: fotos de perfil -->
+    <string name="profile_step3_title">Tus fotos</string>
+    <string name="profile_step3_subtitle">Sube al menos 2 fotos para que te reconozcan fácilmente</string>
+    <string name="profile_step3_counter">%1$d de 2 mínimo</string>
+    <string name="profile_step3_counter_ok">%1$d fotos</string>
+    <string name="profile_step3_error_min">Sube al menos 2 fotos para continuar</string>
+    <string name="photo_take">Hacer foto</string>
+    <string name="photo_pick">Elegir de la galería</string>
+    <string name="photo_uploading">Subiendo…</string>
+    <string name="photo_add">+</string>
+    <string name="photo_remove">Quitar foto</string>
+    <string name="error_upload_photo">No se pudo subir la foto. Inténtalo de nuevo.</string>
+    <string name="error_delete_photo">No se pudo eliminar la foto. Inténtalo de nuevo.</string>
+    <string name="error_camera_permission">No tienes permiso para usar la cámara. Puedes elegir una foto de la galería.</string>
+
     <string name="profile_step_placeholder">Paso %1$d</string>
     <string name="profile_step_placeholder_subtitle">Este paso se completará más adelante</string>
     <string name="profile_error_age_range">Introduce una edad entre 18 y 100</string>

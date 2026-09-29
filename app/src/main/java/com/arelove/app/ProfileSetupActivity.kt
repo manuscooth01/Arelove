@@ -10,7 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.arelove.app.databinding.ActivityProfileSetupBinding
 import com.arelove.app.profile.Step1BasicFragment
 import com.arelove.app.profile.Step2InterestsFragment
-import com.arelove.app.profile.Step3Fragment
+import com.arelove.app.profile.Step3PhotosFragment
 import com.arelove.app.profile.Step4Fragment
 import com.arelove.app.profile.Step5Fragment
 import com.arelove.app.ui.AreloveDialog
@@ -20,7 +20,9 @@ import com.arelove.app.ui.AreloveDialog
  *
  * 5 pasos en un ViewPager2 sin swipe manual:
  *  - Paso 1: datos básicos (se validan y se guardan en Supabase antes de avanzar)
- *  - Pasos 2 a 5: placeholders (los guardaremos más adelante)
+ *  - Paso 2: intereses (también se guardan antes de avanzar)
+ *  - Paso 3: fotos de perfil (hay que subir al menos 2)
+ *  - Pasos 4 y 5: placeholders (los guardaremos más adelante)
  */
 class ProfileSetupActivity : AppCompatActivity() {
 
@@ -112,10 +114,29 @@ class ProfileSetupActivity : AppCompatActivity() {
                 )
             }
 
+            // Paso 3: hace falta subir al menos 2 fotos antes de avanzar
+            actual == 2 -> {
+                val paso3 = supportFragmentManager.fragments
+                    .filterIsInstance<Step3PhotosFragment>()
+                    .firstOrNull() ?: return
+
+                paso3.validarYGuardar(
+                    onSuccess = { pasarSiguientePaso() },
+                    onError = { mensaje ->
+                        AreloveDialog.show(
+                            this@ProfileSetupActivity,
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.dialog_error_title),
+                            mensaje
+                        )
+                    }
+                )
+            }
+
             // Paso 5 (último): terminamos el asistente
             actual >= totalPasos - 1 -> irAHome()
 
-            // Pasos 3 y 4: por ahora solo avanzamos (los guardaremos después)
+            // Paso 4: por ahora solo avanzamos (lo guardaremos después)
             else -> pasarSiguientePaso()
         }
     }
@@ -147,7 +168,7 @@ class ProfileSetupActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment = when (position) {
             0 -> Step1BasicFragment()
             1 -> Step2InterestsFragment()
-            2 -> Step3Fragment()
+            2 -> Step3PhotosFragment()
             3 -> Step4Fragment()
             else -> Step5Fragment()
         }

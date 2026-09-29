@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Rutas que expone el FileProvider de la app de cámara.
+    La foto del paso 3 se guarda en caché y se comparte solo mientras
+    la app de cámara está en uso.
+-->
+<paths>
+    <cache-path
+        name="fotos_cache"
+        path="." />
+    <files-path
+        name="fotos_files"
+        path="." />
+</paths>
