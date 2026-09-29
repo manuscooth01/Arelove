@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.arelove.app.DebugLog
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -192,53 +191,37 @@ class Step2InterestsFragment : Fragment() {
      * @param onError se llama con el mensaje de error a mostrar
      */
     fun validarYGuardar(onSuccess: () -> Unit, onError: (String) -> Unit) {
-        DebugLog.add("validarYGuardar: inicio, guardando=$guardando")
-        if (guardando) {
-            DebugLog.add("validarYGuardar: BLOQUEADO por guardando=true")
-            return
-        }
+        if (guardando) return
 
-        val b = _binding
-        if (b == null) {
-            DebugLog.add("validarYGuardar: SIN VISTA")
-            return
-        }
+        val b = _binding ?: return
         b.tvInterestsError.visibility = View.GONE
 
         val seleccionados = b.chipGroupInterests.checkedChipIds.mapNotNull { interesesPorChip[it] }
-        DebugLog.add("validarYGuardar: seleccionados=$seleccionados")
 
         if (seleccionados.size < MINIMO_INTERESES) {
-            DebugLog.add("validarYGuardar: MENOS DE $MINIMO_INTERESES")
             b.tvInterestsError.text = getString(R.string.profile_step2_error_min)
             b.tvInterestsError.visibility = View.VISIBLE
             return
         }
 
         guardando = true
-        DebugLog.add("validarYGuardar: lanzando corrutina")
 
         lifecycleScope.launch {
             try {
                 // La sesión se lee dentro de la corrutina: en el hilo principal
                 // currentSessionOrNull() puede bloquear y congelar la pantalla
-                DebugLog.add("validarYGuardar: leyendo userId")
                 val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-                DebugLog.add("validarYGuardar: userId=$userId")
-
                 if (userId == null) {
-                    DebugLog.add("validarYGuardar: SIN SESIÓN")
                     onError(getString(R.string.profile_error_no_session))
                     return@launch
                 }
 
-                DebugLog.add("validarYGuardar: DELETE")
+                // DELETE FROM user_interests WHERE user_id = ...
                 SupabaseClient.client.postgrest["user_interests"].delete {
                     filter { eq("user_id", userId) }
                 }
-                DebugLog.add("validarYGuardar: DELETE OK")
 
-                DebugLog.add("validarYGuardar: INSERT")
+                // INSERT de la selección nueva (una sola petición)
                 val filas = seleccionados.map { interesId ->
                     buildJsonObject {
                         put("user_id", userId)
@@ -248,12 +231,10 @@ class Step2InterestsFragment : Fragment() {
                 if (filas.isNotEmpty()) {
                     SupabaseClient.client.postgrest["user_interests"].insert<JsonObject>(filas)
                 }
-                DebugLog.add("validarYGuardar: INSERT OK")
 
                 onSuccess()
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error guardando intereses", e)
-                DebugLog.add("validarYGuardar: EXCEPCIÓN ${e.message}")
                 onError(
                     getString(
                         R.string.profile_error_save_detail,
@@ -262,7 +243,6 @@ class Step2InterestsFragment : Fragment() {
                     )
                 )
             } finally {
-                DebugLog.add("validarYGuardar: finally")
                 guardando = false
             }
         }

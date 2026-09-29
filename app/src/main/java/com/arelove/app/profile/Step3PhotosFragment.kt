@@ -544,17 +544,12 @@ class Step3PhotosFragment : Fragment() {
 
                 val uriLocal = foto.uriLocal
 
-                b.tvPhotoError.visibility = View.GONE
-
                 when {
                     url != null -> b.ivPhoto.load(url) {
                         crossfade(true)
                         listener(
                             onError = { _, result ->
-                                val msg =
-                                    result.throwable.message ?: result.throwable.toString()
-                                b.tvPhotoError.text = msg.take(200)
-                                b.tvPhotoError.visibility = View.VISIBLE
+                                Log.e(TAG_LOG, "Coil error cargando $url", result.throwable)
                             }
                         )
                     }
@@ -562,10 +557,7 @@ class Step3PhotosFragment : Fragment() {
                         crossfade(true)
                         listener(
                             onError = { _, result ->
-                                val msg =
-                                    result.throwable.message ?: result.throwable.toString()
-                                b.tvPhotoError.text = msg.take(200)
-                                b.tvPhotoError.visibility = View.VISIBLE
+                                Log.e(TAG_LOG, "Coil error cargando $uriLocal", result.throwable)
                             }
                         )
                     }

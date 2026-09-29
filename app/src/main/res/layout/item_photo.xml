@@ -33,24 +33,6 @@
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_launcher" />
 
-        <!-- Diagnóstico temporal: mensaje de error de Coil sobre la imagen -->
-        <TextView
-            android:id="@+id/tvPhotoError"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
-            android:background="@color/scrim"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="3"
-            android:padding="4dp"
-            android:textColor="@color/error"
-            android:textSize="10sp"
-            android:visibility="gone"
-            tools:text="Unable to resolve host"
-            tools:visibility="visible" />
-
         <ImageButton
             android:id="@+id/btnPhotoRemove"
             android:layout_width="32dp"
