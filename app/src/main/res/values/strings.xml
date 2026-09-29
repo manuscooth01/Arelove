@@ -362,6 +362,8 @@
     <string name="dialog_warning_title">Atención</string>
     <string name="dialog_success_title">¡Listo!</string>
     <string name="dialog_info_title">Información</string>
+    <string name="debug_title">Debug</string>
+    <string name="debug_no_fragment">No se encontró el fragmento del Paso 2</string>
     <string name="dialog_login_success_msg">¡Bienvenido a Arelove!</string>
     <string name="dialog_register_success_msg">Tu cuenta se creó correctamente</string>
 

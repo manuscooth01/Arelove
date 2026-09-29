@@ -71,6 +71,7 @@ class ProfileSetupActivity : AppCompatActivity() {
      */
     private fun avanzarPaso() {
         val actual = binding.viewPager.currentItem
+        DebugLog.add("avanzarPaso: actual=$actual")
 
         when {
             // Paso 1: validar y guardar en Supabase antes de avanzar
@@ -97,21 +98,53 @@ class ProfileSetupActivity : AppCompatActivity() {
 
             // Paso 2: validar y guardar los intereses antes de avanzar
             actual == 1 -> {
+                // Cada intento empieza con el registro limpio
+                DebugLog.limpiar()
+                DebugLog.add("avanzarPaso: actual=$actual")
+                DebugLog.add("Paso 2: buscando fragment")
+
                 val paso2 = supportFragmentManager.fragments
                     .filterIsInstance<Step2InterestsFragment>()
-                    .firstOrNull() ?: return
+                    .firstOrNull()
 
+                if (paso2 == null) {
+                    DebugLog.add("Paso 2: FRAGMENT NULL")
+                    AreloveDialog.show(
+                        this@ProfileSetupActivity,
+                        AreloveDialog.Tipo.ERROR,
+                        getString(R.string.debug_title),
+                        getString(R.string.debug_no_fragment)
+                    )
+                    return
+                }
+
+                DebugLog.add("Paso 2: fragment OK, llamando validarYGuardar")
                 paso2.validarYGuardar(
-                    onSuccess = { pasarSiguientePaso() },
-                    onError = { mensaje ->
+                    onSuccess = {
+                        DebugLog.add("Paso 2: onSuccess")
+                        pasarSiguientePaso()
+                    },
+                    onError = { msg ->
+                        DebugLog.add("Paso 2: onError=$msg")
                         AreloveDialog.show(
                             this@ProfileSetupActivity,
                             AreloveDialog.Tipo.ERROR,
                             getString(R.string.dialog_error_title),
-                            mensaje
+                            msg
                         )
                     }
                 )
+
+                // TEMPORAL: 2 segundos después se pinta todas las trazas
+                binding.root.postDelayed({
+                    if (isFinishing || isDestroyed) return@postDelayed
+                    AreloveDialog.show(
+                        this@ProfileSetupActivity,
+                        AreloveDialog.Tipo.INFO,
+                        getString(R.string.debug_title),
+                        DebugLog.texto()
+                    )
+                }, 2000)
             }
 
             // Paso 3: hace falta subir al menos 2 fotos antes de avanzar
