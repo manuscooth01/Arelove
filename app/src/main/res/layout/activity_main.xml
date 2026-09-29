@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:background="@color/background"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
     android:paddingTop="32dp"

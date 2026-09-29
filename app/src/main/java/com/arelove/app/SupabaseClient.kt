@@ -5,8 +5,6 @@ import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.SettingsSessionManager
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.realtime.Realtime
-import io.github.jan.supabase.storage.Storage
 
 /**
  * Cliente único de Supabase para toda la aplicación.
@@ -32,8 +30,6 @@ object SupabaseClient {
                 sessionManager = SettingsSessionManager()
             }
             install(Postgrest) // consultas a las tablas
-            install(Realtime)  // chat, indicador de actividad y likes en vivo
-            install(Storage)   // fotos, historias y notas de voz
         }
     }
 }

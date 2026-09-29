@@ -15,7 +15,7 @@ App de citas Android (Kotlin + XML + Material 3) contra Supabase. Un único mód
 ## Supabase (BOM 2.1.0) — trampas reales
 
 - El *group* de Maven es `io.github.jan-tennert.supabase`, pero **los paquetes Kotlin son `io.github.jan.supabase.*`**: `io.github.jan.supabase.gotrue.auth`, `io.github.jan.supabase.postgrest.postgrest`. El módulo de Auth se llama `gotrue-kt`.
-- Cliente único: `SupabaseClient.client` (URL y anon key hardcodeados; instala Auth, Postgrest, Realtime y Storage).
+- Cliente único: `SupabaseClient.client` (URL y anon key hardcodeados; instala Auth y Postgrest). Se removieron Realtime y Storage para optimizar el arranque; volver a añadirlos cuando se implementen chat en vivo y subida de archivos.
 - Select con filtro: `client.postgrest["profiles"].select { filter { eq("id", userId) } }` — el lambda es de `PostgrestRequestBuilder` (ahí viven `filter`, `limit`, `single`), y `eq` está dentro de `filter`.
 - **`decodeSingleOrNull<Map<String, Any>>()` no funciona**: `KotlinXSerializer` hace `serializer(typeOf<T>())` y kotlinx no serializa `Any`. Usa `decodeSingleOrNull<JsonObject>()`.
 - **`upsert(mapOf(...))` tampoco** (explota en runtime con `SerializationException`). Usa `upsert(buildJsonObject { put("col", valor) })`.
@@ -27,7 +27,7 @@ App de citas Android (Kotlin + XML + Material 3) contra Supabase. Un único mód
 
 - `MainActivity` (launcher) → `awaitInitialization()` → con sesión consulta `profiles` y abre `ProfileSetupActivity` si el perfil no tiene `age`+`location`+`looking_for`, o `HomeActivity` si está completo; sin sesión a Login/Register.
 - `RegisterActivity` abre `ProfileSetupActivity` con `NEW_TASK | CLEAR_TASK` tras registrarse.
-- `LoginActivity` va directo a `HomeActivity` (no comprueba el perfil; solo lo hace `MainActivity`).
+- `LoginActivity` navega SIEMPRE a `MainActivity` con `NEW_TASK|CLEAR_TASK` tras login exitoso. Es `MainActivity` quien decide entre `ProfileSetupActivity` (perfil incompleto) y `HomeActivity` (perfil completo) usando `ProfileChecker.perfilCompleto()`. Se centralizó así para evitar una consulta de red duplicada.
 - Asistente de perfil: 5 pasos en `ViewPager2` con `isUserInputEnabled = false` (paquete `com.arelove.app.profile`). Solo el paso 1 valida y guarda; los pasos 2-5 son placeholders.
 
 ## Convenciones del repo
@@ -37,6 +37,17 @@ App de citas Android (Kotlin + XML + Material 3) contra Supabase. Un único mód
 - Errores de formulario inline en `TextInputLayout.error`; avisos con `AreloveDialog.show(...)` — nunca Toast.
 - Tema único `Theme.Arelove` con variantes `values/` y `values-night/`; colores de marca en `res/values/colors.xml`.
 - `android.nonTransitiveRClass=true`: para recursos de librerías usa el R completo (p. ej. `com.google.android.material.R...`).
+
+## Optimizaciones aplicadas
+
+Para no reintroducir regresiones de rendimiento, estas optimizaciones ya están aplicadas (no deshacer sin medir):
+
+- Listeners de `MainActivity` se instalan antes de cualquier red (botones responden desde el primer frame).
+- Cliente Supabase se precarga en `Dispatchers.IO`.
+- Login navega a `MainActivity` (una sola comprobación de perfil, no dos).
+- `windowBackground` del tema pinta el fondo; los layouts raíz ya NO repiten `android:background` (evita overdraw).
+- `ViewPager2.offscreenPageLimit = 1` en el asistente (no reinflar pasos).
+- Sin módulos/dependencias sin uso (Realtime, Storage, Coil, ViewModel, ConstraintLayout).
 
 ## Entorno
 

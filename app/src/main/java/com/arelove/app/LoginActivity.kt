@@ -100,7 +100,7 @@ class LoginActivity : AppCompatActivity() {
                     AreloveDialog.Tipo.SUCCESS,
                     getString(R.string.dialog_success_title),
                     getString(R.string.dialog_login_success_msg),
-                    onPositive = { navegarTrasLogin() }
+                    onPositive = { navegarAMain() }
                 )
             } catch (e: Exception) {
                 AreloveDialog.show(
@@ -147,7 +147,7 @@ class LoginActivity : AppCompatActivity() {
                     AreloveDialog.Tipo.SUCCESS,
                     getString(R.string.dialog_success_title),
                     getString(R.string.dialog_login_success_msg),
-                    onPositive = { navegarTrasLogin() }
+                    onPositive = { navegarAMain() }
                 )
             } catch (e: Exception) {
                 AreloveDialog.show(
@@ -164,27 +164,16 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Abre la pantalla que corresponde tras un inicio de sesión exitoso:
-     * HomeActivity si el perfil está completo o ProfileSetupActivity si falta
-     * terminar el asistente. Limpia la pila para no dejar el Login en el
-     * historial de navegación.
+     * Abre MainActivity tras un inicio de sesión exitoso y limpia la pila para
+     * no dejar el Login en el historial. MainActivity es la única que decide
+     * entre HomeActivity y ProfileSetupActivity (comprueba el perfil), así que
+     * aquí no se hace ninguna llamada de red.
      */
-    private fun navegarTrasLogin() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.btnLogin.isEnabled = false
-        binding.btnGoogle.isEnabled = false
-
-        lifecycleScope.launch {
-            val destino = if (ProfileChecker.perfilCompleto()) {
-                HomeActivity::class.java
-            } else {
-                ProfileSetupActivity::class.java
-            }
-            val intent = Intent(this@LoginActivity, destino).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
-            startActivity(intent)
-            finish()
+    private fun navegarAMain() {
+        val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
+        startActivity(intent)
+        finish()
     }
 }

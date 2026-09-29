@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityMainBinding
 import io.github.jan.supabase.gotrue.auth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -21,6 +22,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Los listeners no dependen de la sesión: se instalan ya para que los
+        // botones respondan desde el primer frame (antes de cualquier red)
+        configurarBotones()
+
+        // Precarga el cliente Supabase fuera del hilo principal
+        lifecycleScope.launch(Dispatchers.IO) {
+            SupabaseClient.client // fuerza la inicialización lazy
+        }
+
         lifecycleScope.launch {
             // Espera a que GoTrue termine de cargar la sesión guardada en disco
             SupabaseClient.client.auth.awaitInitialization()
@@ -34,10 +44,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 startActivity(Intent(this@MainActivity, destino))
                 finish()
-                return@launch
             }
-
-            configurarBotones()
         }
     }
 

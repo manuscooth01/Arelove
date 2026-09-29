@@ -54,8 +54,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.activity:activity-ktx:1.8.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
 
     // Material Design 3 (temas y componentes)
@@ -70,8 +68,6 @@ dependencies {
     // Módulos de Supabase
     implementation 'io.github.jan-tennert.supabase:postgrest-kt'
     implementation 'io.github.jan-tennert.supabase:gotrue-kt'
-    implementation 'io.github.jan-tennert.supabase:storage-kt'
-    implementation 'io.github.jan-tennert.supabase:realtime-kt'
 
     // Persistencia de sesión entre reinicios (SettingsSessionManager)
     implementation 'com.russhwolf:multiplatform-settings-no-arg:1.1.1'
@@ -85,9 +81,6 @@ dependencies {
     implementation 'io.ktor:ktor-client-android:2.3.7'
     implementation 'io.ktor:ktor-client-core:2.3.7'
     implementation 'io.ktor:ktor-utils:2.3.7'
-
-    // Imágenes
-    implementation 'io.coil-kt:coil:2.5.0'
 
     // Corrutinas
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'

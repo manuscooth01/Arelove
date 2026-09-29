@@ -42,6 +42,9 @@ class ProfileSetupActivity : AppCompatActivity() {
     private fun configurarViewPager() {
         // Los pasos solo se cambian con los botones (sin arrastrar)
         binding.viewPager.isUserInputEnabled = false
+        // Mantiene vivo el fragmento vecino para no reinflar el paso 1
+        // (3 TextInputLayout + 3 Chip) al volver hacia atrás
+        binding.viewPager.offscreenPageLimit = 1
         binding.viewPager.adapter = SetupAdapter()
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
