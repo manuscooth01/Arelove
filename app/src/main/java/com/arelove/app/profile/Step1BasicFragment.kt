@@ -70,7 +70,10 @@ class Step1BasicFragment : Fragment() {
     /** Evita borrar las coordenadas cuando rellenamos el campo desde el GPS. */
     private var rellenandoLugar = false
 
-    /** Selector de fecha ya construido (constraints + selección) para abrirlo al primer toque. */
+    /**
+     * Selector de fecha construido de forma perezosa en el primer toque sobre
+     * el campo (no se monta en onViewCreated) y cacheado para reutilizarlo.
+     */
     private var datePicker: MaterialDatePicker<Long>? = null
 
     /** Marca si el selector actual ya se mostró (un fragmento no debe reutilizarse tras descartarse). */
@@ -100,7 +103,6 @@ class Step1BasicFragment : Fragment() {
         configurarCiudades()
         prellenarNickname()
         configurarChips()
-        prepararSelectorFecha()
         configurarFechaNacimiento()
         configurarLugar()
         cargarDatosExistentes()
@@ -161,21 +163,14 @@ class Step1BasicFragment : Fragment() {
     // ---------------------------------------------------------------------
 
     /**
-     * Pre-construye el [MaterialDatePicker] (constraints + selección) para que
-     * el primer toque sobre el campo no tenga que montarlo desde cero.
-     */
-    private fun prepararSelectorFecha() {
-        datePicker = construirSelector()
-        selectorUsado = false
-    }
-
-    /**
      * Muestra un [MaterialDatePicker] limitado a fechas pasadas:
      * entre hoy - 100 años y hoy, abriendo en hoy - 25 años.
      *
-     * MaterialDatePicker no permite cambiar la selección una vez construido y un
-     * fragmento no debe reutilizarse tras su descarte, así que si el selector ya
-     * se mostró (o cambió la fecha de apertura) se reconstruye con la fecha actual.
+     * El selector se construye de forma perezosa en este primer toque (no en
+     * onViewCreated) y se cachea en [datePicker]. MaterialDatePicker no permite
+     * cambiar la selección una vez construido y un fragmento no debe
+     * reutilizarse tras su descarte, así que si el selector ya se mostró
+     * (o cambió la fecha de apertura) se reconstruye con la fecha actual.
      */
     private fun mostrarSelectorFecha() {
         if (_binding == null) return

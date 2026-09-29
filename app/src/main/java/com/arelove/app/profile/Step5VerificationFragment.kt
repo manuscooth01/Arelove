@@ -24,7 +24,12 @@ import com.arelove.app.util.AntiSpam
 import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.io.File
@@ -55,6 +60,9 @@ class Step5VerificationFragment : Fragment() {
 
     /** Evita avanzar dos veces si pulsan "Siguiente" repetidamente. */
     private var guardando = false
+
+    /** Trabajo en curso de la preview; se cancela al pedir una nueva. */
+    private var jobPreview: Job? = null
 
     // ---------------------------------------------------------------------
     // Launchers (se registran en el constructor: nunca dentro de onViewCreated)
@@ -110,13 +118,63 @@ class Step5VerificationFragment : Fragment() {
             saltarVerificacion()
         }
 
-        // Si la vista se recreó después de subir la selfie, restauramos el estado
-        urlSelfie?.let { mostrarSelfieSubida(it) }
+        // Restaura la selfie de esta sesión o la que ya esté en Supabase
+        cargarSelfieGuardada()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // ---------------------------------------------------------------------
+    // Restauración de la selfie guardada
+    // ---------------------------------------------------------------------
+
+    /**
+     * Restaura la selfie pendiente al abrir el paso: usa la de esta sesión
+     * si la hay ([urlSelfie]) y, si no, consulta
+     * `profiles.verification_photo_url` (en una sesión anterior la URL solo
+     * vivía en memoria y la preview no se recuperaba nunca).
+     */
+    private fun cargarSelfieGuardada() {
+        val urlEnSesion = urlSelfie
+        if (urlEnSesion != null) {
+            mostrarSelfieSubida(urlEnSesion)
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                // La sesión se lee dentro de la corrutina (nunca en el hilo principal)
+                val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                    ?: return@launch
+
+                val fila = SupabaseClient.client.postgrest["profiles"].select(
+                    columns = Columns.list("verification_photo_url")
+                ) {
+                    filter { eq("id", userId) }
+                    limit(1)
+                }.decodeSingleOrNull<JsonObject>() ?: return@launch
+
+                val url = textoDe(fila, "verification_photo_url") ?: return@launch
+                urlSelfie = url
+
+                // Sin vista (paso destruido) no se pinta nada: en el próximo
+                // onViewCreated urlSelfie ya no será null y se restaura solo
+                mostrarSelfieSubida(url)
+            } catch (e: Exception) {
+                // Sin conexión o sin permiso: el paso sigue funcionando sin preview
+                Log.e(TAG_LOG, "Error cargando la selfie guardada", e)
+            }
+        }
+    }
+
+    /** Valor de texto de una columna; ausente, JSON null o vacío => null. */
+    private fun textoDe(fila: JsonObject, clave: String): String? {
+        val elemento = fila[clave] as? JsonPrimitive ?: return null
+        if (elemento is JsonNull) return null
+        return elemento.content.trim().ifEmpty { null }
     }
 
     // ---------------------------------------------------------------------
@@ -277,8 +335,9 @@ class Step5VerificationFragment : Fragment() {
 
     /**
      * Pide una URL firmada temporal ([PhotoUploadHelper.urlFirmada]) para la
-     * selfie y la carga en la preview. Si no se puede firmar, la preview se
-     * queda oculta: el paso sigue funcionando igual.
+     * selfie y la carga en la preview. La imagen solo pasa a VISIBLE cuando
+     * Coil confirma la carga; si no se puede firmar o descargar, se queda
+     * oculta y el paso sigue funcionando igual.
      */
     private fun cargarPreview(url: String) {
         val path = extraerPathVerificacion(url)
@@ -287,7 +346,9 @@ class Step5VerificationFragment : Fragment() {
             return
         }
 
-        lifecycleScope.launch {
+        // Solo una preview en vuelo: la anterior se cancela al pedir esta
+        jobPreview?.cancel()
+        jobPreview = viewLifecycleOwner.lifecycleScope.launch {
             val firmada = PhotoUploadHelper.urlFirmada(BUCKET_VERIFICACION, path)
             val sinVista = _binding ?: return@launch
             if (firmada == null) {
@@ -295,8 +356,20 @@ class Step5VerificationFragment : Fragment() {
                 sinVista.ivSelfiePreview.visibility = View.GONE
                 return@launch
             }
-            sinVista.ivSelfiePreview.visibility = View.VISIBLE
-            sinVista.ivSelfiePreview.load(firmada) { crossfade(true) }
+            // Oculta hasta que Coil descargue bien: nunca un hueco en blanco
+            sinVista.ivSelfiePreview.visibility = View.GONE
+            sinVista.ivSelfiePreview.load(firmada) {
+                crossfade(true)
+                listener(
+                    onSuccess = { _, _ ->
+                        _binding?.ivSelfiePreview?.visibility = View.VISIBLE
+                    },
+                    onError = { _, result ->
+                        Log.e(TAG_LOG, "Coil error cargando la selfie", result.throwable)
+                        _binding?.ivSelfiePreview?.visibility = View.GONE
+                    }
+                )
+            }
         }
     }
 
@@ -406,12 +479,11 @@ class Step5VerificationFragment : Fragment() {
                     return@launch
                 }
 
-                guardarSelfie(userId, url)
-
-                // El asistente terminó: solo el Paso 5 marca el perfil completo
-                SupabaseClient.client.postgrest["profiles"].update(
-                    buildJsonObject { put("profile_completed", true) }
-                ) {
+                // Un solo UPDATE: la URL de la selfie y el fin del asistente
+                SupabaseClient.client.postgrest["profiles"].update(buildJsonObject {
+                    put("verification_photo_url", url)
+                    put("profile_completed", true)
+                }) {
                     filter { eq("id", userId) }
                 }
 

@@ -31,8 +31,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -393,8 +395,9 @@ class Step3PhotosFragment : Fragment() {
                 }
 
                 // Mismo contenido = misma foto: se compara por SHA-256 de los
-                // bytes ya recomprimidos, antes de subir nada
-                val hash = PhotoUploadHelper.hashBytes(bytes)
+                // bytes ya recomprimidos, antes de subir nada (en IO: el hash
+                // de unos cientos de KB no debe bloquear el hilo principal)
+                val hash = withContext(Dispatchers.IO) { PhotoUploadHelper.hashBytes(bytes) }
                 if (fotos.any { it.hash == hash }) {
                     AreloveDialog.show(
                         contexto,
