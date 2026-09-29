@@ -281,12 +281,13 @@ class Step5VerificationFragment : Fragment() {
         )
     }
 
-    /** UPSERT de la URL de la selfie en `profiles` (no toca la columna "verified"). */
+    /** UPDATE de la URL de la selfie en `profiles` (no toca la columna "verified"). */
     private suspend fun guardarSelfie(userId: String, url: String) {
-        SupabaseClient.client.postgrest["profiles"].upsert(buildJsonObject {
-            put("id", userId)
+        SupabaseClient.client.postgrest["profiles"].update(buildJsonObject {
             put("verification_photo_url", url)
-        })
+        }) {
+            filter { eq("id", userId) }
+        }
     }
 
     // ---------------------------------------------------------------------

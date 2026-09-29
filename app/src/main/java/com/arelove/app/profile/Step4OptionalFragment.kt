@@ -128,8 +128,9 @@ class Step4OptionalFragment : Fragment() {
 
     /**
      * Valida los rangos opcionales de altura y peso y, si todo está correcto,
-     * hace un UPSERT en la tabla `profiles` con id = auth.uid(). Los campos
-     * vacíos se envían como JsonNull (para poder borrar un valor previo).
+     * hace un UPDATE en la tabla `profiles` con filtro por el id de la sesión
+     * (la fila la creó el Paso 1). Los campos vacíos se envían como JsonNull
+     * (para poder borrar un valor previo).
      *
      * @param onSuccess se llama cuando el guardado termina bien (para avanzar de paso)
      * @param onError se llama con el mensaje de error a mostrar
@@ -176,7 +177,6 @@ class Step4OptionalFragment : Fragment() {
                 }
 
                 val fila = buildJsonObject {
-                    put("id", userId)
                     ponerTexto("bio", bio)
                     ponerNumero("height", altura)
                     ponerNumero("weight", peso)
@@ -184,8 +184,12 @@ class Step4OptionalFragment : Fragment() {
                     ponerTexto("occupation", ocupacion)
                     ponerTexto("favorite_music", musica)
                 }
-                // UPSERT: crea la fila si no existe y la actualiza si ya existe
-                SupabaseClient.client.postgrest["profiles"].upsert(fila)
+                // UPDATE con filtro por id: la fila ya existe desde el Paso 1.
+                // Un upsert aquí haría un INSERT y fallaría con el constraint
+                // NOT NULL de "nickname" (no se envía en este paso).
+                SupabaseClient.client.postgrest["profiles"].update(fila) {
+                    filter { eq("id", userId) }
+                }
                 onSuccess()
             } catch (e: Exception) {
                 // Stacktrace completo en logcat para diagnosticar la causa real

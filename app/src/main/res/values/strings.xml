@@ -217,7 +217,7 @@
     <!-- ==================== PERFIL OPCIONAL ==================== -->
     <string name="profile_optional_title">Completa tu perfil</string>
     <string name="profile_optional_subtitle">Es opcional, pero ayuda a que te conozcan mejor</string>
-    <string name="field_bio">Bio</string>
+    <string name="field_bio">Cuéntanos algo sobre ti</string>
     <string name="field_height">Altura</string>
     <string name="field_weight">Peso</string>
     <string name="field_zodiac_sign">Signo zodiacal</string>
