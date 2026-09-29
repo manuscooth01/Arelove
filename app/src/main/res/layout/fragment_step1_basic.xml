@@ -59,21 +59,24 @@
                 android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Edad -->
+        <!-- Fecha de nacimiento (selector con MaterialDatePicker) -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilAge"
+            android:id="@+id/tilBirthdate"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="@string/field_age">
+            android:hint="@string/field_birthdate"
+            app:endIconDrawable="@drawable/ic_calendar"
+            app:endIconMode="custom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etAge"
+                android:id="@+id/etBirthdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="2"
+                android:clickable="true"
+                android:focusable="false"
+                android:inputType="none"
                 android:maxLines="1"
                 android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -96,6 +99,20 @@
                 android:maxLines="1"
                 android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Botón: rellenar el lugar con la ubicación del GPS -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUseLocation"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/use_my_location"
+            android:textAllCaps="false"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_location"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
 
         <!-- Qué busco -->
         <TextView

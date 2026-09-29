@@ -16,12 +16,11 @@ import com.google.android.material.textfield.TextInputEditText
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
 /**
  * Pantalla de registro de Arelove.
- * Crea la cuenta con Supabase Auth (signUpWith Email + nickname en user_metadata).
+ * Crea la cuenta con Supabase Auth (signUpWith Email).
+ * El apodo se pide después, en el paso 1 del asistente de perfil.
  */
 class RegisterActivity : AppCompatActivity() {
 
@@ -55,7 +54,6 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun configurarCampos() {
-        binding.etNickname.doAfterTextChanged { binding.tilNickname.error = null }
         binding.etEmail.doAfterTextChanged { binding.tilEmail.error = null }
         binding.etPassword.doAfterTextChanged { binding.tilPassword.error = null }
         binding.etConfirmPassword.doAfterTextChanged { binding.tilConfirmPassword.error = null }
@@ -107,21 +105,14 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun crearCuenta() {
-        val nickname = binding.etNickname.text?.toString()?.trim().orEmpty()
         val emailValue = binding.etEmail.text?.toString()?.trim().orEmpty()
         val passwordValue = binding.etPassword.text?.toString().orEmpty()
         val confirmPassword = binding.etConfirmPassword.text?.toString().orEmpty()
 
-        binding.tilNickname.error = null
         binding.tilEmail.error = null
         binding.tilPassword.error = null
         binding.tilConfirmPassword.error = null
         binding.cbTerms.error = null
-
-        if (nickname.isEmpty()) {
-            binding.tilNickname.error = getString(R.string.validation_required_field)
-            return
-        }
 
         if (emailValue.isEmpty()) {
             binding.tilEmail.error = getString(R.string.validation_required_field)
@@ -166,7 +157,6 @@ class RegisterActivity : AppCompatActivity() {
                 SupabaseClient.client.auth.signUpWith(Email) {
                     this.email = emailValue
                     this.password = passwordValue
-                    data = buildJsonObject { put("nickname", nickname) }
                 }
                 AreloveDialog.show(
                     this@RegisterActivity,

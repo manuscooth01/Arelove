@@ -61,6 +61,9 @@ dependencies {
     // Material Design 3 (temas y componentes)
     implementation 'com.google.android.material:material:1.11.0'
 
+    // Ubicación (GPS para el paso 1 del asistente de perfil)
+    implementation 'com.google.android.gms:play-services-location:21.2.0'
+
     // Supabase BOM (para alinear versiones de todos los módulos)
     implementation platform('io.github.jan-tennert.supabase:bom:2.1.0')
 

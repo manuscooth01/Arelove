@@ -81,6 +81,7 @@
     <string name="profile_setup_subtitle">Los campos obligatorios están marcados con *</string>
     <string name="field_nickname">Apodo</string>
     <string name="field_age">Edad</string>
+    <string name="field_birthdate">Fecha de nacimiento</string>
     <string name="field_place">Lugar</string>
     <string name="field_interests">Intereses</string>
     <string name="field_looking_for">Busco</string>
@@ -91,6 +92,16 @@
     <string name="interests_min_3">Elige al menos 3 intereses</string>
     <string name="age_min_18">Debes tener 18 años o más</string>
     <string name="required_field">Este campo es obligatorio</string>
+
+    <!-- Validaciones del paso 1 (fecha de nacimiento) -->
+    <string name="validation_min_age">Debes ser mayor de 18 años</string>
+    <string name="validation_invalid_birthdate">Fecha de nacimiento inválida</string>
+
+    <!-- Ubicación (GPS) -->
+    <string name="use_my_location">Usar mi ubicación</string>
+    <string name="location_permission_denied">Permiso de ubicación denegado. Puedes escribir tu ubicación manualmente.</string>
+    <string name="location_error">No pudimos obtener tu ubicación. Intenta de nuevo o escríbela manualmente.</string>
+    <string name="location_permission_settings">Activa el permiso de ubicación en los ajustes del teléfono</string>
     <string name="verification_selfie_title">Verifica tu identidad</string>
     <string name="verification_selfie_subtitle">Toma un selfie siguiendo el gesto que aparece en pantalla</string>
     <string name="btn_take_selfie">Hacer selfie</string>

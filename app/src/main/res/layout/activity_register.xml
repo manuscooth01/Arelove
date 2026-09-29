@@ -53,23 +53,6 @@
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <!-- Apodo -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilNickname"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_nickname">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName|textCapWords"
-                android:maxLines="1"
-                android:textSize="15sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
         <!-- Correo electrónico -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
