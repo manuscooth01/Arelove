@@ -2,12 +2,14 @@
 <!--
     Pantalla principal con navegación inferior y contenedor de fragments.
     El fondo lo pinta el tema (windowBackground), sin background en la raíz.
+    LinearLayout vertical: FragmentContainerView con weight=1, BottomNav al pie.
 -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <!-- Version marker (temporal) -->
     <TextView
@@ -44,18 +46,16 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         app:navGraph="@navigation/nav_graph_home"
-        app:defaultNavHost="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:defaultNavHost="true" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
         android:background="?attr/colorSurfaceContainer"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
