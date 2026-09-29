@@ -85,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
                         this@LoginActivity,
                         AreloveDialog.Tipo.ERROR,
                         getString(R.string.dialog_error_title),
-                        "No se obtuvo el token"
+                        getString(R.string.error_google_token_missing)
                     )
                     return@launch
                 }
@@ -100,17 +100,14 @@ class LoginActivity : AppCompatActivity() {
                     AreloveDialog.Tipo.SUCCESS,
                     getString(R.string.dialog_success_title),
                     getString(R.string.dialog_login_success_msg),
-                    onPositive = {
-                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                        finish()
-                    }
+                    onPositive = { navegarTrasLogin() }
                 )
             } catch (e: Exception) {
                 AreloveDialog.show(
                     this@LoginActivity,
                     AreloveDialog.Tipo.ERROR,
                     getString(R.string.dialog_error_title),
-                    AuthErrorMapper.traducir(e.message)
+                    AuthErrorMapper.traducir(this@LoginActivity, e.message)
                 )
             } finally {
                 binding.progressBar.visibility = View.GONE
@@ -127,12 +124,12 @@ class LoginActivity : AppCompatActivity() {
         binding.tilPassword.error = null
 
         if (emailValue.isEmpty()) {
-            binding.tilEmail.error = "Campo obligatorio"
+            binding.tilEmail.error = getString(R.string.validation_required_field)
             return
         }
 
         if (passwordValue.isEmpty()) {
-            binding.tilPassword.error = "Campo obligatorio"
+            binding.tilPassword.error = getString(R.string.validation_required_field)
             return
         }
 
@@ -150,22 +147,44 @@ class LoginActivity : AppCompatActivity() {
                     AreloveDialog.Tipo.SUCCESS,
                     getString(R.string.dialog_success_title),
                     getString(R.string.dialog_login_success_msg),
-                    onPositive = {
-                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                        finish()
-                    }
+                    onPositive = { navegarTrasLogin() }
                 )
             } catch (e: Exception) {
                 AreloveDialog.show(
                     this@LoginActivity,
                     AreloveDialog.Tipo.ERROR,
                     getString(R.string.dialog_error_title),
-                    AuthErrorMapper.traducir(e.message)
+                    AuthErrorMapper.traducir(this@LoginActivity, e.message)
                 )
             } finally {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
             }
+        }
+    }
+
+    /**
+     * Abre la pantalla que corresponde tras un inicio de sesión exitoso:
+     * HomeActivity si el perfil está completo o ProfileSetupActivity si falta
+     * terminar el asistente. Limpia la pila para no dejar el Login en el
+     * historial de navegación.
+     */
+    private fun navegarTrasLogin() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.btnLogin.isEnabled = false
+        binding.btnGoogle.isEnabled = false
+
+        lifecycleScope.launch {
+            val destino = if (ProfileChecker.perfilCompleto()) {
+                HomeActivity::class.java
+            } else {
+                ProfileSetupActivity::class.java
+            }
+            val intent = Intent(this@LoginActivity, destino).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            startActivity(intent)
+            finish()
         }
     }
 }

@@ -30,6 +30,12 @@
             android:name=".RegisterActivity"
             android:exported="false" />
 
+        <!-- Asistente de perfil (5 pasos) -->
+        <activity
+            android:name=".ProfileSetupActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".HomeActivity"
             android:exported="false" />

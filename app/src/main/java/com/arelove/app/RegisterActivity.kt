@@ -1,5 +1,6 @@
 package com.arelove.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
@@ -93,6 +94,18 @@ class RegisterActivity : AppCompatActivity() {
         icono.alpha = if (visible) 1.0f else 0.4f
     }
 
+    /**
+     * Abre el asistente de perfil y limpia la pila de pantallas,
+     * para que al terminar el setup no se vuelva al registro.
+     */
+    private fun abrirProfileSetup() {
+        val intent = Intent(this, ProfileSetupActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+        finish()
+    }
+
     private fun crearCuenta() {
         val nickname = binding.etNickname.text?.toString()?.trim().orEmpty()
         val emailValue = binding.etEmail.text?.toString()?.trim().orEmpty()
@@ -106,42 +119,42 @@ class RegisterActivity : AppCompatActivity() {
         binding.cbTerms.error = null
 
         if (nickname.isEmpty()) {
-            binding.tilNickname.error = "Campo obligatorio"
+            binding.tilNickname.error = getString(R.string.validation_required_field)
             return
         }
 
         if (emailValue.isEmpty()) {
-            binding.tilEmail.error = "Campo obligatorio"
+            binding.tilEmail.error = getString(R.string.validation_required_field)
             return
         }
 
         if (passwordValue.isEmpty()) {
-            binding.tilPassword.error = "Campo obligatorio"
+            binding.tilPassword.error = getString(R.string.validation_required_field)
             return
         }
 
         if (confirmPassword.isEmpty()) {
-            binding.tilConfirmPassword.error = "Campo obligatorio"
+            binding.tilConfirmPassword.error = getString(R.string.validation_required_field)
             return
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(emailValue).matches()) {
-            binding.tilEmail.error = "Correo electrónico inválido"
+            binding.tilEmail.error = getString(R.string.validation_invalid_email)
             return
         }
 
         if (passwordValue.length < 8) {
-            binding.tilPassword.error = "Mínimo 8 caracteres"
+            binding.tilPassword.error = getString(R.string.validation_min_password_length)
             return
         }
 
         if (passwordValue != confirmPassword) {
-            binding.tilConfirmPassword.error = "Las contraseñas no coinciden"
+            binding.tilConfirmPassword.error = getString(R.string.error_passwords_dont_match)
             return
         }
 
         if (!binding.cbTerms.isChecked) {
-            binding.cbTerms.error = "Debes aceptar los términos"
+            binding.cbTerms.error = getString(R.string.validation_accept_terms)
             return
         }
 
@@ -160,14 +173,14 @@ class RegisterActivity : AppCompatActivity() {
                     AreloveDialog.Tipo.SUCCESS,
                     getString(R.string.dialog_success_title),
                     getString(R.string.dialog_register_success_msg),
-                    onPositive = { finish() }
+                    onPositive = { abrirProfileSetup() }
                 )
             } catch (e: Exception) {
                 AreloveDialog.show(
                     this@RegisterActivity,
                     AreloveDialog.Tipo.ERROR,
                     getString(R.string.dialog_error_title),
-                    AuthErrorMapper.traducir(e.message)
+                    AuthErrorMapper.traducir(this@RegisterActivity, e.message)
                 )
             } finally {
                 binding.progressBar.visibility = View.GONE

@@ -44,9 +44,9 @@ object GoogleAuthHelper {
         val respuesta = try {
             gestor.getCredential(context, peticion)
         } catch (e: GetCredentialCancellationException) {
-            throw Exception("Inicio de sesión cancelado")
+            throw Exception(context.getString(R.string.error_login_cancelled))
         } catch (e: GetCredentialException) {
-            throw Exception("No se pudo mostrar el selector de Google: ${e.message}")
+            throw Exception(context.getString(R.string.error_google_picker_failed))
         }
 
         // Extraer el ID Token solo si la credencial es de tipo Google

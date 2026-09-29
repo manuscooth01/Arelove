@@ -26,7 +26,13 @@ class MainActivity : AppCompatActivity() {
             SupabaseClient.client.auth.awaitInitialization()
 
             if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
-                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                // Hay sesión: comprobamos si el perfil ya está completo antes de entrar
+                val destino = if (ProfileChecker.perfilCompleto()) {
+                    HomeActivity::class.java
+                } else {
+                    ProfileSetupActivity::class.java
+                }
+                startActivity(Intent(this@MainActivity, destino))
                 finish()
                 return@launch
             }

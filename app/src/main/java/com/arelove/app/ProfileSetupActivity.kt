@@ -1,0 +1,133 @@
+package com.arelove.app
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.arelove.app.databinding.ActivityProfileSetupBinding
+import com.arelove.app.profile.Step1BasicFragment
+import com.arelove.app.profile.Step2Fragment
+import com.arelove.app.profile.Step3Fragment
+import com.arelove.app.profile.Step4Fragment
+import com.arelove.app.profile.Step5Fragment
+import com.arelove.app.ui.AreloveDialog
+
+/**
+ * Asistente de creación de perfil de Arelove.
+ *
+ * 5 pasos en un ViewPager2 sin swipe manual:
+ *  - Paso 1: datos básicos (se validan y se guardan en Supabase antes de avanzar)
+ *  - Pasos 2 a 5: placeholders (los guardaremos más adelante)
+ */
+class ProfileSetupActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityProfileSetupBinding
+
+    /** Número total de pasos del asistente. */
+    private val totalPasos = 5
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityProfileSetupBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        configurarViewPager()
+        configurarBotones()
+        actualizarIndicador(binding.viewPager.currentItem)
+    }
+
+    private fun configurarViewPager() {
+        // Los pasos solo se cambian con los botones (sin arrastrar)
+        binding.viewPager.isUserInputEnabled = false
+        binding.viewPager.adapter = SetupAdapter()
+
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                actualizarIndicador(position)
+            }
+        })
+    }
+
+    private fun configurarBotones() {
+        binding.btnBack.setOnClickListener {
+            if (binding.viewPager.currentItem > 0) {
+                binding.viewPager.currentItem -= 1
+            }
+        }
+
+        binding.btnNext.setOnClickListener { avanzarPaso() }
+    }
+
+    /**
+     * Lógica del botón "Siguiente" según el paso actual.
+     */
+    private fun avanzarPaso() {
+        val actual = binding.viewPager.currentItem
+
+        when {
+            // Paso 1: validar y guardar en Supabase antes de avanzar
+            actual == 0 -> {
+                // El fragmento se crea en el primer layout del ViewPager2
+                val paso1 = supportFragmentManager.fragments
+                    .filterIsInstance<Step1BasicFragment>()
+                    .firstOrNull() ?: return
+
+                // Si la validación falla, el fragmento marca los errores en línea
+                // y no llama a ningún callback (por eso no deshabilitamos el botón)
+                paso1.validarYGuardar(
+                    onSuccess = { pasarSiguientePaso() },
+                    onError = { mensaje ->
+                        AreloveDialog.show(
+                            this@ProfileSetupActivity,
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.dialog_error_title),
+                            mensaje
+                        )
+                    }
+                )
+            }
+
+            // Paso 5 (último): terminamos el asistente
+            actual >= totalPasos - 1 -> irAHome()
+
+            // Pasos 2 a 4: por ahora solo avanzamos (los guardaremos después)
+            else -> pasarSiguientePaso()
+        }
+    }
+
+    private fun pasarSiguientePaso() {
+        binding.viewPager.currentItem += 1
+    }
+
+    private fun irAHome() {
+        startActivity(Intent(this, HomeActivity::class.java))
+        finish()
+    }
+
+    /**
+     * Actualiza el indicador "Paso X de 5", la barra de progreso y la visibilidad
+     * del botón "Atrás" (oculto en el paso 1).
+     */
+    private fun actualizarIndicador(posicion: Int) {
+        binding.tvStepIndicator.text = getString(R.string.profile_step_indicator, posicion + 1)
+        binding.progressBar.progress = posicion + 1
+        binding.btnBack.visibility = if (posicion == 0) View.GONE else View.VISIBLE
+    }
+
+    /** Adaptador con los 5 fragmentos del asistente. */
+    private inner class SetupAdapter : FragmentStateAdapter(this@ProfileSetupActivity) {
+
+        override fun getItemCount(): Int = totalPasos
+
+        override fun createFragment(position: Int): Fragment = when (position) {
+            0 -> Step1BasicFragment()
+            1 -> Step2Fragment()
+            2 -> Step3Fragment()
+            3 -> Step4Fragment()
+            else -> Step5Fragment()
+        }
+    }
+}

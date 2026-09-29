@@ -66,7 +66,8 @@ class AreloveDialog(
         /**
          * Muestra un diálogo Arelove con un solo botón.
          *
-         * @param type tipo predefinido (ERROR, WARNING, SUCCESS, INFO)
+         * @param type tipo predefinido de diálogo (ERROR, WARNING, SUCCESS, INFO)
+         * @param positiveText texto del botón; si es null se usa `@string/dialog_accept`
          * @param onPositive se ejecuta al pulsar el botón, después de cerrar
          */
         fun show(
@@ -74,10 +75,11 @@ class AreloveDialog(
             type: Tipo,
             title: String,
             message: String,
-            positiveText: String = "Aceptar",
+            positiveText: String? = null,
             onPositive: (() -> Unit)? = null
         ) {
-            AreloveDialog(context, type, title, message, positiveText, onPositive).show()
+            val texto = positiveText ?: context.getString(R.string.dialog_accept)
+            AreloveDialog(context, type, title, message, texto, onPositive).show()
         }
     }
 }

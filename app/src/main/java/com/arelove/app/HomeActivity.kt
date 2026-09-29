@@ -37,7 +37,7 @@ class HomeActivity : AppCompatActivity() {
                     this@HomeActivity,
                     AreloveDialog.Tipo.ERROR,
                     getString(R.string.dialog_error_title),
-                    AuthErrorMapper.traducir(e.message),
+                    AuthErrorMapper.traducir(this@HomeActivity, e.message),
                     onPositive = { irAInicio() }
                 )
             }

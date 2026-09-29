@@ -61,6 +61,20 @@
     <string name="error_email_in_use">Este correo ya está registrado</string>
     <string name="error_wrong_credentials">Correo o contraseña incorrectos</string>
     <string name="error_email_not_verified">Debes verificar tu correo antes de continuar</string>
+    <string name="error_unknown">Error desconocido</string>
+    <string name="error_email_unconfirmed">Debes confirmar tu correo antes de iniciar sesión</string>
+    <string name="error_password_too_short">La contraseña es muy corta</string>
+    <string name="error_network">Sin conexión. Revisa tu internet</string>
+    <string name="error_rate_limit">Demasiados intentos. Espera unos minutos</string>
+    <string name="error_google_token_missing">No se obtuvo el token</string>
+    <string name="error_login_cancelled">Inicio de sesión cancelado</string>
+    <string name="error_google_picker_failed">No se pudo mostrar el selector de Google</string>
+
+    <!-- Validaciones de los formularios de acceso -->
+    <string name="validation_required_field">Campo obligatorio</string>
+    <string name="validation_invalid_email">Correo electrónico inválido</string>
+    <string name="validation_min_password_length">Mínimo 8 caracteres</string>
+    <string name="validation_accept_terms">Debes aceptar los términos</string>
 
     <!-- ==================== PERFIL OBLIGATORIO ==================== -->
     <string name="profile_setup_title">Crea tu perfil</string>
@@ -83,6 +97,56 @@
     <string name="verification_pending">Verificación en revisión</string>
     <string name="verification_ok">Perfil verificado</string>
     <string name="verification_rejected">Verificación rechazada. Inténtalo de nuevo.</string>
+
+    <!-- ==================== ASISTENTE DE PERFIL (5 PASOS) ==================== -->
+    <string name="profile_step_indicator">Paso %1$d de 5</string>
+    <string name="profile_step1_title">Cuéntanos de ti</string>
+    <string name="profile_step1_subtitle">Esta información ayuda a encontrar mejores conexiones</string>
+    <string name="profile_step_placeholder">Paso %1$d</string>
+    <string name="profile_step_placeholder_subtitle">Este paso se completará más adelante</string>
+    <string name="profile_error_age_range">Introduce una edad entre 18 y 100</string>
+    <string name="profile_error_looking_for">Elige qué buscas en Arelove</string>
+    <string name="profile_error_save">No se pudo guardar tu perfil. Inténtalo de nuevo.</string>
+    <string name="profile_error_no_session">Tu sesión ya no es válida. Cierra sesión y vuelve a entrar.</string>
+
+    <!-- Ciudades más comunes de Venezuela (autocompletado del paso 1) -->
+    <string-array name="venezuela_cities">
+        <item>Caracas</item>
+        <item>Maracaibo</item>
+        <item>Valencia</item>
+        <item>Barquisimeto</item>
+        <item>Maracay</item>
+        <item>Ciudad Guayana</item>
+        <item>Ciudad Bolívar</item>
+        <item>Barcelona</item>
+        <item>Puerto La Cruz</item>
+        <item>San Cristóbal</item>
+        <item>Mérida</item>
+        <item>Cabimas</item>
+        <item>Barinas</item>
+        <item>Coro</item>
+        <item>Punto Fijo</item>
+        <item>Los Teques</item>
+        <item>Guarenas</item>
+        <item>Guatire</item>
+        <item>Petare</item>
+        <item>Ocumare del Tuy</item>
+        <item>Maturín</item>
+        <item>Puerto Ordaz</item>
+        <item>Cumaná</item>
+        <item>Porlamar</item>
+        <item>San Fernando de Apure</item>
+        <item>Trujillo</item>
+        <item>Guanare</item>
+        <item>Acarigua</item>
+        <item>Araure</item>
+        <item>El Tigre</item>
+        <item>Tucupita</item>
+        <item>Puerto Cabello</item>
+        <item>La Victoria</item>
+        <item>Valle de la Pascua</item>
+        <item>Zaraza</item>
+    </string-array>
 
     <!-- ==================== PERFIL OPCIONAL ==================== -->
     <string name="profile_optional_title">Completa tu perfil</string>
