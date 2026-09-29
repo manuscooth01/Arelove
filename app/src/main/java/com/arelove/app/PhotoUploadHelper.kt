@@ -121,10 +121,11 @@ object PhotoUploadHelper {
     suspend fun urlFirmada(bucket: String, path: String): String? =
         withContext(Dispatchers.IO) {
             try {
+                Log.e(TAG_LOG, "urlFirmada(bucket=$bucket, path=$path)")
                 SupabaseClient.client.storage[bucket]
                     .createSignedUrl(path, expiresIn = 3600.seconds)
             } catch (e: Exception) {
-                Log.e(TAG_LOG, "Error creando signed URL", e)
+                Log.e(TAG_LOG, "Error creando signed URL: ${e.message}", e)
                 null
             }
         }

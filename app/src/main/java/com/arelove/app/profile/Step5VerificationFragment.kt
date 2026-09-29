@@ -64,6 +64,9 @@ class Step5VerificationFragment : Fragment() {
     /** Trabajo en curso de la preview; se cancela al pedir una nueva. */
     private var jobPreview: Job? = null
 
+    /** Diagnóstico temporal de la preview (se muestra en pantalla y se quitará). */
+    private var debugTexto = StringBuilder()
+
     // ---------------------------------------------------------------------
     // Launchers (se registran en el constructor: nunca dentro de onViewCreated)
     // ---------------------------------------------------------------------
@@ -334,13 +337,28 @@ class Step5VerificationFragment : Fragment() {
     }
 
     /**
+     * Diagnóstico temporal: añade una línea al TextView de debug del paso 5
+     * (oculto por defecto) para ver en pantalla qué falla la preview sin
+     * acceso a logcat. Se elimina cuando acabe la depuración.
+     */
+    private fun debugAdd(linea: String) {
+        debugTexto.append(linea).append("\n")
+        _binding?.tvDebugVerificacion?.text = debugTexto.toString()
+        _binding?.tvDebugVerificacion?.visibility = View.VISIBLE
+    }
+
+    /**
      * Pide una URL firmada temporal ([PhotoUploadHelper.urlFirmada]) para la
      * selfie y la carga en la preview. La imagen solo pasa a VISIBLE cuando
      * Coil confirma la carga; si no se puede firmar o descargar, se queda
      * oculta y el paso sigue funcionando igual.
      */
     private fun cargarPreview(url: String) {
+        debugTexto.clear()
+        debugAdd("URL guardada: $url")
+
         val path = extraerPathVerificacion(url)
+        debugAdd("Path extraído: $path")
         if (path == null) {
             _binding?.ivSelfiePreview?.visibility = View.GONE
             return
@@ -349,10 +367,13 @@ class Step5VerificationFragment : Fragment() {
         // Solo una preview en vuelo: la anterior se cancela al pedir esta
         jobPreview?.cancel()
         jobPreview = viewLifecycleOwner.lifecycleScope.launch {
+            debugAdd("Llamando urlFirmada...")
             val firmada = PhotoUploadHelper.urlFirmada(BUCKET_VERIFICACION, path)
+            debugAdd("Signed URL: $firmada")
             val sinVista = _binding ?: return@launch
             if (firmada == null) {
                 // Sin URL firmada la imagen no se puede pedir al bucket privado
+                debugAdd("urlFirmada devolvió null")
                 sinVista.ivSelfiePreview.visibility = View.GONE
                 return@launch
             }
@@ -362,9 +383,11 @@ class Step5VerificationFragment : Fragment() {
                 crossfade(true)
                 listener(
                     onSuccess = { _, _ ->
+                        debugAdd("Coil OK")
                         _binding?.ivSelfiePreview?.visibility = View.VISIBLE
                     },
                     onError = { _, result ->
+                        debugAdd("Coil error: ${result.throwable.message}")
                         Log.e(TAG_LOG, "Coil error cargando la selfie", result.throwable)
                         _binding?.ivSelfiePreview?.visibility = View.GONE
                     }

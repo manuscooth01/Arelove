@@ -153,5 +153,19 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
+        <!-- Diagnóstico temporal de la preview (se elimina tras depurar) -->
+        <TextView
+            android:id="@+id/tvDebugVerificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#22000000"
+            android:fontFamily="monospace"
+            android:padding="8dp"
+            android:textColor="@color/error"
+            android:textSize="10sp"
+            android:visibility="gone"
+            tools:text="debug" />
+
     </LinearLayout>
 </ScrollView>
