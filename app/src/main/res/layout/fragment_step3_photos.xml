@@ -23,11 +23,9 @@
             android:id="@+id/tvPhotosTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@font/poppins_semibold"
             android:text="@string/profile_step3_title"
-            android:textColor="@color/on_surface"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Widget.Arelove.Title" />
 
         <!-- Subtítulo -->
         <TextView
@@ -35,10 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
             android:text="@string/profile_step3_subtitle"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Widget.Arelove.Subtitle" />
 
         <!-- Contador "0 de 2 mínimo" / "3 fotos" -->
         <TextView
@@ -46,7 +42,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:fontFamily="sans-serif"
             android:textColor="@color/on_surface_variant"
             android:textSize="14sp"
             tools:text="0 de 2 mínimo" />
@@ -65,7 +60,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
             android:textColor="@color/error"
             android:textSize="14sp"
             android:visibility="gone"

@@ -41,6 +41,8 @@
     <string name="register_success">Cuenta creada. Revisa tu correo</string>
     <string name="error_accept_terms">Debes aceptar los Términos y Condiciones</string>
     <string name="home_welcome">¡Bienvenido a Arelove!</string>
+    <string name="home_welcome_big">¡Bienvenido!</string>
+    <string name="home_profile_complete">Perfil completo</string>
     <string name="register_title">Crea tu cuenta</string>
     <string name="register_subtitle">Solo necesitas un correo y una contraseña</string>
     <string name="field_email">Correo electrónico</string>

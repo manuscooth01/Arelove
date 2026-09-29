@@ -20,11 +20,9 @@
             android:id="@+id/tvInterestsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@font/poppins_semibold"
             android:text="@string/profile_step2_title"
-            android:textColor="@color/on_surface"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Widget.Arelove.Title" />
 
         <!-- Subtítulo -->
         <TextView
@@ -32,10 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
             android:text="@string/profile_step2_subtitle"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Widget.Arelove.Subtitle" />
 
         <!-- Chips de intereses (se rellenan desde la tabla interests) -->
         <com.google.android.material.chip.ChipGroup
@@ -53,7 +49,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:fontFamily="sans-serif"
             android:textColor="@color/on_surface_variant"
             android:textSize="14sp"
             tools:text="0 de 3 seleccionados" />
@@ -64,7 +59,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
             android:text="@string/profile_step2_error_min"
             android:textColor="@color/error"
             android:textSize="13sp"

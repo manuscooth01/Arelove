@@ -26,11 +26,9 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@font/poppins_semibold"
             android:text="@string/profile_step5_title"
-            android:textColor="@color/on_surface"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Widget.Arelove.Title" />
 
         <!-- Subtítulo -->
         <TextView
@@ -38,10 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
             android:text="@string/profile_step5_subtitle"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Widget.Arelove.Subtitle" />
 
         <!-- Tarjeta explicativa -->
         <com.google.android.material.card.MaterialCardView
@@ -71,7 +67,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif"
                     android:text="@string/profile_step5_explanation"
                     android:textColor="@color/on_surface_variant"
                     android:textSize="14sp" />
@@ -97,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/poppins_semibold"
             android:text="@string/profile_step5_status_unverified"
             android:textColor="@color/on_surface_variant"
             android:textSize="14sp" />
@@ -118,7 +113,7 @@
         <!-- Botón outlined: elegir una foto ya existente -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPickSelfie"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Arelove.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -137,7 +132,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/poppins_semibold"
             android:padding="8dp"
             android:text="@string/profile_step5_skip"
             android:textColor="@color/on_surface_variant"
