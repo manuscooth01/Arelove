@@ -529,7 +529,9 @@ class Step3PhotosFragment : Fragment() {
                 // El aspa solo aparece cuando la foto ya está subida
                 b.btnPhotoRemove.visibility = if (url != null) View.VISIBLE else View.GONE
                 b.btnPhotoRemove.setOnClickListener {
-                    val indice = holder.bindingAdapterPosition
+                    // adapterPosition (no bindingAdapterPosition): la versión
+                    // resuelta de recyclerview es 1.0.0 y aún no tiene esa API
+                    val indice = holder.adapterPosition
                     if (indice != RecyclerView.NO_POSITION) quitarFoto(indice)
                 }
             } else {
