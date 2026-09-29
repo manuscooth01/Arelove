@@ -121,9 +121,15 @@ object PhotoUploadHelper {
     suspend fun urlFirmada(bucket: String, path: String): String? =
         withContext(Dispatchers.IO) {
             try {
-                Log.e(TAG_LOG, "urlFirmada(bucket=$bucket, path=$path)")
-                SupabaseClient.client.storage[bucket]
+                val relativa = SupabaseClient.client.storage[bucket]
                     .createSignedUrl(path, expiresIn = 3600.seconds)
+                // createSignedUrl devuelve una ruta relativa
+                // ("object/sign/...?token=..."); Coil necesita la URL absoluta
+                if (relativa.startsWith("http")) {
+                    relativa
+                } else {
+                    "${SupabaseClient.SUPABASE_URL}/storage/v1/$relativa"
+                }
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error creando signed URL: ${e.message}", e)
                 null

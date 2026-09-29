@@ -17,7 +17,9 @@ import io.github.jan.supabase.storage.Storage
  */
 object SupabaseClient {
 
-    private const val SUPABASE_URL = "https://ggskodlzrkjbxilocyws.supabase.co"
+    // Visible fuera del objeto (PhotoUploadHelper.urlFirmada antepone el
+    // dominio a la signed URL, que createSignedUrl devuelve relativa)
+    internal const val SUPABASE_URL = "https://ggskodlzrkjbxilocyws.supabase.co"
 
     private const val SUPABASE_ANON_KEY = "sb_publishable_b7PwA4bBaiW6FEEonnmnIQ_AWsN6Bgv"
 
