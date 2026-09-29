@@ -12,11 +12,12 @@ import kotlinx.serialization.json.JsonPrimitive
 /**
  * Comprueba si el perfil del usuario actual está completo en Supabase.
  *
- * Lo usan MainActivity (al arrancar la app) y LoginActivity (tras iniciar
- * sesión) para decidir entre HomeActivity y ProfileSetupActivity: un perfil
- * incompleto nunca debe entrar en Home.
+ * Lo usan MainActivity (al arrancar la app) para decidir entre HomeActivity y
+ * ProfileSetupActivity: un perfil incompleto nunca debe entrar en Home.
  *
- * Comprueba los 3 pasos críticos del asistente:
+ * Única vía de entrada a Home: `profiles.profile_completed = true`, que solo
+ * marca el Paso 5 del asistente al terminarlo (con o sin selfie). Además se
+ * exige la salvaguarda de los 3 pasos críticos:
  *  - Paso 1: age, location y looking_for con valor
  *  - Paso 2: al menos 3 filas en user_interests
  *  - Paso 3: al menos 2 fotos con type = 'profile' en media
@@ -32,7 +33,8 @@ object ProfileChecker {
     private const val MINIMO_FOTOS = 2
 
     /**
-     * @return true solo si los 3 pasos del asistente están completos.
+     * @return true solo si el asistente se terminó (profile_completed) y los
+     * 3 pasos siguen completos.
      */
     suspend fun perfilCompleto(): Boolean {
         try {
@@ -57,10 +59,12 @@ object ProfileChecker {
             // Fila inexistente (0 resultados) => perfil incompleto
             val perfil = resultado.decodeSingleOrNull<JsonObject>() ?: return false
 
-            // Atajo rápido: Supabase ya marcó el perfil como completo
-            if (esVerdadero(perfil["profile_completed"])) return true
+            // Atajo: sin profile_completed no se entra en Home, aunque los
+            // 3 primeros pasos estén completos (los marca solo el Paso 5)
+            if (!esVerdadero(perfil["profile_completed"])) return false
 
-            // profiles.profile_completed = false => comprobamos los 3 pasos
+            // Salvaguarda: si el flag está pero falta algún dato esencial
+            // (borrado a posteriori), volvemos al asistente
             val paso1 = tieneValor(perfil, "age") &&
                 tieneValor(perfil, "location") &&
                 tieneValor(perfil, "looking_for")

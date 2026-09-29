@@ -300,6 +300,8 @@ class Step5VerificationFragment : Fragment() {
     /**
      * Si hay selfie subida, vuelve a guardar su URL en `profiles` y avanza.
      * Si no la hay, pide confirmación para continuar sin verificar.
+     * En ambas rutas se marca `profiles.profile_completed = true` antes de
+     * avanzar: es la única forma de terminar el asistente.
      *
      * @param onSuccess se llama cuando el paso queda resuelto (para terminar el asistente)
      * @param onError se llama con el mensaje de error a mostrar
@@ -318,8 +320,24 @@ class Step5VerificationFragment : Fragment() {
                 getString(R.string.dialog_warning_title),
                 getString(R.string.profile_step5_skip_warning),
                 onPositive = {
-                    guardando = false
-                    onSuccess()
+                    // Marcar profile_completed antes de avanzar
+                    lifecycleScope.launch {
+                        try {
+                            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                            if (userId != null) {
+                                SupabaseClient.client.postgrest["profiles"].update(
+                                    buildJsonObject { put("profile_completed", true) }
+                                ) {
+                                    filter { eq("id", userId) }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG_LOG, "Error marcando profile_completed", e)
+                        } finally {
+                            guardando = false
+                            onSuccess()
+                        }
+                    }
                 }
             )
             return
@@ -338,6 +356,14 @@ class Step5VerificationFragment : Fragment() {
                 }
 
                 guardarSelfie(userId, url)
+
+                // El asistente terminó: solo el Paso 5 marca el perfil completo
+                SupabaseClient.client.postgrest["profiles"].update(
+                    buildJsonObject { put("profile_completed", true) }
+                ) {
+                    filter { eq("id", userId) }
+                }
+
                 onSuccess()
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error guardando la selfie de verificación", e)

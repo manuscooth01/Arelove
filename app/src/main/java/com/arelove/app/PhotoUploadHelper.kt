@@ -9,6 +9,7 @@ import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 
 /**
  * Lectura, subida y borrado de las fotos subidas por la app:
@@ -106,6 +107,16 @@ object PhotoUploadHelper {
                 null
             }
         }
+
+    /**
+     * Calcula el SHA-256 de [bytes] y lo devuelve en hexadecimal.
+     * Sirve para detectar fotos ya subidas (mismo contenido = mismo hash).
+     */
+    fun hashBytes(bytes: ByteArray): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return digest.joinToString("") { "%02x".format(it) }
+    }
 
     /**
      * Borra el archivo del bucket a partir de su URL pública.

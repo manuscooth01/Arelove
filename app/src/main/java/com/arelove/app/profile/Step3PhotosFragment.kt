@@ -53,9 +53,15 @@ class Step3PhotosFragment : Fragment() {
 
     /**
      * Una casilla de la rejilla: [FotoItem.url] si ya está en Supabase,
-     * [FotoItem.uriLocal] mientras la subida sigue en curso.
+     * [FotoItem.uriLocal] mientras la subida sigue en curso y
+     * [FotoItem.hash] (SHA-256 de los bytes subidos) para detectar fotos
+     * repetidas dentro de la sesión actual.
      */
-    private data class FotoItem(val url: String?, val uriLocal: Uri?)
+    private data class FotoItem(
+        val url: String?,
+        val uriLocal: Uri?,
+        val hash: String? = null
+    )
 
     /** Fotos mostradas en la rejilla (en el mismo orden que la tabla). */
     private val fotos = mutableListOf<FotoItem>()
@@ -325,46 +331,59 @@ class Step3PhotosFragment : Fragment() {
     }
 
     /**
-     * Reserva la casilla en la rejilla y lanza la subida de [uri].
+     * Recomprime [uri], calcula su hash y, si no es una foto repetida de esta
+     * sesión, reserva la casilla en la rejilla y lanza la subida.
      * La fila de `media` se guarda al terminar la subida.
      */
     private fun procesarFoto(uri: Uri) {
-        val b = _binding ?: return
         if (cargando || fotos.size >= MAX_FOTOS) return
-
-        // La foto se pinta ya en la rejilla (feedback visual) sin esperar a leer la sesión
-        fotos.add(FotoItem(url = null, uriLocal = uri))
-        b.rvPhotos.adapter?.notifyDataSetChanged()
 
         subidasActivas++
         actualizarContador()
 
         val job = lifecycleScope.launch {
             try {
+                val contexto = context ?: return@launch
+
                 // La sesión se lee dentro de la corrutina (nunca en el hilo principal)
                 val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
                 if (userId == null) {
-                    // Sin sesión: quitamos la foto que acabamos de añadir
-                    val sinSesion = fotos.indexOfFirst { it.uriLocal == uri }
-                    if (sinSesion >= 0) fotos.removeAt(sinSesion)
-                    _binding?.let {
-                        it.rvPhotos.adapter?.notifyDataSetChanged()
-                        AreloveDialog.show(
-                            it.root.context,
-                            AreloveDialog.Tipo.ERROR,
-                            getString(R.string.dialog_error_title),
-                            getString(R.string.profile_error_no_session)
-                        )
-                    }
+                    mostrarErrorSubida(getString(R.string.profile_error_no_session))
                     return@launch
                 }
 
-                val url = subirYGuardar(userId, uri)
+                val bytes = PhotoUploadHelper.recomprimir(contexto, uri)
+                if (bytes == null) {
+                    mostrarErrorSubida(getString(R.string.error_upload_photo))
+                    return@launch
+                }
+
+                // Mismo contenido = misma foto: se compara por SHA-256 de los
+                // bytes ya recomprimidos, antes de subir nada
+                val hash = PhotoUploadHelper.hashBytes(bytes)
+                if (fotos.any { it.hash == hash }) {
+                    AreloveDialog.show(
+                        contexto,
+                        AreloveDialog.Tipo.WARNING,
+                        getString(R.string.dialog_warning_title),
+                        getString(R.string.error_photo_duplicate)
+                    )
+                    return@launch
+                }
+
+                // Rechequeo: al terminar la recompresión la rejilla podría estar llena
+                if (fotos.size >= MAX_FOTOS) return@launch
+
+                // La foto se pinta ya en la rejilla (feedback visual)
+                fotos.add(FotoItem(url = null, uriLocal = uri, hash = hash))
+                _binding?.rvPhotos?.adapter?.notifyDataSetChanged()
+
+                val url = subirYGuardar(userId, bytes)
                 val sinVista = _binding ?: return@launch
 
                 val posicion = fotos.indexOfFirst { it.uriLocal == uri }
                 if (url != null && posicion >= 0) {
-                    fotos[posicion] = FotoItem(url = url, uriLocal = null)
+                    fotos[posicion] = FotoItem(url = url, uriLocal = null, hash = hash)
                 } else {
                     if (posicion >= 0) fotos.removeAt(posicion)
                     sinVista.tvPhotosError.text = getString(R.string.error_upload_photo)
@@ -384,10 +403,19 @@ class Step3PhotosFragment : Fragment() {
         jobsSubida += job
     }
 
-    /** Sube la foto al bucket y guarda su fila en `media`. */
-    private suspend fun subirYGuardar(userId: String, uri: Uri): String? {
-        val contexto = context ?: return null
-        val bytes = PhotoUploadHelper.recomprimir(contexto, uri) ?: return null
+    /** Enseña un diálogo de error cuando la subida no puede ni empezar. */
+    private fun mostrarErrorSubida(mensaje: String) {
+        val contexto = context ?: return
+        AreloveDialog.show(
+            contexto,
+            AreloveDialog.Tipo.ERROR,
+            getString(R.string.dialog_error_title),
+            mensaje
+        )
+    }
+
+    /** Sube los [bytes] ya recomprimidos al bucket y guarda su fila en `media`. */
+    private suspend fun subirYGuardar(userId: String, bytes: ByteArray): String? {
         val url = PhotoUploadHelper.subirFoto(userId, bytes) ?: return null
 
         return try {
@@ -504,14 +532,6 @@ class Step3PhotosFragment : Fragment() {
                     b.tvPhotosError.text = getString(R.string.profile_step3_error_min)
                     b.tvPhotosError.visibility = View.VISIBLE
                     return@launch
-                }
-
-                // Los 3 pasos están completos: marcamos el perfil como terminado
-                // para que Home y el futuro swipe solo vean perfiles completos
-                SupabaseClient.client.postgrest["profiles"].update(
-                    buildJsonObject { put("profile_completed", true) }
-                ) {
-                    filter { eq("id", userId) }
                 }
 
                 onSuccess()
