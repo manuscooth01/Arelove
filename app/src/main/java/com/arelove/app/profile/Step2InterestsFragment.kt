@@ -164,7 +164,9 @@ class Step2InterestsFragment : Fragment() {
                 text = nombre
                 isCheckable = true
                 isCheckedIconVisible = true
-                chipIconVisible = false
+                // Llamada explícita: la propiedad sintética chipIconVisible no resuelve
+                // (Chip declara setChipIconVisible(int) y setChipIconVisible(boolean)).
+                setChipIconVisible(false)
                 id = View.generateViewId()
             }
 
