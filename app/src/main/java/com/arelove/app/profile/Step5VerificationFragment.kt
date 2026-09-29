@@ -259,16 +259,56 @@ class Step5VerificationFragment : Fragment() {
         }
     }
 
-    /** Muestra la selfie subida: preview, estado "en revisión" y sin "Saltar". */
+    /**
+     * Muestra la selfie subida: estado "en revisión" y sin "Saltar".
+     *
+     * El bucket "verification" es privado, así que la URL guardada no sirve
+     * para la vista previa: la preview se carga con una URL firmada.
+     */
     private fun mostrarSelfieSubida(url: String) {
         val b = _binding ?: return
-        b.ivSelfiePreview.visibility = View.VISIBLE
-        b.ivSelfiePreview.load(url) { crossfade(true) }
         b.tvVerificationStatus.text = getString(R.string.profile_step5_status_review)
         b.tvVerificationStatus.setTextColor(
             ContextCompat.getColor(b.root.context, R.color.dialog_warning)
         )
         b.btnSkip.visibility = View.GONE
+        cargarPreview(url)
+    }
+
+    /**
+     * Pide una URL firmada temporal ([PhotoUploadHelper.urlFirmada]) para la
+     * selfie y la carga en la preview. Si no se puede firmar, la preview se
+     * queda oculta: el paso sigue funcionando igual.
+     */
+    private fun cargarPreview(url: String) {
+        val path = extraerPathVerificacion(url)
+        if (path == null) {
+            _binding?.ivSelfiePreview?.visibility = View.GONE
+            return
+        }
+
+        lifecycleScope.launch {
+            val firmada = PhotoUploadHelper.urlFirmada(BUCKET_VERIFICACION, path)
+            val sinVista = _binding ?: return@launch
+            if (firmada == null) {
+                // Sin URL firmada la imagen no se puede pedir al bucket privado
+                sinVista.ivSelfiePreview.visibility = View.GONE
+                return@launch
+            }
+            sinVista.ivSelfiePreview.visibility = View.VISIBLE
+            sinVista.ivSelfiePreview.load(firmada) { crossfade(true) }
+        }
+    }
+
+    /**
+     * Extrae la ruta interna de la selfie desde su URL pública:
+     * `.../object/public/verification/abc/1.jpg` -> `abc/1.jpg`.
+     */
+    private fun extraerPathVerificacion(url: String): String? {
+        val marca = "$BUCKET_VERIFICACION/"
+        val indice = url.indexOf(marca)
+        if (indice < 0) return null
+        return url.substring(indice + marca.length).ifEmpty { null }
     }
 
     private fun mostrarErrorSubida() {

@@ -8,6 +8,7 @@ import android.util.Log
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.seconds
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 
@@ -104,6 +105,26 @@ object PhotoUploadHelper {
                 url
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error subiendo la foto", e)
+                null
+            }
+        }
+
+    /**
+     * Devuelve una URL firmada temporal (1 hora) para un archivo de un
+     * bucket privado. Se usa para previews de verificación: el bucket
+     * "verification" es privado, así que su URL pública no se puede cargar.
+     *
+     * @param bucket bucket privado donde está el archivo
+     * @param path ruta interna dentro del bucket (`{userId}/{archivo}`)
+     * @return la URL firmada o null si la petición falló
+     */
+    suspend fun urlFirmada(bucket: String, path: String): String? =
+        withContext(Dispatchers.IO) {
+            try {
+                SupabaseClient.client.storage[bucket]
+                    .createSignedUrl(path, expiresIn = 3600.seconds)
+            } catch (e: Exception) {
+                Log.e(TAG_LOG, "Error creando signed URL", e)
                 null
             }
         }
