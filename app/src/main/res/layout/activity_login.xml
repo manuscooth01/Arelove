@@ -180,8 +180,6 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
-            android:drawableStart="@drawable/ic_google_logo"
-            android:drawablePadding="12dp"
             android:fontFamily="sans-serif-medium"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
@@ -190,8 +188,11 @@
             android:textColor="@color/on_surface"
             android:textSize="15sp"
             app:cornerRadius="26dp"
+            app:icon="@drawable/ic_google_logo"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
+            app:iconSize="20dp"
+            app:iconTint="@null"
             app:strokeColor="@color/outline"
             app:strokeWidth="1.5dp" />
 

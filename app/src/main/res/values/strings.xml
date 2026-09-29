@@ -113,6 +113,22 @@
     <string name="profile_step_indicator">Paso %1$d de 5</string>
     <string name="profile_step1_title">Cuéntanos de ti</string>
     <string name="profile_step1_subtitle">Esta información ayuda a encontrar mejores conexiones</string>
+
+    <!-- Paso 2: intereses -->
+    <string name="profile_step2_title">Tus intereses</string>
+    <string name="profile_step2_subtitle">Elige al menos 3 para encontrar personas afines</string>
+    <string name="profile_step2_error_min">Elige al menos 3 intereses</string>
+    <string name="error_load_interests">No pudimos cargar los intereses</string>
+    <string name="error_save_interests">No pudimos guardar tus intereses</string>
+
+    <plurals name="profile_step2_counter_min">
+        <item quantity="one">%1$d de 3 seleccionado</item>
+        <item quantity="other">%1$d de 3 seleccionados</item>
+    </plurals>
+    <plurals name="profile_step2_counter_ok">
+        <item quantity="one">%1$d seleccionado</item>
+        <item quantity="other">%1$d seleccionados</item>
+    </plurals>
     <string name="profile_step_placeholder">Paso %1$d</string>
     <string name="profile_step_placeholder_subtitle">Este paso se completará más adelante</string>
     <string name="profile_error_age_range">Introduce una edad entre 18 y 100</string>

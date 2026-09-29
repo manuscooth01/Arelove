@@ -67,6 +67,12 @@ class Step1BasicFragment : Fragment() {
     /** Evita borrar las coordenadas cuando rellenamos el campo desde el GPS. */
     private var rellenandoLugar = false
 
+    /** Selector de fecha ya construido (constraints + selección) para abrirlo al primer toque. */
+    private var datePicker: MaterialDatePicker<Long>? = null
+
+    /** Marca si el selector actual ya se mostró (un fragmento no debe reutilizarse tras descartarse). */
+    private var selectorUsado = false
+
     /** Pide los permisos de ubicación al pulsar "Usar mi ubicación". */
     private val solicitudPermisos = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -91,6 +97,7 @@ class Step1BasicFragment : Fragment() {
         configurarCiudades()
         prellenarNickname()
         configurarChips()
+        prepararSelectorFecha()
         configurarFechaNacimiento()
         configurarLugar()
     }
@@ -147,21 +154,54 @@ class Step1BasicFragment : Fragment() {
     // ---------------------------------------------------------------------
 
     /**
+     * Pre-construye el [MaterialDatePicker] (constraints + selección) para que
+     * el primer toque sobre el campo no tenga que montarlo desde cero.
+     */
+    private fun prepararSelectorFecha() {
+        datePicker = construirSelector()
+        selectorUsado = false
+    }
+
+    /**
      * Muestra un [MaterialDatePicker] limitado a fechas pasadas:
      * entre hoy - 100 años y hoy, abriendo en hoy - 25 años.
+     *
+     * MaterialDatePicker no permite cambiar la selección una vez construido y un
+     * fragmento no debe reutilizarse tras su descarte, así que si el selector ya
+     * se mostró (o cambió la fecha de apertura) se reconstruye con la fecha actual.
      */
     private fun mostrarSelectorFecha() {
+        if (_binding == null) return
+
+        val selectorPreparado = datePicker
+        if (selectorPreparado == null || selectorUsado || selectorPreparado.selection != millisUtc(fechaInicial())) {
+            datePicker = construirSelector()
+        }
+
+        selectorUsado = true
+        datePicker?.show(parentFragmentManager, TAG_SELECTOR_FECHA)
+    }
+
+    /** Fecha con la que abre el calendario: la elegida, la del campo o la sugerida. */
+    private fun fechaInicial(): LocalDate {
         val hoy = LocalDate.now()
         val minima = hoy.minusYears(EDAD_MAXIMA.toLong())
         val candidata = fechaNacimiento
             ?: parsearFecha(binding.etBirthdate.text?.toString().orEmpty())
             ?: hoy.minusYears(EDAD_SUGERIDA.toLong())
-        val inicial = candidata.coerceIn(minima, hoy)
 
-        val limites = CalendarConstraints.Builder()
+        return candidata.coerceIn(minima, hoy)
+    }
+
+    /** Restricciones del calendario: solo fechas pasadas (hoy - 100 años … hoy). */
+    private fun crearConstraints(): CalendarConstraints {
+        val hoy = LocalDate.now()
+        val minima = hoy.minusYears(EDAD_MAXIMA.toLong())
+
+        return CalendarConstraints.Builder()
             .setStart(millisUtc(minima))
             .setEnd(millisUtc(hoy))
-            .setOpenAt(millisUtc(inicial))
+            .setOpenAt(millisUtc(fechaInicial()))
             .setValidator(
                 CompositeDateValidator.allOf(
                     listOf<CalendarConstraints.DateValidator>(
@@ -171,11 +211,14 @@ class Step1BasicFragment : Fragment() {
                 )
             )
             .build()
+    }
 
+    /** Construye el selector y engancha el callback que escribe la fecha elegida. */
+    private fun construirSelector(): MaterialDatePicker<Long> {
         val selector = MaterialDatePicker.Builder.datePicker()
-            .setCalendarConstraints(limites)
-            .setSelection(millisUtc(inicial))
-            .setTitleText(getString(R.string.field_birthdate))
+            .setTitleText(R.string.field_birthdate)
+            .setCalendarConstraints(crearConstraints())
+            .setSelection(millisUtc(fechaInicial()))
             .build()
 
         selector.addOnPositiveButtonClickListener { seleccion ->
@@ -183,7 +226,7 @@ class Step1BasicFragment : Fragment() {
             aplicarFechaNacimiento(elegida)
         }
 
-        selector.show(childFragmentManager, TAG_SELECTOR_FECHA)
+        return selector
     }
 
     /** Escribe la fecha en el campo y marca el error si la edad no es válida. */

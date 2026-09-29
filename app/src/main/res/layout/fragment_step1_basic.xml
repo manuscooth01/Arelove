@@ -97,7 +97,6 @@
                 android:ellipsize="end"
                 android:inputType="textPersonName|textCapWords"
                 android:maxLines="1"
-                android:minHeight="56dp"
                 android:singleLine="true"
                 android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>

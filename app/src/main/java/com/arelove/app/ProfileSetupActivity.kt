@@ -9,7 +9,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.arelove.app.databinding.ActivityProfileSetupBinding
 import com.arelove.app.profile.Step1BasicFragment
-import com.arelove.app.profile.Step2Fragment
+import com.arelove.app.profile.Step2InterestsFragment
 import com.arelove.app.profile.Step3Fragment
 import com.arelove.app.profile.Step4Fragment
 import com.arelove.app.profile.Step5Fragment
@@ -93,10 +93,29 @@ class ProfileSetupActivity : AppCompatActivity() {
                 )
             }
 
+            // Paso 2: validar y guardar los intereses antes de avanzar
+            actual == 1 -> {
+                val paso2 = supportFragmentManager.fragments
+                    .filterIsInstance<Step2InterestsFragment>()
+                    .firstOrNull() ?: return
+
+                paso2.validarYGuardar(
+                    onSuccess = { pasarSiguientePaso() },
+                    onError = { mensaje ->
+                        AreloveDialog.show(
+                            this@ProfileSetupActivity,
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.dialog_error_title),
+                            mensaje
+                        )
+                    }
+                )
+            }
+
             // Paso 5 (último): terminamos el asistente
             actual >= totalPasos - 1 -> irAHome()
 
-            // Pasos 2 a 4: por ahora solo avanzamos (los guardaremos después)
+            // Pasos 3 y 4: por ahora solo avanzamos (los guardaremos después)
             else -> pasarSiguientePaso()
         }
     }
@@ -127,7 +146,7 @@ class ProfileSetupActivity : AppCompatActivity() {
 
         override fun createFragment(position: Int): Fragment = when (position) {
             0 -> Step1BasicFragment()
-            1 -> Step2Fragment()
+            1 -> Step2InterestsFragment()
             2 -> Step3Fragment()
             3 -> Step4Fragment()
             else -> Step5Fragment()
