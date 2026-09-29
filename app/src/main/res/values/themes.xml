@@ -49,8 +49,28 @@
         <item name="chipStyle">@style/Widget.Arelove.Chip</item>
         <item name="cardViewStyle">@style/Widget.Arelove.Card</item>
 
+        <!-- BottomNavigationView -->
+        <item name="bottomNavigationStyle">@style/Widget.Arelove.BottomNavigationView</item>
+
         <item name="android:windowActionModeOverlay">true</item>
 
     </style>
+
+    <!-- BottomNavigationView personalizado -->
+    <style name="Widget.Arelove.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/Widget.Arelove.BottomNavigationView.Text</item>
+        <item name="itemTextAppearanceInactive">@style/Widget.Arelove.BottomNavigationView.Text</item>
+        <item name="itemIconSize">24dp</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemPaddingTop">8dp</item>
+        <item name="itemPaddingBottom">8dp</item>
+    </style>
+
+    <style name="Widget.Arelove.BottomNavigationView.Text" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+</resources>
 
 </resources>

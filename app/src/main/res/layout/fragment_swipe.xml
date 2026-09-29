@@ -1,70 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Fragment de descubrimiento (swipe).
-    Muestra una tarjeta con fotos (ViewPager2), info del perfil y botones like/nope.
+    Tarjeta principal con fotos, gradiente al pie, y botones like/nope centrados.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <!-- Tarjeta de perfil -->
+    <!-- Card principal -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardProfile"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnDislike"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/llActions"
+        app:layout_constraintVertical_bias="0">
 
-        <!-- ViewPager2 para las fotos -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/photoPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- Indicador de página (puntitos) -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/photoIndicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginTop="12dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:tabBackground="@drawable/selector_photo_indicator"
-            app:tabGravity="center"
-            app:tabIndicatorHeight="0dp"
-            app:tabMinWidth="8dp"
-            app:tabMaxWidth="8dp" />
-
-        <!-- Gradiente inferior con info del perfil -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:padding="16dp">
+            android:layout_height="match_parent">
 
+            <!-- Foto -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/photoPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Indicador de páginas arriba centrado -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/photoIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/transparent"
+                app:tabBackground="@drawable/selector_photo_indicator"
+                app:tabGravity="center"
+                app:tabIndicatorHeight="0dp"
+                app:tabMaxWidth="8dp"
+                app:tabMinWidth="8dp"
+                app:tabPaddingEnd="4dp"
+                app:tabPaddingStart="4dp" />
+
+            <!-- Gradiente + info al pie -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_profile_gradient_bottom"
                 android:orientation="vertical"
-                android:background="@drawable/bg_profile_gradient_bottom">
+                android:padding="20dp">
 
-                <!-- Nombre, edad e ícono verificado -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
+                    android:gravity="center_vertical">
 
                     <TextView
                         android:id="@+id/tvName"
@@ -73,95 +73,96 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_semibold"
                         android:textColor="@android:color/white"
-                        android:textSize="24sp"
+                        android:textSize="22sp"
                         tools:text="María, 25" />
 
                     <ImageView
                         android:id="@+id/ivVerified"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="6dp"
                         android:contentDescription="@string/profile_verified"
                         android:src="@drawable/ic_verified"
                         android:visibility="gone" />
                 </LinearLayout>
 
-                <!-- Ubicación -->
                 <TextView
                     android:id="@+id/tvLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="4dp"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
+                    android:alpha="0.9"
                     tools:text="Caracas, Venezuela" />
 
-                <!-- Bio -->
                 <TextView
                     android:id="@+id/tvBio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
                     android:maxLines="3"
+                    android:ellipsize="end"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    tools:text="Me gusta la música, viajar y comer rico 🍕" />
-
+                    android:alpha="0.85"
+                    tools:text="Me gusta la música, viajar y comer rico" />
             </LinearLayout>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Botón Dislike (X) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnDislike"
-        style="@style/Widget.Arelove.Button.Outlined"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="24dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="@string/swipe_nope"
-        android:textSize="0sp"
-        app:icon="@drawable/ic_dislike"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:iconSize="28dp"
+    <!-- Botones de acción -->
+    <LinearLayout
+        android:id="@+id/llActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/cardProfile"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnLike"
-        app:strokeColor="@color/heart_red"
-        app:strokeWidth="2dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Botón Like (♥) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLike"
-        style="@style/Widget.Arelove.Button.Primary"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="24dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="@string/swipe_like"
-        android:textSize="0sp"
-        app:icon="@drawable/ic_like"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:iconSize="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnDislike"
-        app:backgroundTint="@color/heart_red" />
+        <!-- Botón dislike -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDislike"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginEnd="24dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="36dp"
+            app:icon="@drawable/ic_dislike"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="32dp"
+            app:iconTint="@color/primary"
+            app:strokeColor="@color/primary"
+            app:strokeWidth="2dp" />
+
+        <!-- Botón like -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLike"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:backgroundTint="@color/primary"
+            app:cornerRadius="36dp"
+            app:icon="@drawable/ic_like"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="36dp"
+            app:iconTint="@color/white" />
+    </LinearLayout>
 
     <!-- ProgressBar de carga -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="center"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -181,21 +182,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Debug TextView -->
-    <TextView
-        android:id="@+id/tvDebugSwipe"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#CC000000"
-        android:fontFamily="monospace"
-        android:padding="8dp"
-        android:textColor="@color/error"
-        android:textSize="10sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="debug" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

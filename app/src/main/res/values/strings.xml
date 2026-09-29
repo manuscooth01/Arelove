@@ -245,7 +245,7 @@
     <string name="match_subtitle">También le gustaste. ¡Empiecen a hablar!</string>
     <string name="match_btn_chat">Enviar mensaje</string>
     <string name="like_expires_in">Este like expira en %1$s</string>
-    <string name="likes_expires_24h">Los likes expiran en 24 horas</string>
+    <string name="likes_empty">Nadie te ha dado like todavía</string>
     <string name="no_more_profiles">No hay más personas cerca por ahora</string>
     <string name="coming_soon">Próximamente</string>
     <string name="boost_title">Boost activado</string>
@@ -261,6 +261,14 @@
     <string name="add_photo">Añadir foto</string>
     <string name="delete_photo">Eliminar foto</string>
     <string name="photos_under_review">Algunas fotos están en revisión</string>
+
+    <!-- Home placeholders -->
+    <string name="likes_title">Tus likes</string>
+    <string name="likes_subtitle">Aquí verás quién te dio like</string>
+    <string name="chats_title">Chats</string>
+    <string name="chats_subtitle">Tus conversaciones aparecerán aquí</string>
+    <string name="profile_title">Perfil</string>
+    <string name="profile_subtitle">Tu información y ajustes</string>
 
     <!-- ==================== HISTORIAS ==================== -->
     <string name="stories_title">Historias</string>

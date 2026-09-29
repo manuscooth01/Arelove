@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.arelove.app.AreloveApp
 import com.arelove.app.MainActivity
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -15,11 +14,13 @@ import com.arelove.app.databinding.FragmentProfileBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * Fragment de Perfil (placeholder con logout).
- * Muestra el email del usuario y permite cerrar la sesión.
+ * Fragment de Perfil - muestra avatar, nombre, email, opciones y botón logout.
  */
 class ProfileFragment : Fragment() {
 
@@ -37,7 +38,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cargarEmail()
+        cargarPerfil()
         configurarLogout()
     }
 
@@ -46,11 +47,34 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
 
-    private fun cargarEmail() {
+    private fun cargarPerfil() {
         lifecycleScope.launch {
-            val email = SupabaseClient.client.auth.currentUserOrNull()?.email.orEmpty()
-            val sinVista = _binding ?: return@launch
-            sinVista.tvEmail.text = email
+            try {
+                val session = SupabaseClient.client.auth.currentSessionOrNull()
+                val userId = session?.user?.id
+                val email = session?.user?.email.orEmpty()
+                if (userId == null) {
+                    _binding?.tvEmail?.text = email
+                    return@launch
+                }
+
+                // Cargar nickname desde profiles
+                val filas = SupabaseClient.client.postgrest["profiles"].select(
+                    columns = Columns.list("nickname")
+                ) {
+                    filter { eq("id", userId) }
+                    limit(1)
+                }.decodeList<kotlinx.serialization.json.JsonObject>()
+
+                val sinVista = _binding ?: return@launch
+                sinVista.tvEmail.text = email
+                if (filas.isNotEmpty()) {
+                    val nickname = filas[0]["nickname"] as? JsonPrimitive
+                    sinVista.tvName.text = nickname?.content.orEmpty()
+                }
+            } catch (e: Exception) {
+                _binding?.tvEmail?.text = email
+            }
         }
     }
 
