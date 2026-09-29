@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.TabLayoutMediator
+import com.google.android.material.tabs.TabLayoutMediator
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.PhotoUploadHelper
 import com.arelove.app.R
