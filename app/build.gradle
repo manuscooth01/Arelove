@@ -56,6 +56,10 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.8.2'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
 
+    // Navigation Component
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
+
     // Material Design 3 (temas y componentes)
     implementation 'com.google.android.material:material:1.11.0'
 

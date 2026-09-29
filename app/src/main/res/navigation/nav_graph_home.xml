@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_home"
+    app:startDestination="@id/swipeFragment">
+
+    <fragment
+        android:id="@+id/swipeFragment"
+        android:name="com.arelove.app.home.SwipeFragment"
+        android:label="@string/nav_swipe" />
+
+    <fragment
+        android:id="@+id/likesFragment"
+        android:name="com.arelove.app.home.LikesFragment"
+        android:label="@string/nav_likes" />
+
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.arelove.app.home.ChatsFragment"
+        android:label="@string/nav_chats" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.arelove.app.home.ProfileFragment"
+        android:label="@string/nav_profile" />
+
+</navigation>

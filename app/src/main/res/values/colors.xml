@@ -60,6 +60,10 @@
     <color name="scrim">#99000000</color>
     <color name="ripple">#33E53935</color>
 
+    <!-- Bottom Navigation -->
+    <color name="bottom_nav_active">#E53935</color>
+    <color name="bottom_nav_inactive">#857372</color>
+
     <!-- ==================== DIÁLOGOS ==================== -->
     <color name="dialog_error">#E53935</color>
     <color name="dialog_warning">#F57C00</color>

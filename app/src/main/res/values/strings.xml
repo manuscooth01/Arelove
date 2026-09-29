@@ -110,6 +110,7 @@
     <string name="verification_pending">Verificación en revisión</string>
     <string name="verification_ok">Perfil verificado</string>
     <string name="verification_rejected">Verificación rechazada. Inténtalo de nuevo.</string>
+    <string name="profile_verified">Perfil verificado</string>
 
     <!-- ==================== ASISTENTE DE PERFIL (5 PASOS) ==================== -->
     <string name="profile_step_indicator">Paso %1$d de 5</string>
@@ -230,7 +231,7 @@
     <!-- ==================== NAVEGACIÓN ==================== -->
     <string name="nav_swipe">Descubrir</string>
     <string name="nav_feed">Feed</string>
-    <string name="nav_likes">Me gusta</string>
+    <string name="nav_likes">Likes</string>
     <string name="nav_chats">Chats</string>
     <string name="nav_profile">Perfil</string>
     <string name="tab_para_ti">Para ti</string>
@@ -246,6 +247,7 @@
     <string name="like_expires_in">Este like expira en %1$s</string>
     <string name="likes_expires_24h">Los likes expiran en 24 horas</string>
     <string name="no_more_profiles">No hay más personas cerca por ahora</string>
+    <string name="coming_soon">Próximamente</string>
     <string name="boost_title">Boost activado</string>
     <string name="boost_subtitle">Tu perfil será visible durante 20 minutos</string>
     <string name="btn_boost">Boost · 30 diamantes</string>

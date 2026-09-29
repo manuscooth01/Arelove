@@ -1,18 +1,19 @@
 package com.arelove.app
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.arelove.app.databinding.ActivityHomeBinding
-import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Pantalla principal tras iniciar sesión (placeholder).
- * Muestra el email del usuario y permite cerrar la sesión.
+ * Pantalla principal con navegación inferior (swipe, likes, chats, perfil).
+ * El logout se mueve al ProfileFragment.
  */
 class HomeActivity : AppCompatActivity() {
 
@@ -23,37 +24,15 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.tvEmail.text = SupabaseClient.client.auth.currentUserOrNull()?.email.orEmpty()
-
-        binding.btnLogout.setOnClickListener {
-            if (AntiSpam.esDobleTap("btnLogout")) return@setOnClickListener
-            cerrarSesion()
+        // Precarga el cliente Supabase fuera del hilo principal
+        lifecycleScope.launch(Dispatchers.IO) {
+            SupabaseClient.client
         }
-    }
 
-    private fun cerrarSesion() {
-        lifecycleScope.launch {
-            try {
-                SupabaseClient.client.auth.signOut()
-                irAInicio()
-            } catch (e: Exception) {
-                AreloveDialog.show(
-                    this@HomeActivity,
-                    AreloveDialog.Tipo.ERROR,
-                    getString(R.string.dialog_error_title),
-                    AuthErrorMapper.traducir(this@HomeActivity, e.message),
-                    onPositive = { irAInicio() }
-                )
-            }
-        }
-    }
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.fragmentContainer) as NavHostFragment
+        val navController = navHostFragment.navController
 
-    /** Vuelve a la pantalla de bienvenida. */
-    private fun irAInicio() {
-        val intent = Intent(this@HomeActivity, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-        startActivity(intent)
-        finish()
+        binding.bottomNav.setupWithNavController(navController)
     }
 }
