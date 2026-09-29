@@ -453,17 +453,19 @@ class Step1BasicFragment : Fragment() {
             return
         }
 
-        val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-        if (userId == null) {
-            onError(getString(R.string.profile_error_no_session))
-            return
-        }
-
         if (guardando) return
         guardando = true
 
         lifecycleScope.launch {
             try {
+                // La sesión se lee dentro de la corrutina: en el hilo principal
+                // currentSessionOrNull() puede bloquear y congelar la pantalla
+                val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                if (userId == null) {
+                    onError(getString(R.string.profile_error_no_session))
+                    return@launch
+                }
+
                 val coords = coordenadas
                 val fila = buildJsonObject {
                     put("id", userId)

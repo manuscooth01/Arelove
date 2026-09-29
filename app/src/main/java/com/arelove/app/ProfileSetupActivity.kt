@@ -144,7 +144,7 @@ class ProfileSetupActivity : AppCompatActivity() {
                         getString(R.string.debug_title),
                         DebugLog.texto()
                     )
-                }, 2000)
+                }, 5000)
             }
 
             // Paso 3: hace falta subir al menos 2 fotos antes de avanzar

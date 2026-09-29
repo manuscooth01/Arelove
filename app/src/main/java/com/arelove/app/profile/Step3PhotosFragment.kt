@@ -332,17 +332,7 @@ class Step3PhotosFragment : Fragment() {
         val b = _binding ?: return
         if (cargando || fotos.size >= MAX_FOTOS) return
 
-        val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-        if (userId == null) {
-            AreloveDialog.show(
-                b.root.context,
-                AreloveDialog.Tipo.ERROR,
-                getString(R.string.dialog_error_title),
-                getString(R.string.profile_error_no_session)
-            )
-            return
-        }
-
+        // La foto se pinta ya en la rejilla (feedback visual) sin esperar a leer la sesión
         fotos.add(FotoItem(url = null, uriLocal = uri))
         b.rvPhotos.adapter?.notifyDataSetChanged()
 
@@ -351,6 +341,24 @@ class Step3PhotosFragment : Fragment() {
 
         val job = lifecycleScope.launch {
             try {
+                // La sesión se lee dentro de la corrutina (nunca en el hilo principal)
+                val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                if (userId == null) {
+                    // Sin sesión: quitamos la foto que acabamos de añadir
+                    val sinSesion = fotos.indexOfFirst { it.uriLocal == uri }
+                    if (sinSesion >= 0) fotos.removeAt(sinSesion)
+                    _binding?.let {
+                        it.rvPhotos.adapter?.notifyDataSetChanged()
+                        AreloveDialog.show(
+                            it.root.context,
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.dialog_error_title),
+                            getString(R.string.profile_error_no_session)
+                        )
+                    }
+                    return@launch
+                }
+
                 val url = subirYGuardar(userId, uri)
                 val sinVista = _binding ?: return@launch
 
@@ -471,17 +479,18 @@ class Step3PhotosFragment : Fragment() {
         val b = _binding ?: return
         b.tvPhotosError.visibility = View.GONE
 
-        val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-        if (userId == null) {
-            onError(getString(R.string.profile_error_no_session))
-            return
-        }
-
         if (guardando) return
         guardando = true
 
         lifecycleScope.launch {
             try {
+                // La sesión se lee dentro de la corrutina (nunca en el hilo principal)
+                val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                if (userId == null) {
+                    onError(getString(R.string.profile_error_no_session))
+                    return@launch
+                }
+
                 if (subidasActivas > 0) {
                     b.progressBarPhotos.visibility = View.VISIBLE
                     b.tvPhotoCount.text = getString(R.string.photo_uploading)

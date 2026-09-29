@@ -200,7 +200,7 @@ class Step2InterestsFragment : Fragment() {
 
         val b = _binding
         if (b == null) {
-            DebugLog.add("validarYGuardar: SIN VISTA (_binding null)")
+            DebugLog.add("validarYGuardar: SIN VISTA")
             return
         }
         b.tvInterestsError.visibility = View.GONE
@@ -215,27 +215,29 @@ class Step2InterestsFragment : Fragment() {
             return
         }
 
-        val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-        DebugLog.add("validarYGuardar: userId=$userId")
-        if (userId == null) {
-            DebugLog.add("validarYGuardar: SIN SESIÓN")
-            onError(getString(R.string.profile_error_no_session))
-            return
-        }
-
         guardando = true
         DebugLog.add("validarYGuardar: lanzando corrutina")
 
         lifecycleScope.launch {
             try {
-                // DELETE FROM user_interests WHERE user_id = ...
+                // La sesión se lee dentro de la corrutina: en el hilo principal
+                // currentSessionOrNull() puede bloquear y congelar la pantalla
+                DebugLog.add("validarYGuardar: leyendo userId")
+                val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                DebugLog.add("validarYGuardar: userId=$userId")
+
+                if (userId == null) {
+                    DebugLog.add("validarYGuardar: SIN SESIÓN")
+                    onError(getString(R.string.profile_error_no_session))
+                    return@launch
+                }
+
                 DebugLog.add("validarYGuardar: DELETE")
                 SupabaseClient.client.postgrest["user_interests"].delete {
                     filter { eq("user_id", userId) }
                 }
                 DebugLog.add("validarYGuardar: DELETE OK")
 
-                // INSERT de la selección nueva (una sola petición)
                 DebugLog.add("validarYGuardar: INSERT")
                 val filas = seleccionados.map { interesId ->
                     buildJsonObject {
