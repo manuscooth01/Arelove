@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_swipe"
+        android:id="@+id/swipeFragment"
         android:icon="@drawable/ic_nav_swipe"
         android:title="@string/nav_swipe" />
     <item
-        android:id="@+id/nav_likes"
+        android:id="@+id/likesFragment"
         android:icon="@drawable/ic_nav_likes"
         android:title="@string/nav_likes" />
     <item
-        android:id="@+id/nav_chats"
+        android:id="@+id/chatsFragment"
         android:icon="@drawable/ic_nav_chats"
         android:title="@string/nav_chats" />
     <item
-        android:id="@+id/nav_profile"
+        android:id="@+id/profileFragment"
         android:icon="@drawable/ic_nav_profile"
         android:title="@string/nav_profile" />
 </menu>

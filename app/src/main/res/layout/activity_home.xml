@@ -9,6 +9,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Version marker (temporal) -->
+    <TextView
+        android:id="@+id/tvVersionMarker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:background="#80FF0000"
+        android:padding="4dp"
+        android:text="v.637d664"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <!-- Current destination marker (temporal) -->
+    <TextView
+        android:id="@+id/tvCurrentDestination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="8dp"
+        android:background="#800000FF"
+        android:padding="4dp"
+        android:text="dest: --"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
         android:name="androidx.navigation.fragment.NavHostFragment"
