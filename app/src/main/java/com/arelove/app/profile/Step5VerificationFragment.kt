@@ -335,9 +335,9 @@ class Step5VerificationFragment : Fragment() {
 
     /**
      * Pide una URL firmada temporal ([PhotoUploadHelper.urlFirmada]) para la
-     * selfie y la carga en la preview. La imagen solo pasa a VISIBLE cuando
-     * Coil confirma la carga; si no se puede firmar o descargar, se queda
-     * oculta y el paso sigue funcionando igual.
+     * selfie y la carga en la preview. El ImageView se hace visible ANTES de
+     * cargar (Coil no arranca si el target mide 0 por estar GONE); si Coil
+     * falla se intenta una descarga manual y, si esa también falla, se oculta.
      */
     private fun cargarPreview(url: String) {
         val path = extraerPathVerificacion(url)
@@ -349,24 +349,36 @@ class Step5VerificationFragment : Fragment() {
         // Solo una preview en vuelo: la anterior se cancela al pedir esta
         jobPreview?.cancel()
         jobPreview = viewLifecycleOwner.lifecycleScope.launch {
-            val firmada = PhotoUploadHelper.urlFirmada(BUCKET_VERIFICACION, path)
             val sinVista = _binding ?: return@launch
+            // Visible ANTES de cargar: Coil necesita que el target tenga tamaño
+            sinVista.ivSelfiePreview.visibility = View.VISIBLE
+            sinVista.ivSelfiePreview.setImageDrawable(null) // limpia
+
+            val firmada = PhotoUploadHelper.urlFirmada(BUCKET_VERIFICACION, path)
             if (firmada == null) {
-                // Sin URL firmada la imagen no se puede pedir al bucket privado
                 sinVista.ivSelfiePreview.visibility = View.GONE
                 return@launch
             }
-            // Oculta hasta que Coil descargue bien: nunca un hueco en blanco
-            sinVista.ivSelfiePreview.visibility = View.GONE
+
             sinVista.ivSelfiePreview.load(firmada) {
                 crossfade(true)
                 listener(
-                    onSuccess = { _, _ ->
-                        _binding?.ivSelfiePreview?.visibility = View.VISIBLE
-                    },
                     onError = { _, result ->
-                        Log.e(TAG_LOG, "Coil error cargando la selfie", result.throwable)
-                        _binding?.ivSelfiePreview?.visibility = View.GONE
+                        Log.e(TAG_LOG, "Coil error, intentando descarga manual", result.throwable)
+                        // Descarga manual con el cliente HTTP de Supabase
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            try {
+                                val bytes = SupabaseClient.client.storage[BUCKET_VERIFICACION]
+                                    .downloadAuthenticated(path)
+                                val bitmap = android.graphics.BitmapFactory
+                                    .decodeByteArray(bytes, 0, bytes.size)
+                                _binding?.ivSelfiePreview?.setImageBitmap(bitmap)
+                                _binding?.ivSelfiePreview?.visibility = View.VISIBLE
+                            } catch (e: Exception) {
+                                Log.e(TAG_LOG, "Descarga manual también falló", e)
+                                _binding?.ivSelfiePreview?.visibility = View.GONE
+                            }
+                        }
                     }
                 )
             }

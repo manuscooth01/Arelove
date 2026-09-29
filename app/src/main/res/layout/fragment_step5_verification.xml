@@ -84,6 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginTop="16dp"
+            android:background="@color/photo_placeholder"
             android:contentDescription="@string/profile_step5_status_review"
             android:importantForAccessibility="no"
             android:scaleType="centerCrop"
