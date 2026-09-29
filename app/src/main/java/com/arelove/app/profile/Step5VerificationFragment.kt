@@ -20,6 +20,7 @@ import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentStep5VerificationBinding
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
@@ -96,9 +97,18 @@ class Step5VerificationFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.btnTakeSelfie.setOnClickListener { pedirPermisoCamara() }
-        binding.btnPickSelfie.setOnClickListener { abrirGaleria() }
-        binding.btnSkip.setOnClickListener { saltarVerificacion() }
+        binding.btnTakeSelfie.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnTakeSelfie")) return@setOnClickListener
+            pedirPermisoCamara()
+        }
+        binding.btnPickSelfie.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnPickSelfie")) return@setOnClickListener
+            abrirGaleria()
+        }
+        binding.btnSkip.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnSkip")) return@setOnClickListener
+            saltarVerificacion()
+        }
 
         // Si la vista se recreó después de subir la selfie, restauramos el estado
         urlSelfie?.let { mostrarSelfieSubida(it) }

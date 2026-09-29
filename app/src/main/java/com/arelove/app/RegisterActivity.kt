@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityRegisterBinding
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import com.google.android.material.textfield.TextInputEditText
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
@@ -38,9 +39,15 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun configurarBotones() {
-        binding.btnRegister.setOnClickListener { crearCuenta() }
+        binding.btnRegister.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnRegister")) return@setOnClickListener
+            crearCuenta()
+        }
 
-        binding.tvGoLogin.setOnClickListener { finish() }
+        binding.tvGoLogin.setOnClickListener {
+            if (AntiSpam.esDobleTap("tvGoLogin")) return@setOnClickListener
+            finish()
+        }
 
         binding.ivTogglePassword.alpha = 0.4f
         binding.ivTogglePassword.setOnClickListener { alternarPassword() }

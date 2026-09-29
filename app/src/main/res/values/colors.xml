@@ -6,6 +6,15 @@
     <color name="arelove_red_dark">#C62828</color>
     <color name="arelove_red_light">#FF6F61</color>
 
+    <!-- ==================== SISTEMA DE DISEÑO - EXTENSIÓN DE PALETA ==================== -->
+    <!-- Solo colores nuevos; los tokens de Material 3 que ya existían se conservan -->
+    <color name="primary_dark">#B71C1C</color>
+    <color name="primary_light">#EF5350</color>
+    <color name="accent_pink">#FF6B8A</color>
+    <color name="accent_warm">#FF8A65</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#616161</color>
+
     <!-- ==================== MATERIAL 3 - MODO CLARO ==================== -->
     <color name="primary">#E53935</color>
     <color name="on_primary">#FFFFFF</color>

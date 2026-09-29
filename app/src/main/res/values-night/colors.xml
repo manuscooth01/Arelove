@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- ==================== SISTEMA DE DISEÑO - EXTENSIÓN DE PALETA ==================== -->
+    <!-- Solo colores nuevos; los tokens de Material 3 que ya existían se conservan -->
+    <color name="primary_dark">#E53935</color>
+    <color name="primary_light">#FF8A8A</color>
+    <color name="accent_pink">#FF85A1</color>
+    <color name="accent_warm">#FFA07A</color>
+    <color name="text_primary">#F5F5F5</color>
+    <color name="text_secondary">#B0B0B0</color>
+
     <!-- ==================== MATERIAL 3 - MODO OSCURO ==================== -->
     <!-- El rojo de marca se mantiene igual en ambos modos -->
     <color name="primary">#E53935</color>

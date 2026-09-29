@@ -25,6 +25,7 @@ import com.arelove.app.databinding.BottomSheetPhotoSourceBinding
 import com.arelove.app.databinding.FragmentStep3PhotosBinding
 import com.arelove.app.databinding.ItemPhotoBinding
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.github.jan.supabase.gotrue.auth
@@ -32,6 +33,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -80,6 +82,9 @@ class Step3PhotosFragment : Fragment() {
 
     /** Evita avanzar dos veces si pulsan "Siguiente" repetidamente. */
     private var guardando = false
+
+    /** Anti-spam: instante de la última foto aceptada (milisegundos). */
+    private var ultimaSubidaEn = 0L
 
     // ---------------------------------------------------------------------
     // Launchers (se registran en el constructor: nunca dentro de onViewCreated)
@@ -141,6 +146,7 @@ class Step3PhotosFragment : Fragment() {
         val b = _binding ?: return
         // La rejilla mide todas sus celdas: no rueda ella sola dentro del ScrollView
         b.rvPhotos.isNestedScrollingEnabled = false
+        b.rvPhotos.setHasFixedSize(true)
         b.rvPhotos.layoutManager = GridLayoutManager(requireContext(), COLUMNAS)
         b.rvPhotos.adapter = FotosAdapter()
         b.rvPhotos.addItemDecoration(object : RecyclerView.ItemDecoration() {
@@ -208,12 +214,17 @@ class Step3PhotosFragment : Fragment() {
                     order("created_at", Order.ASCENDING)
                 }.decodeList<JsonObject>()
 
-                val urls = filas.mapNotNull { (it["url"] as? JsonPrimitive)?.content }
-
                 val sinVista = _binding ?: return@launch
                 sinVista.progressBarPhotos.visibility = View.GONE
                 fotos.clear()
-                fotos.addAll(urls.map { FotoItem(url = it, uriLocal = null) })
+                // El SELECT es "*" (Columns.ALL), así que viene content_hash:
+                // con él la detección de duplicados también vale entre sesiones
+                fotos.addAll(
+                    filas.mapNotNull { fila ->
+                        val url = textoDe(fila, "url") ?: return@mapNotNull null
+                        FotoItem(url = url, uriLocal = null, hash = textoDe(fila, "content_hash"))
+                    }
+                )
                 sinVista.rvPhotos.adapter?.notifyDataSetChanged()
                 actualizarContador()
             } catch (e: Exception) {
@@ -229,6 +240,16 @@ class Step3PhotosFragment : Fragment() {
                 cargando = false
             }
         }
+    }
+
+    /**
+     * Valor de texto de una columna de `media`; ausente, JSON null o vacío
+     * => null (para no contar una fila sin URL ni meter "null" como hash).
+     */
+    private fun textoDe(fila: JsonObject, clave: String): String? {
+        val elemento = fila[clave] as? JsonPrimitive ?: return null
+        if (elemento is JsonNull) return null
+        return elemento.content.trim().ifEmpty { null }
     }
 
     /** Deja la rejilla cargada y enseña el diálogo de error (con reintento). */
@@ -338,6 +359,19 @@ class Step3PhotosFragment : Fragment() {
     private fun procesarFoto(uri: Uri) {
         if (cargando || fotos.size >= MAX_FOTOS) return
 
+        // Anti-spam: una foto como máximo cada INTERVALO_SUBIDA_MS
+        val ahora = System.currentTimeMillis()
+        if (ahora - ultimaSubidaEn < INTERVALO_SUBIDA_MS) {
+            AreloveDialog.show(
+                context ?: return,
+                AreloveDialog.Tipo.WARNING,
+                getString(R.string.dialog_warning_title),
+                getString(R.string.error_photo_rate_limit)
+            )
+            return
+        }
+        ultimaSubidaEn = ahora
+
         subidasActivas++
         actualizarContador()
 
@@ -378,7 +412,7 @@ class Step3PhotosFragment : Fragment() {
                 fotos.add(FotoItem(url = null, uriLocal = uri, hash = hash))
                 _binding?.rvPhotos?.adapter?.notifyDataSetChanged()
 
-                val url = subirYGuardar(userId, bytes)
+                val url = subirYGuardar(userId, bytes, hash)
                 val sinVista = _binding ?: return@launch
 
                 val posicion = fotos.indexOfFirst { it.uriLocal == uri }
@@ -414,8 +448,15 @@ class Step3PhotosFragment : Fragment() {
         )
     }
 
-    /** Sube los [bytes] ya recomprimidos al bucket y guarda su fila en `media`. */
-    private suspend fun subirYGuardar(userId: String, bytes: ByteArray): String? {
+    /**
+     * Sube los [bytes] ya recomprimidos al bucket y guarda su fila en `media`,
+     * con su [hash] (SHA-256) para detectar duplicados también en otras sesiones.
+     */
+    private suspend fun subirYGuardar(
+        userId: String,
+        bytes: ByteArray,
+        hash: String
+    ): String? {
         val url = PhotoUploadHelper.subirFoto(userId, bytes) ?: return null
 
         return try {
@@ -423,6 +464,7 @@ class Step3PhotosFragment : Fragment() {
                 put("user_id", userId)
                 put("url", url)
                 put("type", "profile")
+                put("content_hash", hash)
             })
             url
         } catch (e: Exception) {
@@ -600,7 +642,10 @@ class Step3PhotosFragment : Fragment() {
                     if (indice != RecyclerView.NO_POSITION) quitarFoto(indice)
                 }
             } else {
-                b.photoAdd.setOnClickListener { mostrarSelectorDeOrigen() }
+                b.photoAdd.setOnClickListener {
+                    if (AntiSpam.esDobleTap("photoAdd")) return@setOnClickListener
+                    mostrarSelectorDeOrigen()
+                }
             }
 
             fijarProporcion(holder.itemView)
@@ -630,6 +675,9 @@ class Step3PhotosFragment : Fragment() {
         /** Fotos mínimas para avanzar y máximo que se pueden subir. */
         const val MIN_FOTOS = 2
         const val MAX_FOTOS = 6
+
+        /** Intervalo mínimo entre subidas aceptadas (anti-spam), en milisegundos. */
+        const val INTERVALO_SUBIDA_MS = 5_000L
 
         /** Columnas de la rejilla y proporción de cada celda (3:4). */
         const val COLUMNAS = 2

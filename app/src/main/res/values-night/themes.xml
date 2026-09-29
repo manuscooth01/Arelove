@@ -39,8 +39,16 @@
         <!-- Fondo de la ventana (evita destello blanco al abrir la app) -->
         <item name="android:windowBackground">@color/background</item>
 
-        <!-- Tipografía sans-serif moderna -->
-        <item name="android:fontFamily">sans-serif</item>
+        <!-- Tipografía global: Poppins -->
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="fontFamily">@font/poppins</item>
+
+        <!-- Estilos por defecto del sistema de diseño Arelove -->
+        <item name="materialButtonStyle">@style/Widget.Arelove.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.Arelove.TextInput</item>
+        <item name="chipStyle">@style/Widget.Arelove.Chip</item>
+        <item name="cardViewStyle">@style/Widget.Arelove.Card</item>
+
         <item name="android:windowActionModeOverlay">true</item>
 
     </style>

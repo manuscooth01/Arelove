@@ -30,12 +30,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/poppins_semibold"
             android:gravity="center"
             android:text="@string/login_welcome_back"
-            android:textColor="@color/on_surface"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/Widget.Arelove.Title" />
 
         <!-- Subtítulo -->
         <TextView
@@ -43,11 +41,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/login_subtitle"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="14sp" />
+            android:textAppearance="@style/Widget.Arelove.Subtitle" />
 
         <Space
             android:layout_width="match_parent"
@@ -56,7 +52,7 @@
         <!-- Campo Email -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.Arelove.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/field_email">
@@ -78,7 +74,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                style="@style/Widget.Arelove.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/field_password"
@@ -122,17 +118,15 @@
         <!-- Botón principal -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
+            style="@style/Widget.Arelove.Button.Primary"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:layout_marginTop="24dp"
-            android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.02"
+            android:fontFamily="@font/poppins_semibold"
             android:text="@string/btn_login"
             android:textAllCaps="false"
             android:textColor="@color/on_primary"
-            android:textSize="16sp"
-            app:backgroundTint="@color/primary"
-            app:cornerRadius="26dp" />
+            app:backgroundTint="@color/primary" />
 
         <!-- Indicador de carga -->
         <ProgressBar
@@ -176,25 +170,23 @@
         <!-- Botón Google (solo UI) con el logo oficial de Google -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGoogle"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Arelove.Button.Outlined"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:layout_marginTop="16dp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/poppins_semibold"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:text="@string/login_google"
             android:textAllCaps="false"
             android:textColor="@color/on_surface"
             android:textSize="15sp"
-            app:cornerRadius="26dp"
             app:icon="@drawable/ic_google_logo"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
             app:iconSize="20dp"
             app:iconTint="@null"
-            app:strokeColor="@color/outline"
-            app:strokeWidth="1.5dp" />
+            app:strokeColor="@color/outline" />
 
         <!-- Pie: ¿No tienes cuenta? Regístrate -->
         <LinearLayout

@@ -144,6 +144,7 @@
     <string name="error_upload_photo">No se pudo subir la foto. Inténtalo de nuevo.</string>
     <string name="error_delete_photo">No se pudo eliminar la foto. Inténtalo de nuevo.</string>
     <string name="error_photo_duplicate">Esta foto ya está en tu perfil. Elige otra.</string>
+    <string name="error_photo_rate_limit">Espera unos segundos antes de subir otra foto.</string>
     <string name="error_camera_permission">No tienes permiso para usar la cámara. Puedes elegir una foto de la galería.</string>
 
     <!-- Paso 4 del asistente: perfil opcional -->

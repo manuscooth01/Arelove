@@ -32,21 +32,46 @@ object ProfileChecker {
     /** Fotos de perfil mínimas que exige el Paso 3. */
     private const val MINIMO_FOTOS = 2
 
+    /** Validez de la caché en memoria del último resultado (30 segundos). */
+    private const val CACHE_TTL_MS = 30_000L
+
+    /** Último resultado cacheado; null mientras no se ha comprobado nada. */
+    private var cacheResultado: Boolean? = null
+
+    /** Usuario al que pertenece [cacheResultado] (no mezclar cuentas). */
+    private var cacheUserId: String? = null
+
+    /** Instante en que se guardó [cacheResultado]. */
+    private var cacheTimestamp: Long = 0
+
     /**
      * @return true solo si el asistente se terminó (profile_completed) y los
      * 3 pasos siguen completos.
+     *
+     * Requiere que el llamante haya hecho awaitInitialization().
      */
     suspend fun perfilCompleto(): Boolean {
+        val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+        // Sin sesión no hay perfil que comprobar (y no se cachea)
+        if (userId == null) return false
+
+        // Caché de 30s: evita repetir las 3 queries en el mismo arranque
+        val ahora = System.currentTimeMillis()
+        val cacheado = cacheResultado
+        if (cacheado != null && cacheUserId == userId && ahora - cacheTimestamp < CACHE_TTL_MS) {
+            return cacheado
+        }
+
+        val resultado = calcularPerfilCompleto(userId)
+        cacheResultado = resultado
+        cacheUserId = userId
+        cacheTimestamp = System.currentTimeMillis()
+        return resultado
+    }
+
+    /** Consultas de Supabase que responden si el perfil está completo. */
+    private suspend fun calcularPerfilCompleto(userId: String): Boolean {
         try {
-            // Espera a que GoTrue termine de cargar la sesión guardada en disco
-            SupabaseClient.client.auth.awaitInitialization()
-
-            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-            if (userId == null) {
-                // Sin sesión no hay perfil que comprobar
-                return false
-            }
-
             // SELECT age, location, looking_for, profile_completed
             //     FROM profiles WHERE id = userId LIMIT 1
             val resultado = SupabaseClient.client.postgrest["profiles"].select(

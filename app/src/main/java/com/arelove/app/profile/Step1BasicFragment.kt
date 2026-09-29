@@ -21,6 +21,7 @@ import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentStep1BasicBinding
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.CompositeDateValidator
 import com.google.android.material.datepicker.DateValidatorPointBackward
@@ -28,8 +29,10 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -100,6 +103,7 @@ class Step1BasicFragment : Fragment() {
         prepararSelectorFecha()
         configurarFechaNacimiento()
         configurarLugar()
+        cargarDatosExistentes()
     }
 
     override fun onDestroyView() {
@@ -146,7 +150,10 @@ class Step1BasicFragment : Fragment() {
             b.tilLocation.error = null
         }
 
-        binding.btnUseLocation.setOnClickListener { pedirUbicacion() }
+        binding.btnUseLocation.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnUseLocation")) return@setOnClickListener
+            pedirUbicacion()
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -380,6 +387,93 @@ class Step1BasicFragment : Fragment() {
             mensaje,
             onPositive = alAceptar
         )
+    }
+
+    // ---------------------------------------------------------------------
+    // Carga de los datos ya guardados
+    // ---------------------------------------------------------------------
+
+    /**
+     * SELECT nickname, birthdate, location, looking_for, latitude, longitude
+     *     FROM profiles WHERE id = userId LIMIT 1
+     *
+     * Rellena el paso al retomar el asistente (por ejemplo al volver desde el
+     * Paso 3), igual que hace el Paso 4. Si la carga falla no se muestra
+     * diálogo: el usuario puede rellenar los campos a mano.
+     */
+    private fun cargarDatosExistentes() {
+        lifecycleScope.launch {
+            try {
+                // La sesión se lee dentro de la corrutina (nunca en el hilo principal)
+                val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                    ?: return@launch
+
+                val fila = SupabaseClient.client.postgrest["profiles"].select(
+                    columns = Columns.list(
+                        "nickname", "birthdate", "location", "looking_for",
+                        "latitude", "longitude"
+                    )
+                ) {
+                    filter { eq("id", userId) }
+                    limit(1)
+                }.decodeSingleOrNull<JsonObject>() ?: return@launch
+
+                val b = _binding ?: return@launch
+
+                // Apodo: si está vacío se queda el prellenado del user_metadata
+                textoDe(fila, "nickname")?.let { b.etNickname.setText(it) }
+
+                // Fecha de nacimiento: ISO yyyy-MM-dd en BD → dd/MM/yyyy en pantalla
+                textoDe(fila, "birthdate")?.let { iso ->
+                    try {
+                        // Escribe el campo, fija fechaNacimiento y valida la edad
+                        aplicarFechaNacimiento(LocalDate.parse(iso))
+                    } catch (e: Exception) {
+                        Log.e(TAG_LOG, "Error parseando birthdate: $iso", e)
+                    }
+                }
+
+                // Lugar: sin disparar el filtro del desplegable y sin borrar las
+                // coordenadas (misma bandera que usa el relleno por GPS)
+                textoDe(fila, "location")?.let { lugar ->
+                    rellenandoLugar = true
+                    b.etLocation.setText(lugar, false)
+                    rellenandoLugar = false
+                }
+
+                // Coordenadas guardadas: se restauran para no perderlas si luego
+                // se vuelve a guardar con el lugar escrito a mano
+                val lat = numeroDe(fila, "latitude")
+                val lng = numeroDe(fila, "longitude")
+                if (lat != null && lng != null) {
+                    coordenadas = LocationHelper.Coordenadas(latitude = lat, longitude = lng)
+                }
+
+                // "Busco": el ChipGroup es singleSelection, así que marcar uno
+                // desmarca los demás y dispara el listener que oculta el error
+                when (textoDe(fila, "looking_for")) {
+                    "pareja" -> b.chipPareja.isChecked = true
+                    "amistades" -> b.chipAmistades.isChecked = true
+                    "ambos" -> b.chipAmbos.isChecked = true
+                }
+            } catch (e: Exception) {
+                Log.e(TAG_LOG, "Error cargando el Paso 1", e)
+            }
+        }
+    }
+
+    /** Valor de texto de una columna; ausente, JSON null o vacío => null. */
+    private fun textoDe(fila: JsonObject, clave: String): String? {
+        val elemento = fila[clave] as? JsonPrimitive ?: return null
+        if (elemento is JsonNull) return null
+        return elemento.content.trim().ifEmpty { null }
+    }
+
+    /** Valor numérico de una columna; ausente, JSON null o no numérico => null. */
+    private fun numeroDe(fila: JsonObject, clave: String): Double? {
+        val elemento = fila[clave] as? JsonPrimitive ?: return null
+        if (elemento is JsonNull) return null
+        return elemento.content.toDoubleOrNull()
     }
 
     // ---------------------------------------------------------------------

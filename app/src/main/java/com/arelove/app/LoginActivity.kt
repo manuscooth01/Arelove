@@ -10,6 +10,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityLoginBinding
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.Email
@@ -35,11 +36,18 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun configurarBotones() {
-        binding.btnLogin.setOnClickListener { iniciarSesion() }
+        binding.btnLogin.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnLogin")) return@setOnClickListener
+            iniciarSesion()
+        }
 
-        binding.btnGoogle.setOnClickListener { iniciarSesionConGoogle() }
+        binding.btnGoogle.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnGoogle")) return@setOnClickListener
+            iniciarSesionConGoogle()
+        }
 
         binding.tvGoRegister.setOnClickListener {
+            if (AntiSpam.esDobleTap("tvGoRegister")) return@setOnClickListener
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 

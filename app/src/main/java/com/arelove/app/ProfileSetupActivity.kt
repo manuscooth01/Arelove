@@ -16,6 +16,7 @@ import com.arelove.app.profile.Step3PhotosFragment
 import com.arelove.app.profile.Step4OptionalFragment
 import com.arelove.app.profile.Step5VerificationFragment
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
@@ -88,12 +89,16 @@ class ProfileSetupActivity : AppCompatActivity() {
 
     private fun configurarBotones() {
         binding.btnBack.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnBack")) return@setOnClickListener
             if (binding.viewPager.currentItem > 0) {
                 binding.viewPager.currentItem -= 1
             }
         }
 
-        binding.btnNext.setOnClickListener { avanzarPaso() }
+        binding.btnNext.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnNext")) return@setOnClickListener
+            avanzarPaso()
+        }
     }
 
     /**

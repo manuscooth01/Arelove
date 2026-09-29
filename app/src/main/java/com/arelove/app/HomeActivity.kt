@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityHomeBinding
 import com.arelove.app.ui.AreloveDialog
+import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.launch
 
@@ -24,7 +25,10 @@ class HomeActivity : AppCompatActivity() {
 
         binding.tvEmail.text = SupabaseClient.client.auth.currentUserOrNull()?.email.orEmpty()
 
-        binding.btnLogout.setOnClickListener { cerrarSesion() }
+        binding.btnLogout.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnLogout")) return@setOnClickListener
+            cerrarSesion()
+        }
     }
 
     private fun cerrarSesion() {
