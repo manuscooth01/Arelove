@@ -60,8 +60,11 @@ class Step3PhotosFragment : Fragment() {
     /** Fotos mostradas en la rejilla (en el mismo orden que la tabla). */
     private val fotos = mutableListOf<FotoItem>()
 
-    /** Subidas en curso; `validarYGuardar` las espera antes de contar. */
-    private val subidasPendientes = mutableListOf<Job>()
+    /** Subidas que siguen en curso: el contador pasa a "Subiendo…" mientras haya alguna. */
+    private var subidasActivas = 0
+
+    /** Jobs de las subidas; `validarYGuardar` espera a los que sigan activos. */
+    private val jobsSubida = mutableListOf<Job>()
 
     /** Uri temporal que se le pasa a la app de cámara. */
     private var uriCamara: Uri? = null
@@ -152,7 +155,7 @@ class Step3PhotosFragment : Fragment() {
         val b = _binding ?: return
         val total = fotos.size
 
-        if (subidasPendientes.any { it.isActive }) {
+        if (subidasActivas > 0) {
             b.tvPhotoCount.text = getString(R.string.photo_uploading)
             b.progressBarPhotos.visibility = View.VISIBLE
             return
@@ -343,25 +346,34 @@ class Step3PhotosFragment : Fragment() {
         fotos.add(FotoItem(url = null, uriLocal = uri))
         b.rvPhotos.adapter?.notifyDataSetChanged()
 
-        subidasPendientes += lifecycleScope.launch {
-            val url = subirYGuardar(userId, uri)
-            val sinVista = _binding ?: return@launch
-
-            val posicion = fotos.indexOfFirst { it.uriLocal == uri }
-            if (url != null && posicion >= 0) {
-                fotos[posicion] = FotoItem(url = url, uriLocal = null)
-            } else {
-                if (posicion >= 0) fotos.removeAt(posicion)
-                sinVista.tvPhotosError.text = getString(R.string.error_upload_photo)
-                sinVista.tvPhotosError.visibility = View.VISIBLE
-            }
-
-            sinVista.rvPhotos.adapter?.notifyDataSetChanged()
-            actualizarContador()
-        }
-
-        // Ya hay una subida en curso: el contador pasa a "Subiendo…"
+        subidasActivas++
         actualizarContador()
+
+        val job = lifecycleScope.launch {
+            try {
+                val url = subirYGuardar(userId, uri)
+                val sinVista = _binding ?: return@launch
+
+                val posicion = fotos.indexOfFirst { it.uriLocal == uri }
+                if (url != null && posicion >= 0) {
+                    fotos[posicion] = FotoItem(url = url, uriLocal = null)
+                } else {
+                    if (posicion >= 0) fotos.removeAt(posicion)
+                    sinVista.tvPhotosError.text = getString(R.string.error_upload_photo)
+                    sinVista.tvPhotosError.visibility = View.VISIBLE
+                }
+
+                sinVista.rvPhotos.adapter?.notifyDataSetChanged()
+            } finally {
+                subidasActivas--
+                // Refresca la UI en el hilo principal (launch corre en el Main)
+                _binding?.let {
+                    it.rvPhotos.adapter?.notifyDataSetChanged()
+                    actualizarContador()
+                }
+            }
+        }
+        jobsSubida += job
     }
 
     /** Sube la foto al bucket y guarda su fila en `media`. */
@@ -470,10 +482,10 @@ class Step3PhotosFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                if (subidasPendientes.any { it.isActive }) {
+                if (subidasActivas > 0) {
                     b.progressBarPhotos.visibility = View.VISIBLE
                     b.tvPhotoCount.text = getString(R.string.photo_uploading)
-                    subidasPendientes.forEach { it.join() }
+                    jobsSubida.toList().forEach { if (it.isActive) it.join() }
                     b.progressBarPhotos.visibility = View.GONE
                     actualizarContador()
                 }
@@ -521,9 +533,25 @@ class Step3PhotosFragment : Fragment() {
                 val foto = fotos[position]
                 val url = foto.url
 
+                val uriLocal = foto.uriLocal
+
                 when {
-                    url != null -> b.ivPhoto.load(url)
-                    foto.uriLocal != null -> b.ivPhoto.load(foto.uriLocal)
+                    url != null -> b.ivPhoto.load(url) {
+                        crossfade(true)
+                        listener(
+                            onError = { _, result ->
+                                Log.e(TAG_LOG, "Coil error cargando $url", result.throwable)
+                            }
+                        )
+                    }
+                    uriLocal != null -> b.ivPhoto.load(uriLocal) {
+                        crossfade(true)
+                        listener(
+                            onError = { _, result ->
+                                Log.e(TAG_LOG, "Coil error cargando $uriLocal", result.throwable)
+                            }
+                        )
+                    }
                 }
 
                 // El aspa solo aparece cuando la foto ya está subida

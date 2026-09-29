@@ -94,7 +94,9 @@ object PhotoUploadHelper {
                 val path = "$userId/$nombre"
                 val bucket = SupabaseClient.client.storage[BUCKET]
                 bucket.upload(path, bytes)
-                bucket.publicUrl(path)
+                val url = bucket.publicUrl(path)
+                Log.d(TAG_LOG, "Foto subida, URL: $url")
+                url
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error subiendo la foto", e)
                 null
