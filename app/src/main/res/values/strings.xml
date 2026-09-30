@@ -249,6 +249,18 @@
     <string name="no_more_profiles">No hay más personas cerca por ahora</string>
     <string name="coming_soon">Próximamente</string>
 
+    <!-- ==================== LIKES ==================== -->
+    <string name="likes_tab_received">Likes recibidos</string>
+    <string name="likes_tab_matches">Matches</string>
+    <string name="likes_received_empty_title">Nadie te ha dado like todavía</string>
+    <string name="likes_received_empty_subtitle">Sigue deslizando en Descubrir</string>
+    <string name="likes_received_button_profile">Ver perfil</string>
+    <string name="likes_received_button_like_back">Dar like de vuelta</string>
+    <string name="likes_match_empty_title">Aún no tienes matches</string>
+    <string name="likes_match_empty_subtitle">Cuando alguien devuelva tu like, aparecerá aquí</string>
+    <string name="likes_match_button_chat">Abrir chat</string>
+    <string name="likes_match_label">¡Tienen un match!</string>
+
     <!-- ==================== PERFIL DETALLE ==================== -->
     <string name="profile_detail_title">Perfil</string>
     <string name="profile_detail_close">Cerrar</string>

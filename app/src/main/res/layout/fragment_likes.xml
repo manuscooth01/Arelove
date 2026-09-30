@@ -1,53 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Pantalla de Likes - placeholder con ícono, título y subtítulo.
+    Pantalla de Likes con 2 tabs: Likes recibidos y Matches.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="32dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/surface"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        app:tabIndicatorColor="@color/primary"
+        app:tabSelectedTextColor="@color/primary"
+        app:tabTextColor="@color/text_secondary"
+        app:tabTextAppearance="@style/Widget.Arelove.BottomNavigationView.Text" />
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_nav_likes"
-            android:contentDescription="@string/nav_likes"
-            android:tint="@color/primary" />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/likesPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="@string/nav_likes"
-            android:textAppearance="@style/Widget.Arelove.Title"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/tvSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/likes_empty"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
-
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -137,6 +137,41 @@ class SwipeFragment : Fragment() {
 
                 val likedUserIds = likesFilas.mapNotNull { (it["to_user"] as? JsonPrimitive)?.content }.toSet()
 
+                // SELECT from_user FROM likes WHERE to_user = currentUserId AND expires_at > now()
+                val likesRecibidosFilas = SupabaseClient.client.postgrest["likes"].select(
+                    columns = Columns.list("from_user")
+                ) {
+                    filter { eq("to_user", userId) }
+                    filter { gte("expires_at", Instant.now().toString()) }
+                }.decodeList<JsonObject>()
+
+                val likesRecibidosUserIds = likesRecibidosFilas.mapNotNull { (it["from_user"] as? JsonPrimitive)?.content }.toSet()
+
+                // SELECT user1, user2 FROM matches WHERE user1 = currentUserId OR user2 = currentUserId
+                val matchesFilas1 = SupabaseClient.client.postgrest["matches"].select(
+                    columns = Columns.list("user1", "user2")
+                ) {
+                    filter { eq("user1", userId) }
+                }.decodeList<JsonObject>()
+
+                val matchesFilas2 = SupabaseClient.client.postgrest["matches"].select(
+                    columns = Columns.list("user1", "user2")
+                ) {
+                    filter { eq("user2", userId) }
+                }.decodeList<JsonObject>()
+
+                val matchesUserIds = (matchesFilas1 + matchesFilas2)
+                    .mapNotNull { fila ->
+                        val u1 = (fila["user1"] as? JsonPrimitive)?.content.orEmpty()
+                        val u2 = (fila["user2"] as? JsonPrimitive)?.content.orEmpty()
+                        if (u1 == userId) u2 else if (u2 == userId) u1 else null
+                    }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+
+                // Combinar todos los IDs a excluir
+                val excludedUserIds = likedUserIds + likesRecibidosUserIds + matchesUserIds
+
                 // SELECT id, nickname, age, location, looking_for, bio, verified, height, zodiac, occupation
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
                 // ORDER BY verified DESC, created_at DESC LIMIT 30
@@ -156,7 +191,7 @@ class SwipeFragment : Fragment() {
                 profiles.clear()
                 profiles.addAll(
                     filas.mapNotNull { parseProfile(it) }
-                        .filter { perfil -> perfil.userId !in likedUserIds }
+                        .filter { perfil -> perfil.userId !in excludedUserIds }
                 )
 
                 if (profiles.isEmpty()) {

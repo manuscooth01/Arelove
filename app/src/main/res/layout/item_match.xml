@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Item de match para la lista de MatchesListFragment.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvMatch"
+        style="@style/Widget.Arelove.Card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Avatar -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@color/primary"
+                android:contentDescription="@string/nav_likes"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Arelove.Avatar" />
+
+            <!-- Badge "Match" -->
+            <TextView
+                android:id="@+id/tvMatchBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_match_badge"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/likes_match_label"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                app:layout_constraintStart_toEndOf="@id/ivAvatar"
+                app:layout_constraintTop_toTopOf="@id/ivAvatar" />
+
+            <!-- Nombre -->
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivAvatar"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="María, 25" />
+
+            <!-- Subtítulo "¡Tienen un match!" -->
+            <TextView
+                android:id="@+id/tvMatchLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/poppins_regular"
+                android:text="@string/likes_match_label"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivAvatar"
+                app:layout_constraintTop_toBottomOf="@id/tvName" />
+
+            <!-- Botón Abrir chat -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenChat"
+                style="@style/Widget.Arelove.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/likes_match_button_chat"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_nav_chats"
+                app:iconGravity="textStart"
+                app:iconPadding="6dp"
+                app:iconSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMatchLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
