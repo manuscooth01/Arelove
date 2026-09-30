@@ -56,8 +56,6 @@ class ChatActivity : AppCompatActivity() {
 
     private val messages = mutableListOf<MessageItem>()
     private lateinit var adapter: MessagesAdapter
-    private var realtimeChannel: Realtime? = null
-    private var realtimeSubscribed = false
     private var listeningJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,9 +79,7 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (!realtimeSubscribed) {
-            suscribirRealtime()
-        }
+        suscribirRealtime()
     }
 
     override fun onPause() {
