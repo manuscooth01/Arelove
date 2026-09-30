@@ -102,6 +102,19 @@
                     android:textSize="14sp"
                     android:alpha="0.85"
                     tools:text="Me gusta la música, viajar y comer rico" />
+
+                <TextView
+                    android:id="@+id/tvOptionalDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:alpha="0.7"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:visibility="gone"
+                    tools:text="168 cm · Virgo · Diseñador" />
             </LinearLayout>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>

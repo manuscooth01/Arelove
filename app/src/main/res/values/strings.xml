@@ -248,6 +248,16 @@
     <string name="likes_empty">Nadie te ha dado like todavía</string>
     <string name="no_more_profiles">No hay más personas cerca por ahora</string>
     <string name="coming_soon">Próximamente</string>
+
+    <!-- ==================== PERFIL DETALLE ==================== -->
+    <string name="profile_detail_title">Perfil</string>
+    <string name="profile_detail_close">Cerrar</string>
+    <string name="profile_detail_interests">Intereses</string>
+    <string name="profile_detail_optional">Información adicional</string>
+    <string name="profile_detail_height">Altura</string>
+    <string name="profile_detail_zodiac">Signo zodiacal</string>
+    <string name="profile_detail_occupation">Ocupación</string>
+    <string name="profile_detail_favorite_music">Música favorita</string>
     <string name="boost_title">Boost activado</string>
     <string name="boost_subtitle">Tu perfil será visible durante 20 minutos</string>
     <string name="btn_boost">Boost · 30 diamantes</string>

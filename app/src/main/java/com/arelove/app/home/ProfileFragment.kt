@@ -13,6 +13,7 @@ import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentProfileBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
+import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -59,7 +60,7 @@ class ProfileFragment : Fragment() {
                     return@launch
                 }
 
-                // Cargar nickname desde profiles
+                // Cargar nickname y foto desde profiles y media
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
                     columns = Columns.list("nickname")
                 ) {
@@ -73,10 +74,32 @@ class ProfileFragment : Fragment() {
                     val nickname = filas[0]["nickname"] as? JsonPrimitive
                     val nicknameStr = nickname?.content.orEmpty()
                     sinVista.tvName.text = nicknameStr
-                    // Mostrar inicial en el avatar
+                    // Mostrar inicial en el avatar (fallback)
                     if (nicknameStr.isNotEmpty()) {
                         sinVista.tvAvatarInitial.text = nicknameStr.first().uppercase()
                         sinVista.tvAvatarInitial.visibility = View.VISIBLE
+                    }
+                }
+
+                // Cargar foto de perfil desde media
+                val filasMedia = SupabaseClient.client.postgrest["media"].select(
+                    columns = Columns.list("url")
+                ) {
+                    filter { eq("user_id", userId) }
+                    filter { eq("type", "profile") }
+                    order("created_at", Order.ASCENDING)
+                    limit(1)
+                }.decodeList<kotlinx.serialization.json.JsonObject>()
+
+                if (filasMedia.isNotEmpty()) {
+                    val fotoUrl = filasMedia[0]["url"] as? JsonPrimitive
+                    val urlStr = fotoUrl?.content.orEmpty()
+                    if (urlStr.isNotEmpty()) {
+                        val sinVista2 = _binding ?: return@launch
+                        sinVista2.ivAvatar.load(urlStr) {
+                            crossfade(true)
+                        }
+                        sinVista2.tvAvatarInitial.visibility = View.GONE
                     }
                 }
             } catch (e: Exception) {

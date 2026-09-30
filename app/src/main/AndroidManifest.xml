@@ -49,6 +49,11 @@
             android:name=".HomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".home.ProfileDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Arelove" />
+
         <!-- Comparte la foto temporal con la app de cámara (paso 3) -->
         <provider
             android:name="androidx.core.content.FileProvider"

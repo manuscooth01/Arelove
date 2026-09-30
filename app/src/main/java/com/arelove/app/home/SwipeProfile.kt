@@ -10,5 +10,8 @@ data class SwipeProfile(
     val location: String?,
     val bio: String?,
     val verified: Boolean,
-    val fotos: List<String>
+    val fotos: List<String>,
+    val height: Int? = null,
+    val zodiac: String? = null,
+    val occupation: String? = null
 )

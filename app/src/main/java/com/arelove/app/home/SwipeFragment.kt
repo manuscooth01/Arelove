@@ -1,6 +1,7 @@
 package com.arelove.app.home
 
 import android.os.Bundle
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -86,6 +87,17 @@ class SwipeFragment : Fragment() {
         }
     }
 
+    private fun configurarClickCard() {
+        binding.cardProfile.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardProfile")) return@setOnClickListener
+            val perfil = profiles.getOrNull(currentIndex) ?: return@setOnClickListener
+            val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
+                putExtra("user_id", perfil.userId)
+            }
+            startActivity(intent)
+        }
+    }
+
     /** Carga la lista inicial de perfiles desde Supabase. */
     private fun cargarPerfiles() {
         val b = _binding ?: return
@@ -94,6 +106,7 @@ class SwipeFragment : Fragment() {
         b.progressBar.visibility = View.VISIBLE
         b.tvEmpty.visibility = View.GONE
         b.cardProfile.visibility = View.GONE
+        b.llActions.visibility = View.GONE
 
         lifecycleScope.launch {
             try {
@@ -105,11 +118,11 @@ class SwipeFragment : Fragment() {
                 }
                 currentUserId = userId
 
-                // SELECT id, nickname, age, location, looking_for, bio, verified
+                // SELECT id, nickname, age, location, looking_for, bio, verified, height, zodiac, occupation
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
                 // ORDER BY verified DESC, created_at DESC LIMIT 30
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "created_at")
+                    columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "created_at")
                 ) {
                     filter { neq("id", userId) }
                     filter { eq("profile_completed", true) }
@@ -126,9 +139,12 @@ class SwipeFragment : Fragment() {
 
                 if (profiles.isEmpty()) {
                     sinVista.tvEmpty.visibility = View.VISIBLE
+                    sinVista.llActions.visibility = View.GONE
                 } else {
                     currentIndex = 0
                     sinVista.cardProfile.visibility = View.VISIBLE
+                    sinVista.llActions.visibility = View.VISIBLE
+                    configurarClickCard()
                     mostrarPerfilActual()
                     precargarSiguiente()
                 }
@@ -155,6 +171,9 @@ class SwipeFragment : Fragment() {
         val location = textoDe(fila, "location")
         val bio = textoDe(fila, "bio")
         val verified = fila["verified"]?.let { (it as? JsonPrimitive)?.content == "true" } ?: false
+        val height = fila["height"]?.let { (it as? JsonPrimitive)?.content?.toIntOrNull() }
+        val zodiac = textoDe(fila, "zodiac")
+        val occupation = textoDe(fila, "occupation")
 
         return SwipeProfile(
             userId = userId,
@@ -163,7 +182,10 @@ class SwipeFragment : Fragment() {
             location = location,
             bio = bio,
             verified = verified,
-            fotos = emptyList()
+            fotos = emptyList(),
+            height = height,
+            zodiac = zodiac,
+            occupation = occupation
         )
     }
 
@@ -173,6 +195,7 @@ class SwipeFragment : Fragment() {
         if (currentIndex >= profiles.size) {
             b.tvEmpty.visibility = View.VISIBLE
             b.cardProfile.visibility = View.GONE
+            b.llActions.visibility = View.GONE
             return
         }
 
@@ -181,7 +204,21 @@ class SwipeFragment : Fragment() {
         b.tvLocation.text = perfil.location ?: ""
         b.tvBio.text = perfil.bio ?: ""
         b.ivVerified.visibility = if (perfil.verified) View.VISIBLE else View.GONE
+
+        // Mostrar detalles opcionales (altura, zodiaco, ocupación)
+        val optionalParts = mutableListOf<String>()
+        perfil.height?.let { optionalParts.add("${it} cm") }
+        perfil.zodiac?.let { optionalParts.add(it) }
+        perfil.occupation?.let { optionalParts.add(it) }
+        if (optionalParts.isNotEmpty()) {
+            b.tvOptionalDetails.text = optionalParts.joinToString(" · ")
+            b.tvOptionalDetails.visibility = View.VISIBLE
+        } else {
+            b.tvOptionalDetails.visibility = View.GONE
+        }
+
         b.cardProfile.visibility = View.VISIBLE
+        b.llActions.visibility = View.VISIBLE
 
         // Configurar ViewPager2 con las fotos
         if (perfil.fotos.isEmpty()) {
@@ -424,6 +461,7 @@ class SwipeFragment : Fragment() {
         if (currentIndex >= profiles.size) {
             b.tvEmpty.visibility = View.VISIBLE
             b.cardProfile.visibility = View.GONE
+            b.llActions.visibility = View.GONE
         } else {
             mostrarPerfilActual()
             precargarSiguiente()
