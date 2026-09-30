@@ -156,7 +156,7 @@
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="36dp"
-            app:iconTint="@color/white" />
+            app:iconTint="@android:color/white" />
     </LinearLayout>
 
     <!-- ProgressBar de carga -->
