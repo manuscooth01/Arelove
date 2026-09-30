@@ -69,8 +69,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gap="24dp">
+            android:orientation="vertical">
 
             <!-- Info principal: nombre, edad, verificado, ubicación -->
             <LinearLayout
@@ -78,7 +77,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:paddingTop="16dp">
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -121,6 +121,7 @@
                 android:id="@+id/tvBio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:maxLines="5"
@@ -133,7 +134,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gap="8dp"
                 android:visibility="gone">
 
                 <TextView
@@ -148,6 +148,7 @@
                     android:id="@+id/cgInterests"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:padding="8dp"
                     app:chipSpacing="8dp"
                     app:chipSpacingHorizontal="8dp"
@@ -161,12 +162,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gap="16dp"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:text="@string/profile_detail_optional"
                     android:textAppearance="@style/Widget.Arelove.Title"
@@ -177,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gap="12dp" />
+                    android:layout_marginTop="16dp" />
 
             </LinearLayout>
 
