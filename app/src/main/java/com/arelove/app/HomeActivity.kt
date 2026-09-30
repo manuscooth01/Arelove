@@ -59,7 +59,7 @@ class HomeActivity : AppCompatActivity() {
                     .countOrNull() ?: 0
 
                 runOnUiThread {
-                    val badge = binding.bottomNav.getOrCreateBadge(R.id.nav_likes)
+                    val badge = binding.bottomNav.getOrCreateBadge(R.id.likesFragment)
                     if (countResult > 0) {
                         badge.isVisible = true
                         badge.number = countResult
@@ -69,6 +69,8 @@ class HomeActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 // Silenciar error, solo no mostrar badge
-            }
+}
         }
     }
+}
+}
