@@ -5,10 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.PhotoUploadHelper
 import com.arelove.app.R
@@ -236,11 +237,44 @@ class SwipeFragment : Fragment() {
         val b = _binding ?: return
         val adapter = PhotoPagerAdapter(urls)
         b.photoPager.adapter = adapter
-        TabLayoutMediator(b.photoIndicator, b.photoPager) { tab, position ->
-            // Los tabs se configuran solos con el selector_photo_indicator
-        }.attach()
-        // Mostrar/ocultar indicador según número de fotos
-        b.photoIndicator.visibility = if (urls.size > 1) View.VISIBLE else View.GONE
+
+        // Configurar indicadores lineales
+        actualizarIndicadores(urls.size, 0)
+
+        // Listener de cambio de página
+        b.photoPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                actualizarIndicadores(urls.size, position)
+            }
+        })
+    }
+
+    /** Crea/actualiza los dots del indicador. */
+    private fun actualizarIndicadores(total: Int, actual: Int) {
+        val b = _binding ?: return
+        b.llIndicators.removeAllViews()
+
+        if (total <= 1) {
+            b.llIndicators.visibility = View.GONE
+            return
+        }
+        b.llIndicators.visibility = View.VISIBLE
+
+        val tamanoPx = (8 * resources.displayMetrics.density).toInt()
+        val margenPx = (4 * resources.displayMetrics.density).toInt()
+
+        repeat(total) { i ->
+            val dot = ImageView(requireContext())
+            val lp = LinearLayout.LayoutParams(tamanoPx, tamanoPx)
+            lp.marginStart = margenPx
+            lp.marginEnd = margenPx
+            dot.layoutParams = lp
+            dot.setImageResource(
+                if (i == actual) R.drawable.indicator_dot_active
+                else R.drawable.indicator_dot_inactive
+            )
+            b.llIndicators.addView(dot)
+        }
     }
 
     /** Precarga las fotos del siguiente perfil. */

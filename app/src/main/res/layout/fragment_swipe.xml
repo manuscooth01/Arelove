@@ -37,23 +37,14 @@
                 android:layout_height="match_parent" />
 
             <!-- Indicador de páginas arriba centrado -->
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/photoIndicator"
+            <LinearLayout
+                android:id="@+id/llIndicators"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal"
                 android:layout_marginTop="16dp"
-                android:background="@android:color/transparent"
-                app:tabBackground="@drawable/selector_photo_indicator"
-                app:tabGravity="center"
-                app:tabIndicatorColor="@android:color/transparent"
-                app:tabIndicatorHeight="0dp"
-                app:tabMaxWidth="20dp"
-                app:tabMinWidth="20dp"
-                app:tabMode="fixed"
-                app:tabPaddingEnd="0dp"
-                app:tabPaddingStart="0dp"
-                app:tabRippleColor="@android:color/transparent" />
+                android:orientation="horizontal"
+                android:background="@android:color/transparent" />
 
             <!-- Gradiente + info al pie -->
             <LinearLayout
