@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -31,6 +33,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import java.time.Instant
 
 /**
  * Fragment de Likes recibidos - muestra quienes te dieron like.
@@ -57,6 +60,7 @@ class LikesReceivedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configurarRecyclerView()
+        configurarSwipeRefresh()
         cargarLikes()
     }
 
@@ -76,6 +80,13 @@ class LikesReceivedFragment : Fragment() {
         adapter = LikesAdapter()
         binding.rvLikes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvLikes.adapter = adapter
+    }
+
+    private fun configurarSwipeRefresh() {
+        binding.srlLikes.setOnRefreshListener {
+            cargarLikes()
+        }
+        binding.srlLikes.setColorSchemeResources(R.color.primary)
     }
 
     private fun cargarLikes() {
@@ -119,7 +130,7 @@ class LikesReceivedFragment : Fragment() {
                 // Extraer IDs de usuarios que dieron like
                 val fromUserIds = filas.mapNotNull { (it["from_user"] as? JsonPrimitive)?.content }.distinct()
 
-                if (otrosUserIds.isEmpty()) {
+                if (fromUserIds.isEmpty()) {
                     sinVista.llEmpty.visibility = View.VISIBLE
                     sinVista.rvLikes.visibility = View.GONE
                     return@launch
@@ -188,7 +199,7 @@ class LikesReceivedFragment : Fragment() {
                         fromUserId = fromUserId,
                         nickname = nickname,
                         age = age,
-                        location = perfil.second?.let { "" } ?: "", // TODO: cargar location
+                        location = "",
                         fotoUrl = fotoUrl,
                         createdAt = createdAt,
                         expiresAt = expiresAt
@@ -209,6 +220,7 @@ class LikesReceivedFragment : Fragment() {
                 Log.e("LikesReceivedFragment", "Error cargando likes", e)
                 val sinVista = _binding ?: return@launch
                 sinVista.progressBar.visibility = View.GONE
+                sinVista.srlLikes.isRefreshing = false
                 mostrarError(
                     getString(
                         R.string.profile_error_save_detail,
@@ -235,6 +247,7 @@ class LikesReceivedFragment : Fragment() {
 
     private fun mostrarError(mensaje: String) {
         val contexto = context ?: return
+        _binding?.srlLikes?.isRefreshing = false
         _binding?.progressBar?.visibility = View.GONE
         AreloveDialog.show(
             contexto,
@@ -397,6 +410,7 @@ class LikesReceivedFragment : Fragment() {
                 put("user2", u2)
             })
 
+            // Crear chat asociado al match (si no existe)
             val chatExiste1 = SupabaseClient.client.postgrest["chats"].select(
                 columns = Columns.list("id")
             ) {
@@ -436,6 +450,80 @@ class LikesReceivedFragment : Fragment() {
         } catch (e: Exception) {
             Log.e("LikesReceivedFragment", "Error actualizando like mutuo", e)
         }
+    }
+
+    private fun formatearFecha(fechaIso: String?): String {
+        if (fechaIso?.isBlank() == true) return ""
+        try {
+            val formatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
+            val date = formatter.parse(fechaIso)
+            val now = java.util.Date()
+            val diffMs = now.time - date!!.time
+            val diffMins = diffMs / (1000 * 60)
+            val diffHours = diffMins / 60
+            val diffDays = diffHours / 24
+
+            return when {
+                diffMins < 1 -> "Ahora"
+                diffMins < 60 -> "${diffMins} min"
+                diffHours < 24 -> "${diffHours} h"
+                diffDays < 7 -> "${diffDays} d"
+                else -> {
+                    val outFormatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                    outFormatter.format(date!!)
+                }
+            }
+        } catch (e: Exception) {
+            return ""
+        }
+    }
+
+    /** Adaptador para la lista de likes recibidos. */
+    inner class LikesAdapter : RecyclerView.Adapter<LikesAdapter.ViewHolder>() {
+
+        inner class ViewHolder(val binding: ItemLikeBinding) : RecyclerView.ViewHolder(binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding = ItemLikeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ViewHolder(binding)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = likeItems[position]
+            val b = holder.binding
+
+            b.tvName.text = buildNameString(item.nickname, item.age)
+            b.tvLocation.text = item.location
+            b.tvTimestamp.text = formatearFecha(item.createdAt)
+
+            // Avatar
+            if (item.fotoUrl?.isNotBlank() == true) {
+                b.ivAvatar.load(item.fotoUrl!!) { crossfade(true) }
+            } else {
+                b.ivAvatar.setImageResource(R.color.primary)
+            }
+
+            // Click en Ver perfil
+            b.btnViewProfile.setOnClickListener {
+                if (AntiSpam.esDobleTap("view_profile_${item.fromUserId}")) return@setOnClickListener
+                val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
+                    putExtra("user_id", item.fromUserId)
+                }
+                startActivity(intent)
+            }
+
+            // Click en Dar like de vuelta
+            b.btnLikeBack.setOnClickListener {
+                if (AntiSpam.esDobleTap("like_back_${item.fromUserId}")) return@setOnClickListener
+                darLikeDeVuelta(item.fromUserId, item.likeId)
+            }
+        }
+
+        override fun getItemCount(): Int = likeItems.size
+    }
+
+    private fun buildNameString(nickname: String, age: Int?): String {
+        return "$nickname${age?.let { ", $it" } ?: ""}"
     }
 
     private fun formatearFecha(fechaIso: String?): String {
