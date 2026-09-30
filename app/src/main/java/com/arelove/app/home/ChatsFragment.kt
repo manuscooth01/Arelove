@@ -109,10 +109,10 @@ class ChatsFragment : Fragment() {
                     columns = Columns.list("id", "user1", "user2", "created_at")
                 ) {
                     filter {
-                        or {
-                            filter { eq("user1", currentUserId!!) }
-                            filter { eq("user2", currentUserId!!) }
-                        }
+                        or(
+                            { eq("user1", currentUserId!!) },
+                            { eq("user2", currentUserId!!) }
+                        )
                     }
                     order("created_at", Order.DESCENDING)
                 }.decodeList<JsonObject>()

@@ -3,6 +3,7 @@ package com.arelove.app.home
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -24,9 +25,9 @@ import coil.transform.RoundedCornersTransformation
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Filter
 import io.github.jan.supabase.postgrest.query.Order
-import io.github.jan.supabase.realtime.Realtime
-import io.github.jan.supabase.realtime.SubscribeStatus
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -241,61 +242,60 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun suscribirRealtime() {
-        if (realtimeSubscribed) return
+        // TODO: Implementar realtime cuando se verifique la API correcta
+        // Por ahora, usar polling simple cada 5 segundos
+        listeningJob = lifecycleScope.launch {
+            while (isActive) {
+                delay(5000)
+                if (!isActive) break
+                cargarMensajesNuevos()
+            }
+        }
+    }
 
-        try {
-            val channel = SupabaseClient.client.realtime.createChannel("chat-$chatId")
+    private fun cargarMensajesNuevos() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val ultimaFecha = messages.lastOrNull()?.createdAt ?: ""
+                if (ultimaFecha.isBlank()) return@launch
 
-            channel
-                .onPostgresChanges { payload ->
-                    if (payload.table == "messages" && payload.eventType == "INSERT") {
-                        val record = payload.newRecord
-                        val sender = record["sender"] as? String ?: ""
-                        val content = record["content"] as? String ?: ""
-                        val type = record["type"] as? String ?: "text"
-                        val seen = record["seen"] as? Boolean ?: false
-                        val createdAt = record["created_at"] as? String ?: ""
-                        val messageId = record["id"] as? String ?: ""
+                val filas = SupabaseClient.client.postgrest["messages"].select(
+                    columns = Columns.list("id", "chat_id", "sender", "content", "type", "seen", "created_at")
+                ) {
+                    filter { eq("chat_id", chatId) }
+                    filter { Filter.gt("created_at", ultimaFecha) }
+                    order("created_at", Order.ASCENDING)
+                }.decodeList<JsonObject>()
 
-                        if (!content.isBlank()) {
-                            val msg = MessageItem(
-                                id = messageId,
-                                chatId = chatId,
-                                sender = sender,
-                                content = content,
-                                type = type,
-                                seen = seen,
-                                createdAt = createdAt
-                            )
+                val nuevosMensajes = filas.map { fila ->
+                    MessageItem(
+                        id = (fila["id"] as? JsonPrimitive)?.content.orEmpty(),
+                        chatId = (fila["chat_id"] as? JsonPrimitive)?.content.orEmpty(),
+                        sender = (fila["sender"] as? JsonPrimitive)?.content.orEmpty(),
+                        content = (fila["content"] as? JsonPrimitive)?.content.orEmpty(),
+                        type = (fila["type"] as? JsonPrimitive)?.content.orEmpty(),
+                        seen = (fila["seen"] as? JsonPrimitive)?.content == "true",
+                        createdAt = (fila["created_at"] as? JsonPrimitive)?.content.orEmpty()
+                    )
+                }.filterNot { msg -> messages.any { it.id == msg.id } }
 
-                            runOnUiThread {
-                                // Evitar duplicados con el temporal
-                                if (!messages.any { it.id == messageId || (it.content == content && it.sender == sender) }) {
-                                    messages.add(msg)
-                                    adapter.notifyItemInserted(messages.size - 1)
-                                    binding.rvMessages.scrollToPosition(messages.size - 1)
-                                }
-                            }
-                        }
+                if (nuevosMensajes.isNotEmpty()) {
+                    runOnUiThread {
+                        val startPos = messages.size
+                        messages.addAll(nuevosMensajes)
+                        adapter.notifyItemRangeInserted(startPos, nuevosMensajes.size)
+                        binding.rvMessages.scrollToPosition(messages.size - 1)
                     }
                 }
-                .subscribe { status ->
-                    realtimeSubscribed = (status == SubscribeStatus.SUBSCRIBED)
-                }
-        } catch (e: Exception) {
-            Log.e("ChatActivity", "Error suscribiendo realtime", e)
+            } catch (e: Exception) {
+                Log.e("ChatActivity", "Error polling mensajes", e)
+            }
         }
     }
 
     private fun cancelarRealtime() {
-        if (realtimeSubscribed) {
-            try {
-                SupabaseClient.client.realtime.removeChannel("chat-$chatId")
-                realtimeSubscribed = false
-            } catch (e: Exception) {
-                Log.e("ChatActivity", "Error cancelando realtime", e)
-            }
-        }
+        listeningJob?.cancel()
+        listeningJob = null
     }
 
     override fun onDestroy() {

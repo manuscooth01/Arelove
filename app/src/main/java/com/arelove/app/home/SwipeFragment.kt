@@ -23,6 +23,7 @@ import coil.transform.RoundedCornersTransformation
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Filter
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -440,15 +441,10 @@ class SwipeFragment : Fragment() {
                 columns = Columns.list("id")
             ) {
                 filter {
-                    // Verificar en ambos órdenes
-                    or {
-                        filter { eq("user1", u1) }
-                        filter { eq("user2", u2) }
-                    }
-                    or {
-                        filter { eq("user1", u2) }
-                        filter { eq("user2", u1) }
-                    }
+                    or(
+                        { eq("user1", u1); eq("user2", u2) },
+                        { eq("user1", u2); eq("user2", u1) }
+                    )
                 }
                 limit(1)
             }.decodeList<JsonObject>()
