@@ -78,11 +78,21 @@ class SwipeFragment : Fragment() {
     private fun configurarBotones() {
         binding.btnLike.setOnClickListener {
             if (AntiSpam.esDobleTap("btnLike")) return@setOnClickListener
+            // Pulse animation on like button
+            binding.btnLike.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100)
+                .withEndAction {
+                    binding.btnLike.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                }.start()
             darLike()
         }
 
         binding.btnDislike.setOnClickListener {
             if (AntiSpam.esDobleTap("btnDislike")) return@setOnClickListener
+            // Pulse animation on dislike button
+            binding.btnDislike.animate().scaleX(1.15f).scaleY(1.15f).setDuration(100)
+                .withEndAction {
+                    binding.btnDislike.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                }.start()
             pasarPerfil()
         }
     }
@@ -118,6 +128,15 @@ class SwipeFragment : Fragment() {
                 }
                 currentUserId = userId
 
+                // SELECT to_user FROM likes WHERE from_user = currentUserId
+                val likesFilas = SupabaseClient.client.postgrest["likes"].select(
+                    columns = Columns.list("to_user")
+                ) {
+                    filter { eq("from_user", userId) }
+                }.decodeList<JsonObject>()
+
+                val likedUserIds = likesFilas.mapNotNull { (it["to_user"] as? JsonPrimitive)?.content }.toSet()
+
                 // SELECT id, nickname, age, location, looking_for, bio, verified, height, zodiac, occupation
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
                 // ORDER BY verified DESC, created_at DESC LIMIT 30
@@ -135,7 +154,10 @@ class SwipeFragment : Fragment() {
                 sinVista.progressBar.visibility = View.GONE
 
                 profiles.clear()
-                profiles.addAll(filas.mapNotNull { parseProfile(it) })
+                profiles.addAll(
+                    filas.mapNotNull { parseProfile(it) }
+                        .filter { perfil -> perfil.userId !in likedUserIds }
+                )
 
                 if (profiles.isEmpty()) {
                     sinVista.tvEmpty.visibility = View.VISIBLE
@@ -217,7 +239,18 @@ class SwipeFragment : Fragment() {
             b.tvOptionalDetails.visibility = View.GONE
         }
 
+        // Animación de entrada de la card (fade + scale)
+        b.cardProfile.alpha = 0f
+        b.cardProfile.scaleX = 0.95f
+        b.cardProfile.scaleY = 0.95f
         b.cardProfile.visibility = View.VISIBLE
+        b.cardProfile.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(250)
+            .start()
+
         b.llActions.visibility = View.VISIBLE
 
         // Configurar ViewPager2 con las fotos
@@ -389,13 +422,18 @@ class SwipeFragment : Fragment() {
                 val sinVista = _binding ?: return@launch
                 sinVista.btnLike.isEnabled = true
                 sinVista.btnDislike.isEnabled = true
-                mostrarError(
-                    getString(
-                        R.string.profile_error_save_detail,
-                        getString(R.string.error_generic),
-                        ErrorSanitizer.limpiar(e.message ?: e.toString())
+                // Si es error de duplicado, no mostrar error, solo pasar al siguiente
+                if (e.message?.contains("duplicate") == true || e.message?.contains("unique constraint") == true) {
+                    pasarPerfil()
+                } else {
+                    mostrarError(
+                        getString(
+                            R.string.profile_error_save_detail,
+                            getString(R.string.error_generic),
+                            ErrorSanitizer.limpiar(e.message ?: e.toString())
+                        )
                     )
-                )
+                }
             }
         }
     }

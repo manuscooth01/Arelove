@@ -320,6 +320,15 @@ class ChatActivity : AppCompatActivity() {
 
             contentView.text = msg.content
             timeView.text = formatearHora(msg.createdAt)
+
+            // Animación fade + slide para mensajes nuevos
+            holder.itemView.alpha = 0f
+            holder.itemView.translationY = 30f
+            holder.itemView.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(200)
+                .start()
         }
 
         override fun getItemCount(): Int = messages.size
