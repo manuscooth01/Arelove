@@ -62,15 +62,14 @@ class HomeActivity : AppCompatActivity() {
                     val badge = binding.bottomNav.getOrCreateBadge(R.id.likesFragment)
                     if (countResult > 0) {
                         badge.isVisible = true
-                        badge.number = countResult
+                        badge.number = countResult.toInt()
                     } else {
                         badge.isVisible = false
                     }
                 }
             } catch (e: Exception) {
                 // Silenciar error, solo no mostrar badge
-}
+            }
         }
     }
-}
 }

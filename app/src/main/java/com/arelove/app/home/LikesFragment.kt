@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.arelove.app.R
 import com.arelove.app.databinding.FragmentLikesBinding
@@ -60,7 +61,7 @@ class LikesFragment : Fragment() {
     private class LikesPagerAdapter(
         fragmentManager: androidx.fragment.app.FragmentManager,
         lifecycle: androidx.lifecycle.Lifecycle
-    ) : androidx.fragment.app.FragmentStateAdapter(fragmentManager, lifecycle) {
+    ) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
         override fun getItemCount(): Int = 2
 
