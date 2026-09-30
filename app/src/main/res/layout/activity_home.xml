@@ -9,7 +9,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/bg_canvas_gradient">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
@@ -26,8 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/bg_bottom_nav"
+        android:elevation="12dp"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/bottom_nav_item_color"

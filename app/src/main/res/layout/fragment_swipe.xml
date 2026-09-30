@@ -8,7 +8,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_canvas_gradient">
 
     <!-- Card principal -->
     <com.google.android.material.card.MaterialCardView
@@ -21,6 +22,7 @@
         app:cardCornerRadius="28dp"
         app:cardElevation="0dp"
         app:rippleColor="@color/primary"
+        android:background="@drawable/bg_card_rim"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -170,7 +172,7 @@
             android:background="@drawable/bg_like_button_gradient"
             app:backgroundTint="@null"
             app:cornerRadius="40dp"
-            app:elevation="6dp"
+            app:elevation="8dp"
             app:icon="@drawable/ic_like"
             app:iconGravity="textStart"
             app:iconPadding="0dp"

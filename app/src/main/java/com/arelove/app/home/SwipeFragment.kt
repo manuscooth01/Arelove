@@ -3,6 +3,7 @@ package com.arelove.app.home
 import android.os.Bundle
 import android.content.Intent
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -83,6 +84,7 @@ class SwipeFragment : Fragment() {
                 .withEndAction {
                     binding.btnLike.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
                 }.start()
+            it.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
             darLike()
         }
 
@@ -93,6 +95,7 @@ class SwipeFragment : Fragment() {
                 .withEndAction {
                     binding.btnDislike.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
                 }.start()
+            it.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
             pasarPerfil()
         }
     }

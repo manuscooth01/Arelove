@@ -58,4 +58,30 @@
     <color name="dialog_success">#66BB6A</color>
     <color name="dialog_info">#42A5F5</color>
 
+    <!-- ==================== BLOQUE 1 - NOCTURNAL PASSION (NUEVOS TOKENS MODO OSCURO) ==================== -->
+    <!-- Surface containers (valores del Design System Nocturnal Passion) -->
+    <color name="surface_dim">#151315</color>
+    <color name="surface_bright">#3b383b</color>
+    <color name="surface_container_lowest">#0f0e10</color>
+    <color name="surface_container_low">#1d1b1d</color>
+    <color name="surface_container">#211f21</color>
+    <color name="surface_container_high">#2c292b</color>
+    <color name="surface_container_highest">#373436</color>
+
+    <!-- Colores de acento extendidos -->
+    <color name="secondary_coral">#FF5252</color>
+    <color name="tertiary_blush">#FFA4A2</color>
+
+    <!-- Bordes y outlines cálidos -->
+    <color name="outline_warm">#584146</color>
+
+    <!-- Crimson rim border (15% opacity) - ARGB -->
+    <color name="crimson_rim">#26E53935</color>
+
+    <!-- Like glow (35% opacity) - ARGB -->
+    <color name="like_glow">#59E53935</color>
+
+    <!-- Canvas gradient center -->
+    <color name="canvas_gradient_center">#4A0E17</color>
+
 </resources>

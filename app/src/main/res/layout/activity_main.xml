@@ -9,7 +9,8 @@
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
     android:paddingTop="32dp"
-    android:paddingBottom="32dp">
+    android:paddingBottom="32dp"
+    android:background="@drawable/bg_canvas_gradient">
 
     <Space
         android:layout_width="match_parent"

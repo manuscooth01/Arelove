@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Selector de color de borde para TextInputLayout: primary en focused, outline en default. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/primary" android:state_focused="true" />
+    <item android:color="@color/outline" />
+</selector>
