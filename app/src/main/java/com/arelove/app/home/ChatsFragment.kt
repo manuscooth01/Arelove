@@ -24,7 +24,7 @@ import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Filter
+import io.github.jan.supabase.postgrest.query.gt
 import io.github.jan.supabase.postgrest.query.or
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers

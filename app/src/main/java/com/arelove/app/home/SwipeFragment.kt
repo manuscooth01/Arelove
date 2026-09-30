@@ -23,7 +23,7 @@ import coil.transform.RoundedCornersTransformation
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Filter
+import io.github.jan.supabase.postgrest.query.gt
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
