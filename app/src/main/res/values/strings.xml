@@ -330,7 +330,6 @@
     <!-- ==================== LIKES Y VISITAS ==================== -->
     <string name="likes_visits_title">Quien te gustó</string>
     <string name="likes_visits_subtitle">Personas que te dieron like o visitaron tu perfil</string>
-    <string name="likes_empty">Nadie te ha dado like todavía</string>
     <string name="visits_empty">Todavía no tienes visitas</string>
     <string name="new_visit">Nueva visita</string>
 
