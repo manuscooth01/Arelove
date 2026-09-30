@@ -425,7 +425,7 @@ class SwipeFragment : Fragment() {
         return false
     }
 
-    /** Crea la fila en matches. */
+    /** Crea la fila en matches y en chats. */
     private suspend fun crearMatch(user1: String, user2: String) {
         try {
             val u1 = if (user1.compareTo(user2) < 0) user1 else user2
@@ -434,8 +434,33 @@ class SwipeFragment : Fragment() {
                 put("user1", u1)
                 put("user2", u2)
             })
+
+            // Crear chat asociado al match (si no existe)
+            val chatExiste = SupabaseClient.client.postgrest["chats"].select(
+                columns = Columns.list("id")
+            ) {
+                filter {
+                    // Verificar en ambos órdenes
+                    or {
+                        filter { eq("user1", u1) }
+                        filter { eq("user2", u2) }
+                    }
+                    or {
+                        filter { eq("user1", u2) }
+                        filter { eq("user2", u1) }
+                    }
+                }
+                limit(1)
+            }.decodeList<JsonObject>()
+
+            if (chatExiste.isEmpty()) {
+                SupabaseClient.client.postgrest["chats"].insert<JsonObject>(buildJsonObject {
+                    put("user1", u1)
+                    put("user2", u2)
+                })
+            }
         } catch (e: Exception) {
-            Log.e("SwipeFragment", "Error creando match", e)
+            Log.e("SwipeFragment", "Error creando match o chat", e)
         }
     }
 

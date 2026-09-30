@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Item de mensaje para ChatActivity.
+    Dos variantes: mensaje propio (derecha) y del otro (izquierda).
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:layout_height="wrap_content"
+    android:paddingEnd="16dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <!-- Mensaje del OTRO (izquierda) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvMessageOther"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:maxWidth="280dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/surface_variant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvMessageOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:maxLines="5"
+            tools:text="Hola, ¿qué tal? ¿Cómo va todo?" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Timestamp mensaje del otro -->
+    <TextView
+        android:id="@+id/tvTimeOther"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/poppins_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="10sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/cvMessageOther"
+        app:layout_constraintTop_toBottomOf="@id/cvMessageOther" />
+
+    <!-- Mensaje PROPIO (derecha) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvMessageOwn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:maxWidth="280dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvMessageOwn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:maxLines="5"
+            tools:text="Hola, todo bien por aquí" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Timestamp mensaje propio -->
+    <TextView
+        android:id="@+id/tvTimeOwn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/poppins_regular"
+        android:textColor="@color/on_primary"
+        android:textSize="10sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/cvMessageOwn"
+        app:layout_constraintTop_toBottomOf="@id/cvMessageOwn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

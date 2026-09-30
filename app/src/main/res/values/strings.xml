@@ -258,6 +258,14 @@
     <string name="profile_detail_zodiac">Signo zodiacal</string>
     <string name="profile_detail_occupation">Ocupación</string>
     <string name="profile_detail_favorite_music">Música favorita</string>
+
+    <!-- ==================== CHATS ==================== -->
+    <string name="chats_empty_title">No tienes chats todavía</string>
+    <string name="chats_empty_subtitle">Cuando hagas match con alguien, aparecerá aquí</string>
+    <string name="chat_input_hint">Escribe un mensaje...</string>
+    <string name="chat_send">Enviar</string>
+    <string name="chat_back">Atrás</string>
+    <string name="chat_me">Yo</string>
     <string name="boost_title">Boost activado</string>
     <string name="boost_subtitle">Tu perfil será visible durante 20 minutos</string>
     <string name="btn_boost">Boost · 30 diamantes</string>

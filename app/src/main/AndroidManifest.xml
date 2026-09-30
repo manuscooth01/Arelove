@@ -54,6 +54,12 @@
             android:exported="false"
             android:theme="@style/Theme.Arelove" />
 
+        <activity
+            android:name=".home.ChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Arelove"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Comparte la foto temporal con la app de cámara (paso 3) -->
         <provider
             android:name="androidx.core.content.FileProvider"
