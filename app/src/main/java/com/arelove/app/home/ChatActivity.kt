@@ -202,7 +202,6 @@ class ChatActivity : AppCompatActivity() {
         val texto = binding.etMessage.text.toString().trim()
         if (texto.isBlank()) return
 
-        binding.progressBar.visibility = View.VISIBLE
         binding.btnSend.isEnabled = false
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -217,7 +216,6 @@ class ChatActivity : AppCompatActivity() {
                 // Forzar recarga inmediata en lugar de optimistic UI
                 runOnUiThread {
                     binding.etMessage.setText("")
-                    binding.progressBar.visibility = View.GONE
                     binding.btnSend.isEnabled = true
                 }
 
@@ -227,7 +225,6 @@ class ChatActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error enviando mensaje", e)
                 runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
                     binding.btnSend.isEnabled = true
                     AreloveDialog.show(
                         this@ChatActivity,
