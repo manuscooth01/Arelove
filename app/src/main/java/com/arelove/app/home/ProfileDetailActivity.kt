@@ -171,14 +171,14 @@ class ProfileDetailActivity : AppCompatActivity() {
 
         val tvLabel = TextView(this).apply {
             text = label
-            textColor = getColor(R.color.text_secondary)
+            setTextColor(getColor(R.color.text_secondary))
             textSize = 14f
             setPadding(0, 0, 16, 0)
         }
 
         val tvValor = TextView(this).apply {
             text = valor
-            textColor = getColor(R.color.text_primary)
+            setTextColor(getColor(R.color.text_primary))
             textSize = 14f
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         }
