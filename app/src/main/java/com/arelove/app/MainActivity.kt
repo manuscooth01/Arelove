@@ -3,6 +3,7 @@ package com.arelove.app
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityMainBinding
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Pantalla de bienvenida de Arelove.
- * Muestra el logo y los accesos a iniciar sesión / registrarse.
+ * Muestra splash mientras verifica sesión; si hay sesión navega a Home/ProfileSetup,
+ * si no hay sesión muestra botones Login/Register.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -24,23 +26,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Los listeners no dependen de la sesión: se instalan ya para que los
-        // botones respondan desde el primer frame (antes de cualquier red)
-        configurarBotones()
-
         // Precarga el cliente Supabase fuera del hilo principal
         lifecycleScope.launch(Dispatchers.IO) {
             SupabaseClient.client // fuerza la inicialización lazy
         }
 
+        // Verifica sesión inmediatamente (antes de mostrar botones)
         lifecycleScope.launch {
             try {
                 // Espera a que GoTrue termine de cargar la sesión guardada en disco
                 SupabaseClient.client.auth.awaitInitialization()
             } catch (e: Exception) {
                 Log.e("MainActivity", "awaitInitialization falló", e)
-                // Si falla la inicialización, mostramos la pantalla de bienvenida
-                // El usuario podrá hacer login manualmente
+                // Si falla la inicialización, mostramos los botones
+                mostrarContenido()
                 return@launch
             }
 
@@ -58,15 +57,23 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Error comprobando perfil", e)
-                    // Si falla la comprobación, vamos a Home para que el usuario
-                    // decida; ProfileChecker ya loguea internamente
+                    // Si falla la comprobación, vamos a Home
                     startActivity(Intent(this@MainActivity, HomeActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                     })
                     finish()
                 }
+            } else {
+                // Sin sesión: mostrar botones
+                mostrarContenido()
             }
         }
+    }
+
+    private fun mostrarContenido() {
+        binding.splashLayout.visibility = View.GONE
+        binding.contentLayout.visibility = View.VISIBLE
+        configurarBotones()
     }
 
     private fun configurarBotones() {
