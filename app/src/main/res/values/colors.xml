@@ -64,6 +64,11 @@
     <color name="bottom_nav_active">#E53935</color>
     <color name="bottom_nav_inactive">#857372</color>
 
+    <!-- ==================== FASE 1 REDISEÑO SWIPE ==================== -->
+    <color name="like_button_start">#FF544C</color>
+    <color name="like_button_end">#E53935</color>
+    <color name="dislike_button_bg">#E0E0E0</color>
+
     <!-- ==================== DIÁLOGOS ==================== -->
     <color name="dialog_error">#E53935</color>
     <color name="dialog_warning">#F57C00</color>

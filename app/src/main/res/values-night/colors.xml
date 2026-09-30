@@ -47,6 +47,11 @@
     <color name="photo_placeholder">#2A2A2A</color>
     <color name="photo_blur_overlay">#99000000</color>
 
+    <!-- ==================== FASE 1 REDISEÑO SWIPE ==================== -->
+    <color name="like_button_start">#FF544C</color>
+    <color name="like_button_end">#E53935</color>
+    <color name="dislike_button_bg">#2C2C2C</color>
+
     <!-- ==================== DIÁLOGOS (MODO OSCURO: tonos más suaves) ==================== -->
     <color name="dialog_error">#EF5350</color>
     <color name="dialog_warning">#FFA726</color>

@@ -18,7 +18,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:cardCornerRadius="24dp"
+        app:cardCornerRadius="28dp"
         app:cardElevation="0dp"
         app:rippleColor="@color/primary"
         app:layout_constraintTop_toTopOf="parent"
@@ -36,6 +36,14 @@
                 android:id="@+id/photoPager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <!-- Scrim superior: legibilidad de las barras de fotos sobre la imagen -->
+            <View
+                android:id="@+id/vTopScrim"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_gravity="top"
+                android:background="@drawable/bg_profile_gradient_top" />
 
             <!-- Indicador de páginas arriba centrado -->
             <LinearLayout
@@ -69,7 +77,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_semibold"
                         android:textColor="@android:color/white"
-                        android:textSize="22sp"
+                        android:textSize="26sp"
                         tools:text="María, 25" />
 
                     <ImageView
@@ -97,7 +105,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:maxLines="3"
+                    android:maxLines="2"
                     android:ellipsize="end"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
@@ -125,8 +133,8 @@
         android:id="@+id/llActions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="24dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/cardProfile"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -136,21 +144,21 @@
         <!-- Botón dislike -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDislike"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="28dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            app:backgroundTint="@color/surface_variant"
             app:cornerRadius="40dp"
-            app:elevation="4dp"
+            app:elevation="2dp"
             app:icon="@drawable/ic_dislike"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="36dp"
-            app:iconTint="@color/primary"
-            app:strokeColor="@color/primary"
-            app:strokeWidth="2dp" />
+            app:iconTint="@color/on_surface_variant"
+            app:strokeWidth="0dp" />
 
         <!-- Botón like -->
         <com.google.android.material.button.MaterialButton
@@ -159,14 +167,16 @@
             android:layout_height="80dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            app:backgroundTint="@color/primary"
+            android:background="@drawable/bg_like_button_gradient"
+            app:backgroundTint="@null"
             app:cornerRadius="40dp"
-            app:elevation="4dp"
+            app:elevation="6dp"
             app:icon="@drawable/ic_like"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:iconSize="40dp"
-            app:iconTint="@android:color/white" />
+            app:iconSize="36dp"
+            app:iconTint="@android:color/white"
+            app:strokeWidth="0dp" />
     </LinearLayout>
 
     <!-- ProgressBar de carga -->
