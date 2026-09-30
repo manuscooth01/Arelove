@@ -260,6 +260,7 @@
     <string name="likes_match_empty_subtitle">Cuando alguien devuelva tu like, aparecerá aquí</string>
     <string name="likes_match_button_chat">Abrir chat</string>
     <string name="likes_match_label">¡Tienen un match!</string>
+    <string name="chat_error_not_found">No se encontró el chat</string>
 
     <!-- ==================== PERFIL DETALLE ==================== -->
     <string name="profile_detail_title">Perfil</string>

@@ -6,20 +6,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.arelove.app.ErrorSanitizer
+import com.arelove.app.PhotoUploadHelper
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentLikesReceivedBinding
 import com.arelove.app.databinding.ItemLikeBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
-import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -27,26 +24,28 @@ import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.time.Instant
+import java.util.*
 
 /**
- * Fragment de Likes recibidos - muestra quienes te dieron like.
+ * Fragment que muestra los likes recibidos (usuarios que me dieron like y no han expirado).
  */
 class LikesReceivedFragment : Fragment() {
 
     private var _binding: FragmentLikesReceivedBinding? = null
     private val binding get() = _binding!!
 
-    private val likeItems = mutableListOf<LikeItem>()
-    private lateinit var adapter: LikesAdapter
-    private var loading = false
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: LikesReceivedAdapter
+
     private var currentUserId: String? = null
+    private val likesList = mutableListOf<LikeItem>()
+    private val profilesCache = hashMapOf<String, Profile>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,16 +58,14 @@ class LikesReceivedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configurarRecyclerView()
-        configurarSwipeRefresh()
-        cargarLikes()
-    }
+        recyclerView = binding.likesRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = LikesReceivedAdapter()
+        recyclerView.adapter = adapter
 
-    override fun onResume() {
-        super.onResume()
-        if (!loading) {
-            cargarLikes()
-        }
+        // Mostrar estado vacío inicial mientras cargamos
+        showEmptyState(true)
+        cargarLikesRecibidos()
     }
 
     override fun onDestroyView() {
@@ -76,26 +73,17 @@ class LikesReceivedFragment : Fragment() {
         _binding = null
     }
 
-    private fun configurarRecyclerView() {
-        adapter = LikesAdapter()
-        binding.rvLikes.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvLikes.adapter = adapter
+    /** Muestra el estado vacío o la lista según corresponda. */
+    private fun showEmptyState(show: Boolean) {
+        binding.emptyStateLayout.visibility = if (show) View.VISIBLE else View.GONE
+        binding.likesRecyclerView.visibility = if (show) View.GONE else View.VISIBLE
     }
 
-    private fun configurarSwipeRefresh() {
-        binding.srlLikes.setOnRefreshListener {
-            cargarLikes()
-        }
-        binding.srlLikes.setColorSchemeResources(R.color.primary)
-    }
-
-    private fun cargarLikes() {
+    /** Carga los likes recibidos desde Supabase. */
+    private fun cargarLikesRecibidos() {
         val b = _binding ?: return
-        if (loading) return
-        loading = true
         b.progressBar.visibility = View.VISIBLE
-        b.llEmpty.visibility = View.GONE
-        b.rvLikes.visibility = View.GONE
+        showEmptyState(false)
 
         lifecycleScope.launch {
             try {
@@ -107,10 +95,8 @@ class LikesReceivedFragment : Fragment() {
                 }
                 currentUserId = userId
 
-                // SELECT id, from_user, created_at, expires_at FROM likes
-                // WHERE to_user = currentUserId AND expires_at > now()
-                // ORDER BY created_at DESC
-                val filas = SupabaseClient.client.postgrest["likes"].select(
+                // Obtener likes recibidos no expirados
+                val likesFilas = SupabaseClient.client.postgrest["likes"].select(
                     columns = Columns.list("id", "from_user", "created_at", "expires_at")
                 ) {
                     filter { eq("to_user", userId) }
@@ -118,109 +104,38 @@ class LikesReceivedFragment : Fragment() {
                     order("created_at", Order.DESCENDING)
                 }.decodeList<JsonObject>()
 
-                val sinVista = _binding ?: return@launch
-                sinVista.progressBar.visibility = View.GONE
+                // Extraer los IDs de usuarios que nos dieron like
+                val fromUserIds = likesFilas.mapNotNull {
+                    (it["from_user"] as? JsonPrimitive)?.content
+                }.toSet()
 
-                if (filas.isEmpty()) {
-                    sinVista.llEmpty.visibility = View.VISIBLE
-                    sinVista.rvLikes.visibility = View.GONE
-                    return@launch
-                }
+                likesList.clear()
+                likesFilas.forEach { fila ->
+                    val likeId = (fila["id"] as? JsonPrimitive)?.content ?: return@forEach
+                    val fromUserId = (fila["from_user"] as? JsonPrimitive)?.content ?: return@forEach
+                    val createdAt = (fila["created_at"] as? JsonPrimitive)?.content ?: return@forEach
+                    val expiresAt = (fila["expires_at"] as? JsonPrimitive)?.content ?: return@forEach
 
-                // Extraer IDs de usuarios que dieron like
-                val fromUserIds = filas.mapNotNull { (it["from_user"] as? JsonPrimitive)?.content }.distinct()
-
-                if (fromUserIds.isEmpty()) {
-                    sinVista.llEmpty.visibility = View.VISIBLE
-                    sinVista.rvLikes.visibility = View.GONE
-                    return@launch
-                }
-
-                // Cargar perfiles de los usuarios que dieron like
-                val perfiles = mutableMapOf<String, Pair<String?, String?>>()
-                val perfilesJobs = mutableListOf<kotlinx.coroutines.Job>()
-
-                for (otroId in fromUserIds) {
-                    val job = lifecycleScope.launch(Dispatchers.IO) {
-                        try {
-                            val filasPerfil = SupabaseClient.client.postgrest["profiles"].select(
-                                columns = Columns.list("nickname", "age", "location")
-                            ) {
-                                filter { eq("id", otroId) }
-                                limit(1)
-                            }.decodeList<JsonObject>()
-
-                            val fotoMedia = SupabaseClient.client.postgrest["media"].select(
-                                columns = Columns.list("url")
-                            ) {
-                                filter { eq("user_id", otroId) }
-                                filter { eq("type", "profile") }
-                                order("created_at", Order.ASCENDING)
-                                limit(1)
-                            }.decodeList<JsonObject>()
-
-                            val nickname = filasPerfil.firstOrNull()?.let { (it["nickname"] as? JsonPrimitive)?.content.orEmpty() } ?: "Usuario"
-                            val age = filasPerfil.firstOrNull()?.let { (it["age"] as? JsonPrimitive)?.content?.toIntOrNull() }
-                            val location = (filasPerfil.firstOrNull()?["location"] as? JsonPrimitive)?.content.orEmpty()
-                            val fotoUrl = fotoMedia.firstOrNull()?.let { (it["url"] as? JsonPrimitive)?.content.orEmpty() }
-
-                            withContext(Dispatchers.Main) {
-                                perfiles[otroId] = nickname to fotoUrl
-                            }
-                        } catch (e: Exception) {
-                            Log.e("LikesReceivedFragment", "Error cargando perfil $otroId", e)
-                        }
-                    }
-                    perfilesJobs.add(job)
-                }
-
-                // Esperar a que terminen todas las cargas de perfiles
-                perfilesJobs.forEach { it.join() }
-
-                val sinVista = _binding ?: return@launch
-
-                // Construir items para el adapter
-                val itemsTemp = mutableListOf<LikeItem>()
-                for (fila in filas) {
-                    val likeId = (fila["id"] as? JsonPrimitive)?.content.orEmpty()
-                    val fromUserId = (fila["from_user"] as? JsonPrimitive)?.content.orEmpty()
-                    val createdAt = (fila["created_at"] as? JsonPrimitive)?.content.orEmpty()
-                    val expiresAt = (fila["expires_at"] as? JsonPrimitive)?.content.orEmpty()
-
-                    val perfil = perfiles[fromUserId] ?: "Usuario" to null
-                    val nickname = perfil.first ?: "Usuario"
-                    val fotoUrl = perfil.second
-
-                    // Para la edad, necesitamos cargarla del perfil
-                    val age: Int? = null // TODO: cargar edad si se necesita
-
-                    val item = LikeItem(
+                    likesList.add(LikeItem(
                         likeId = likeId,
                         fromUserId = fromUserId,
-                        nickname = nickname,
-                        age = age,
-                        location = "",
-                        fotoUrl = fotoUrl,
                         createdAt = createdAt,
                         expiresAt = expiresAt
-                    )
-                    itemsTemp.add(item)
+                    ))
                 }
 
-                // Ordenar por fecha descendente (más recientes primero)
-                itemsTemp.sortWith(compareByDescending<LikeItem> { it.createdAt })
-
-                val sinVista = _binding ?: return@launch
-                likeItems.clear()
-                likeItems.addAll(itemsTemp)
-                adapter.notifyDataSetChanged()
-                actualizarVistaVacia()
+                // Cargar perfiles de los usuarios que nos dieron_like (individual queries)
+                if (fromUserIds.isNotEmpty()) {
+                    cargarPerfilesIndividuales(fromUserIds)
+                } else {
+                    // No hay likes recibidos
+                    b.progressBar.visibility = View.GONE
+                    showEmptyState(likesList.isEmpty())
+                }
 
             } catch (e: Exception) {
-                Log.e("LikesReceivedFragment", "Error cargando likes", e)
-                val sinVista = _binding ?: return@launch
-                sinVista.progressBar.visibility = View.GONE
-                sinVista.srlLikes.isRefreshing = false
+                b.progressBar.visibility = View.GONE
+                Log.e("LikesReceivedFragment", "Error cargando likes recibidos", e)
                 mostrarError(
                     getString(
                         R.string.profile_error_save_detail,
@@ -228,124 +143,164 @@ class LikesReceivedFragment : Fragment() {
                         ErrorSanitizer.limpiar(e.message ?: e.toString())
                     )
                 )
-            } finally {
-                loading = false
             }
         }
     }
 
-    private fun actualizarVistaVacia() {
-        val b = _binding ?: return
-        if (likeItems.isEmpty()) {
-            b.llEmpty.visibility = View.VISIBLE
-            b.rvLikes.visibility = View.GONE
-        } else {
-            b.llEmpty.visibility = View.GONE
-            b.rvLikes.visibility = View.VISIBLE
+    /** Carga perfiles de múltiples usuarios con queries individuales. */
+    private fun cargarPerfilesIndividuales(userIds: Set<String>) {
+        lifecycleScope.launch {
+            try {
+                // Limpiar caché
+                profilesCache.clear()
+                // Cargar cada perfil individualmente
+                userIds.forEach { userId ->
+                    val fila = SupabaseClient.client.postgrest["profiles"].select(
+                        columns = Columns.list("id", "nickname", "age", "location", "verified")
+                    ) {
+                        filter { eq("id", userId) }
+                        filter { eq("profile_completed", true) }
+                        limit(1)
+                    }.decodeSingleOrNull<JsonObject>()
+
+                    fila?.let {
+                        val id = textoDe(it, "id") ?: return@forEach
+                        val nickname = textoDe(it, "nickname") ?: return@forEach
+                        val age = it["age"]?.let { (it as? JsonPrimitive)?.content?.toIntOrNull() }
+                        val location = textoDe(it, "location")
+                        val verified = it["verified"]?.let { (it as? JsonPrimitive)?.content == "true" } ?: false
+
+                        profilesCache[id] = Profile(
+                            userId = id,
+                            nickname = nickname,
+                            age = age,
+                            location = location,
+                            verified = verified
+                        )
+                    }
+                }
+
+                // Notificar al adaptador que los datos han cambiado
+                val b = _binding ?: return@launch
+                b.progressBar.visibility = View.GONE
+                adapter.notifyDataSetChanged()
+                showEmptyState(likesList.isEmpty())
+
+            } catch (e: Exception) {
+                Log.e("LikesReceivedFragment", "Error cargando perfiles individuales", e)
+                val b = _binding ?: return@launch
+                b.progressBar.visibility = View.GONE
+                mostrarError(
+                    getString(
+                        R.string.profile_error_save_detail,
+                        getString(R.string.error_generic),
+                        ErrorSanitizer.limpiar(e.message ?: e.toString())
+                    )
+                )
+            }
         }
     }
 
+    /** Muestra un diálogo de error. */
     private fun mostrarError(mensaje: String) {
         val contexto = context ?: return
-        _binding?.srlLikes?.isRefreshing = false
         _binding?.progressBar?.visibility = View.GONE
         AreloveDialog.show(
             contexto,
             AreloveDialog.Tipo.ERROR,
             getString(R.string.dialog_error_title),
             mensaje,
-            onPositive = { cargarLikes() }
+            onPositive = { cargarLikesRecibidos() }
         )
     }
 
-    /** Adaptador para la lista de likes recibidos. */
-    inner class LikesAdapter : RecyclerView.Adapter<LikesAdapter.ViewHolder>() {
+    /** Adaptador del RecyclerView para los likes recibidos. */
+    inner class LikesReceivedAdapter :
+        RecyclerView.Adapter<LikesReceivedAdapter.LikesViewHolder>() {
 
-        inner class ViewHolder(val binding: ItemLikeBinding) : RecyclerView.ViewHolder(binding.root)
+        inner class LikesViewHolder(private val binding: ItemLikeBinding) :
+            RecyclerView.ViewHolder(binding.root) {
+            fun bind(item: LikeItem, profilesCache: HashMap<String, Profile>) {
+                val profile = profilesCache[item.fromUserId]
+                if (profile == null) {
+                    // Si no tenemos el perfil aún, mostramos datos básicos
+                    binding.tvNameAge.text = item.fromUserId.takeLast(4) // fallback
+                    binding.tvLocation.text = ""
+                    binding.ivAvatar.setImageResource(R.drawable.ic_nav_profile)
+                    return
+                }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = ItemLikeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ViewHolder(binding)
+                // Configurar avatar
+                cargarAvatar(profile.fotoUrl, binding.ivAvatar)
+
+                // Nombre y edad
+                val name = profile.nickname
+                val ageText = profile.age?.let { ", $it" } ?: ""
+                binding.tvNameAge.text = "$name$ageText"
+
+                // Ubicación
+                binding.tvLocation.text = profile.location ?: ""
+
+                // Botón Ver perfil
+                binding.btnVerPerfil.setOnClickListener {
+                    if (AntiSpam.esDobleTap("btnVerPerfil")) return@setOnClickListener
+                    val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
+                        putExtra("user_id", item.fromUserId)
+                    }
+                    startActivity(intent)
+                }
+
+                // Botón Dar like de vuelta
+                binding.btnLikeBack.setOnClickListener {
+                    if (AntiSpam.esDobleTap("btnLikeBack")) return@setOnClickListener
+                    darLikeDeVuelta(item.fromUserId)
+                }
+            }
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = likeItems[position]
-            val b = holder.binding
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LikesViewHolder {
+            val binding = ItemLikeBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            return LikesViewHolder(binding)
+        }
 
-            b.tvName.text = buildNameString(item.nickname, item.age)
-            b.tvLocation.text = item.location
-            b.tvTimestamp.text = formatearFecha(item.createdAt)
+        override fun onBindViewHolder(holder: LikesViewHolder, position: Int) {
+            holder.bind(likesList[position], profilesCache)
+        }
 
-            // Avatar
-            if (item.fotoUrl?.isNotBlank() == true) {
-                b.ivAvatar.load(item.fotoUrl!!) { crossfade(true) }
+        override fun getItemCount(): Int = likesList.size
+
+        /** Carga la imagen del avatar desde una URL. */
+        private fun cargarAvatar(url: String?, imageView: com.google.android.material.imageview.ShapeableImageView) {
+            if (url.isNullOrBlank()) {
+                imageView.setImageResource(R.drawable.ic_nav_profile)
             } else {
-                b.ivAvatar.setImageResource(R.color.primary)
-            }
-
-            // Click en Ver perfil
-            b.btnViewProfile.setOnClickListener {
-                if (AntiSpam.esDobleTap("view_profile_${item.fromUserId}")) return@setOnClickListener
-                val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
-                    putExtra("user_id", item.fromUserId)
-                }
-                startActivity(intent)
-            }
-
-            // Click en Dar like de vuelta
-            b.btnLikeBack.setOnClickListener {
-                if (AntiSpam.esDobleTap("like_back_${item.fromUserId}")) return@setOnClickListener
-                darLikeDeVuelta(item.fromUserId, item.likeId)
-            }
-        }
-
-        override fun getItemCount(): Int = likeItems.size
-    }
-
-    private fun buildNameString(nickname: String, age: Int?): String {
-        return "$nickname${age?.let { ", $it" } ?: ""}"
-    }
-
-    private fun formatearFecha(fechaIso: String?): String {
-        if (fechaIso?.isBlank() == true) return ""
-        try {
-            val formatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
-            val date = formatter.parse(fechaIso)
-            val now = java.util.Date()
-            val diffMs = now.time - date!!.time
-            val diffMins = diffMs / (1000 * 60)
-            val diffHours = diffMins / 60
-            val diffDays = diffHours / 24
-
-            return when {
-                diffMins < 1 -> "Ahora"
-                diffMins < 60 -> "${diffMins} min"
-                diffHours < 24 -> "${diffHours} h"
-                diffDays < 7 -> "${diffDays} d"
-                else -> {
-                    val outFormatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-                    outFormatter.format(date!!)
+                imageView.load(url) {
+                    placeholder(R.drawable.ic_nav_profile)
+                    error(R.drawable.ic_nav_profile)
                 }
             }
-        } catch (e: Exception) {
-            return ""
         }
     }
 
-    private fun darLikeDeVuelta(fromUserId: String, originalLikeId: String) {
-        val currentUserId = currentUserId ?: return
+    /** Da like de vuelta a un usuario y verifica si hay match. */
+    private fun darLikeDeVuelta(toUserId: String) {
         val b = _binding ?: return
+        val fromUserId = currentUserId ?: return
 
         lifecycleScope.launch {
             try {
-                // INSERT en likes {from_user: currentUserId, to_user: fromUserId}
+                // INSERT en likes {from_user, to_user}
                 SupabaseClient.client.postgrest["likes"].insert<JsonObject>(buildJsonObject {
-                    put("from_user", currentUserId)
-                    put("to_user", fromUserId)
+                    put("from_user", fromUserId)
+                    put("to_user", toUserId)
                 })
 
-                // Verificar si hay match recíproco
-                val match = verificarMatch(currentUserId, fromUserId)
+                // Verificar si hay match (la otra persona ya dio like)
+                val match = verificarMatch(fromUserId, toUserId)
 
                 if (match) {
                     AreloveDialog.show(
@@ -358,13 +313,14 @@ class LikesReceivedFragment : Fragment() {
                     )
                 }
 
-                // Recargar la lista
-                cargarLikes()
+                // Recargar la lista para reflejar el nuevo estado
+                cargarLikesRecibidos()
+
             } catch (e: Exception) {
                 Log.e("LikesReceivedFragment", "Error dando like de vuelta", e)
                 if (e.message?.contains("duplicate") == true || e.message?.contains("unique constraint") == true) {
-                    // Ya existía el like, solo recargar
-                    cargarLikes()
+                    // Ignorar error de duplicado, ya que puede ser un like existente
+                    cargarLikesRecibidos()
                 } else {
                     mostrarError(
                         getString(
@@ -381,6 +337,7 @@ class LikesReceivedFragment : Fragment() {
     /** Verifica si la otra persona ya dio like (match). */
     private suspend fun verificarMatch(fromUserId: String, toUserId: String): Boolean {
         try {
+            // SELECT * FROM likes WHERE from_user = toUserId AND to_user = fromUserId AND expires_at > now()
             val filas = SupabaseClient.client.postgrest["likes"].select(
                 columns = Columns.list("id")
             ) {
@@ -389,166 +346,35 @@ class LikesReceivedFragment : Fragment() {
                 filter { gte("expires_at", Instant.now().toString()) }
             }.decodeList<JsonObject>()
 
-            if (filas.isNotEmpty()) {
-                crearMatch(fromUserId, toUserId)
-                actualizarLikeMutuo(fromUserId, toUserId)
-                return true
-            }
+            return filas.isNotEmpty()
         } catch (e: Exception) {
             Log.e("LikesReceivedFragment", "Error verificando match", e)
-        }
-        return false
-    }
-
-    /** Crea la fila en matches y en chats. */
-    private suspend fun crearMatch(user1: String, user2: String) {
-        try {
-            val u1 = if (user1.compareTo(user2) < 0) user1 else user2
-            val u2 = if (user1.compareTo(user2) < 0) user2 else user1
-            SupabaseClient.client.postgrest["matches"].insert<JsonObject>(buildJsonObject {
-                put("user1", u1)
-                put("user2", u2)
-            })
-
-            // Crear chat asociado al match (si no existe)
-            val chatExiste1 = SupabaseClient.client.postgrest["chats"].select(
-                columns = Columns.list("id")
-            ) {
-                filter { eq("user1", u1); eq("user2", u2) }
-                limit(1)
-            }.decodeList<JsonObject>()
-
-            val chatExiste2 = SupabaseClient.client.postgrest["chats"].select(
-                columns = Columns.list("id")
-            ) {
-                filter { eq("user1", u2); eq("user2", u1) }
-                limit(1)
-            }.decodeList<JsonObject>()
-
-            val chatExiste = (chatExiste1 + chatExiste2).isNotEmpty()
-
-            if (!chatExiste) {
-                SupabaseClient.client.postgrest["chats"].insert<JsonObject>(buildJsonObject {
-                    put("user1", u1)
-                    put("user2", u2)
-                })
-            }
-        } catch (e: Exception) {
-            Log.e("LikesReceivedFragment", "Error creando match o chat", e)
+            return false
         }
     }
 
-    /** Actualiza el like mutuo poniendo expires_at = NULL. */
-    private suspend fun actualizarLikeMutuo(fromUserId: String, toUserId: String) {
-        try {
-            SupabaseClient.client.postgrest["likes"].update<JsonObject>(buildJsonObject {
-                put("expires_at", JsonNull)
-            }) {
-                filter { eq("from_user", toUserId) }
-                filter { eq("to_user", fromUserId) }
-            }
-        } catch (e: Exception) {
-            Log.e("LikesReceivedFragment", "Error actualizando like mutuo", e)
-        }
-    }
+    /** Clase de datos para representar un like recibido. */
+    data class LikeItem(
+        val likeId: String,
+        val fromUserId: String,
+        val createdAt: String,
+        val expiresAt: String
+    )
 
-    private fun formatearFecha(fechaIso: String?): String {
-        if (fechaIso?.isBlank() == true) return ""
-        try {
-            val formatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
-            val date = formatter.parse(fechaIso)
-            val now = java.util.Date()
-            val diffMs = now.time - date!!.time
-            val diffMins = diffMs / (1000 * 60)
-            val diffHours = diffMins / 60
-            val diffDays = diffHours / 24
+    /** Clase de datos para almacenar información básica del perfil. */
+    data class Profile(
+        val userId: String,
+        val nickname: String,
+        val age: Int?,
+        val location: String?,
+        val verified: Boolean,
+        val fotoUrl: String? = null
+    )
 
-            return when {
-                diffMins < 1 -> "Ahora"
-                diffMins < 60 -> "${diffMins} min"
-                diffHours < 24 -> "${diffHours} h"
-                diffDays < 7 -> "${diffDays} d"
-                else -> {
-                    val outFormatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-                    outFormatter.format(date!!)
-                }
-            }
-        } catch (e: Exception) {
-            return ""
-        }
-    }
-
-    /** Adaptador para la lista de likes recibidos. */
-    inner class LikesAdapter : RecyclerView.Adapter<LikesAdapter.ViewHolder>() {
-
-        inner class ViewHolder(val binding: ItemLikeBinding) : RecyclerView.ViewHolder(binding.root)
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = ItemLikeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ViewHolder(binding)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = likeItems[position]
-            val b = holder.binding
-
-            b.tvName.text = buildNameString(item.nickname, item.age)
-            b.tvLocation.text = item.location
-            b.tvTimestamp.text = formatearFecha(item.createdAt)
-
-            // Avatar
-            if (item.fotoUrl?.isNotBlank() == true) {
-                b.ivAvatar.load(item.fotoUrl!!) { crossfade(true) }
-            } else {
-                b.ivAvatar.setImageResource(R.color.primary)
-            }
-
-            // Click en Ver perfil
-            b.btnViewProfile.setOnClickListener {
-                if (AntiSpam.esDobleTap("view_profile_${item.fromUserId}")) return@setOnClickListener
-                val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
-                    putExtra("user_id", item.fromUserId)
-                }
-                startActivity(intent)
-            }
-
-            // Click en Dar like de vuelta
-            b.btnLikeBack.setOnClickListener {
-                if (AntiSpam.esDobleTap("like_back_${item.fromUserId}")) return@setOnClickListener
-                darLikeDeVuelta(item.fromUserId, item.likeId)
-            }
-        }
-
-        override fun getItemCount(): Int = likeItems.size
-    }
-
-    private fun buildNameString(nickname: String, age: Int?): String {
-        return "$nickname${age?.let { ", $it" } ?: ""}"
-    }
-
-    private fun formatearFecha(fechaIso: String?): String {
-        if (fechaIso?.isBlank() == true) return ""
-        try {
-            val formatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
-            val date = formatter.parse(fechaIso)
-            val now = java.util.Date()
-            val diffMs = now.time - date!!.time
-            val diffMins = diffMs / (1000 * 60)
-            val diffHours = diffMins / 60
-            val diffDays = diffHours / 24
-
-            return when {
-                diffMins < 1 -> "Ahora"
-                diffMins < 60 -> "${diffMins} min"
-                diffHours < 24 -> "${diffHours} h"
-                diffDays < 7 -> "${diffDays} d"
-                else -> {
-                    val outFormatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-                    outFormatter.format(date!!)
-                }
-            }
-        } catch (e: Exception) {
-            return ""
-        }
+    /** Extrae texto de un JsonObject de forma segura. */
+    private fun textoDe(fila: JsonObject, clave: String): String? {
+        val elemento = fila[clave] as? JsonPrimitive ?: return null
+        if (elemento is JsonNull) return null
+        return elemento.content.trim().ifEmpty { null }
     }
 }
