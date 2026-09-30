@@ -251,6 +251,7 @@
 
     <!-- ==================== LIKES ==================== -->
     <string name="likes_tab_received">Likes recibidos</string>
+    <string name="avatar">Avatar</string>
     <string name="likes_tab_matches">Matches</string>
     <string name="likes_received_empty_title">Nadie te ha dado like todavía</string>
     <string name="likes_received_empty_subtitle">Sigue deslizando en Descubrir</string>
