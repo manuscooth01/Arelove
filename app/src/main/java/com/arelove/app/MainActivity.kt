@@ -2,6 +2,7 @@ package com.arelove.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.databinding.ActivityMainBinding
@@ -33,18 +34,37 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            // Espera a que GoTrue termine de cargar la sesión guardada en disco
-            SupabaseClient.client.auth.awaitInitialization()
+            try {
+                // Espera a que GoTrue termine de cargar la sesión guardada en disco
+                SupabaseClient.client.auth.awaitInitialization()
+            } catch (e: Exception) {
+                Log.e("MainActivity", "awaitInitialization falló", e)
+                // Si falla la inicialización, mostramos la pantalla de bienvenida
+                // El usuario podrá hacer login manualmente
+                return@launch
+            }
 
-            if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
-                // Hay sesión: comprobamos si el perfil ya está completo antes de entrar
-                val destino = if (ProfileChecker.perfilCompleto()) {
-                    HomeActivity::class.java
-                } else {
-                    ProfileSetupActivity::class.java
+            val session = SupabaseClient.client.auth.currentSessionOrNull()
+            if (session != null) {
+                try {
+                    val destino = if (ProfileChecker.perfilCompleto()) {
+                        HomeActivity::class.java
+                    } else {
+                        ProfileSetupActivity::class.java
+                    }
+                    startActivity(Intent(this@MainActivity, destino).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    })
+                    finish()
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Error comprobando perfil", e)
+                    // Si falla la comprobación, vamos a Home para que el usuario
+                    // decida; ProfileChecker ya loguea internamente
+                    startActivity(Intent(this@MainActivity, HomeActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    })
+                    finish()
                 }
-                startActivity(Intent(this@MainActivity, destino))
-                finish()
             }
         }
     }

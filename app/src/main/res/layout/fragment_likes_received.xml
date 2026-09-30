@@ -20,6 +20,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="32dp"
+        android:background="@android:color/transparent"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,10 +29,12 @@
 
         <ImageView
             android:id="@+id/ivEmptyIllustration"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/empty_likes"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_empty_likes"
             android:contentDescription="@string/likes_title" />
 
         <TextView

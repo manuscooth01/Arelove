@@ -27,7 +27,7 @@
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/logo_arelove"
+            android:src="@drawable/ic_logo_heart"
             android:contentDescription="@string/app_name" />
 
         <TextView
@@ -269,6 +269,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="32dp"
+        android:background="@android:color/transparent"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -277,10 +278,12 @@
 
         <ImageView
             android:id="@+id/ivEmptyIllustration"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/empty_likes"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_empty_swipe"
             android:contentDescription="@string/no_more_profiles" />
 
         <TextView
