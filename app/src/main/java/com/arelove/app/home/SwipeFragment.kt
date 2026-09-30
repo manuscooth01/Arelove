@@ -23,7 +23,6 @@ import coil.transform.RoundedCornersTransformation
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.gt
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -410,7 +409,7 @@ class SwipeFragment : Fragment() {
             ) {
                 filter { eq("from_user", toUserId) }
                 filter { eq("to_user", fromUserId) }
-                filter { gt("expires_at", Instant.now().toString()) }
+                filter { gte("expires_at", Instant.now().toString()) }
             }.decodeList<JsonObject>()
 
             if (filas.isNotEmpty()) {
@@ -437,17 +436,21 @@ class SwipeFragment : Fragment() {
             })
 
             // Crear chat asociado al match (si no existe)
-            val chatExiste = SupabaseClient.client.postgrest["chats"].select(
+            val chatExiste1 = SupabaseClient.client.postgrest["chats"].select(
                 columns = Columns.list("id")
             ) {
-                filter {
-                    or(
-                        { eq("user1", u1); eq("user2", u2) },
-                        { eq("user1", u2); eq("user2", u1) }
-                    )
-                }
+                filter { eq("user1", u1); eq("user2", u2) }
                 limit(1)
             }.decodeList<JsonObject>()
+
+            val chatExiste2 = SupabaseClient.client.postgrest["chats"].select(
+                columns = Columns.list("id")
+            ) {
+                filter { eq("user1", u2); eq("user2", u1) }
+                limit(1)
+            }.decodeList<JsonObject>()
+
+            val chatExiste = (chatExiste1 + chatExiste2).isNotEmpty()
 
             if (chatExiste.isEmpty()) {
                 SupabaseClient.client.postgrest["chats"].insert<JsonObject>(buildJsonObject {

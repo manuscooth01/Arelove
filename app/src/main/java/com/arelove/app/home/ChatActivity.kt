@@ -25,8 +25,6 @@ import coil.transform.RoundedCornersTransformation
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Filter
-import io.github.jan.supabase.postgrest.query.gt
 import io.github.jan.supabase.postgrest.query.Order
 
 import kotlinx.coroutines.Dispatchers
@@ -266,7 +264,7 @@ class ChatActivity : AppCompatActivity() {
                     columns = Columns.list("id", "chat_id", "sender", "content", "type", "seen", "created_at")
                 ) {
                     filter { eq("chat_id", chatId) }
-                    filter { gt("created_at", ultimaFecha) }
+                    filter { gte("created_at", ultimaFecha) }
                     order("created_at", Order.ASCENDING)
                 }.decodeList<JsonObject>()
 

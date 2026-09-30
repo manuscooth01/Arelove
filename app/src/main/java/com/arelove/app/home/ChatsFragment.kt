@@ -24,8 +24,6 @@ import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.gt
-import io.github.jan.supabase.postgrest.query.or
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,17 +107,23 @@ class ChatsFragment : Fragment() {
                 }
 
                 // SELECT id, user1, user2 FROM chats WHERE user1 = currentUserId OR user2 = currentUserId
-                val filasChats = SupabaseClient.client.postgrest["chats"].select(
+                // Hacemos dos queries separadas y combinamos (evita problema con 'or' en postgrest-kt)
+                val filas1 = SupabaseClient.client.postgrest["chats"].select(
                     columns = Columns.list("id", "user1", "user2", "created_at")
                 ) {
-                    filter {
-                        or(
-                            { eq("user1", currentUserId!!) },
-                            { eq("user2", currentUserId!!) }
-                        )
-                    }
+                    filter { eq("user1", currentUserId!!) }
                     order("created_at", Order.DESCENDING)
                 }.decodeList<JsonObject>()
+
+                val filas2 = SupabaseClient.client.postgrest["chats"].select(
+                    columns = Columns.list("id", "user1", "user2", "created_at")
+                ) {
+                    filter { eq("user2", currentUserId!!) }
+                    order("created_at", Order.DESCENDING)
+                }.decodeList<JsonObject>()
+
+                val filasChats = (filas1 + filas2).distinctBy { (it["id"] as? JsonPrimitive)?.content.orEmpty() }
+                    .sortedByDescending { (it["created_at"] as? JsonPrimitive)?.content.orEmpty() }
 
                 val sinVista = _binding ?: return@launch
                 sinVista.srlChats.isRefreshing = false
