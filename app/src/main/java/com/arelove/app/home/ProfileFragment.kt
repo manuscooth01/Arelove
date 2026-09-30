@@ -49,10 +49,11 @@ class ProfileFragment : Fragment() {
 
     private fun cargarPerfil() {
         lifecycleScope.launch {
+            var email = ""
             try {
                 val session = SupabaseClient.client.auth.currentSessionOrNull()
                 val userId = session?.user?.id
-                val email = session?.user?.email.orEmpty()
+                email = session?.user?.email.orEmpty()
                 if (userId == null) {
                     _binding?.tvEmail?.text = email
                     return@launch
