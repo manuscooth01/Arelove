@@ -18,7 +18,9 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/ic_logo_heart"
+            android:src="@drawable/logo_arelove"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/app_name" />
 
         <TextView
@@ -53,7 +55,9 @@
             android:layout_width="140dp"
             android:layout_height="140dp"
             android:contentDescription="@string/logo_description"
-            android:src="@drawable/ic_logo_heart" />
+            android:src="@drawable/logo_arelove"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" />
 
         <TextView
             android:id="@+id/textAppName"
