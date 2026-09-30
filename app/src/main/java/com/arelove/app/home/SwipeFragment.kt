@@ -247,7 +247,7 @@ class SwipeFragment : Fragment() {
                 val filas = SupabaseClient.client.postgrest["user_interests"].select(
                     columns = Columns.list("user_id", "interests(name)")
                 ) {
-                    filter("user_id", FilterOperator.IN, userIds)
+                    filter { isIn("user_id", userIds) }
                 }.decodeList<JsonObject>()
 
                 val map = mutableMapOf<String, MutableList<String>>()

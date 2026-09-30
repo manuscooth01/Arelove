@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arelove.app.AuthErrorMapper
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
