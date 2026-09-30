@@ -199,7 +199,7 @@ class ChatsFragment : Fragment() {
 
                     val otroId = if (user1 == currentUserId) user2 else user1
                     val perfil = perfiles[otroId] ?: "Usuario" to null
-                    val nickname = perfil.first
+                    val nickname = perfil.first ?: "Usuario"
                     val fotoUrl = perfil.second
 
                     // Último mensaje

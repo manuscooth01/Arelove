@@ -452,7 +452,7 @@ class SwipeFragment : Fragment() {
 
             val chatExiste = (chatExiste1 + chatExiste2).isNotEmpty()
 
-            if (chatExiste.isEmpty()) {
+            if (!chatExiste) {
                 SupabaseClient.client.postgrest["chats"].insert<JsonObject>(buildJsonObject {
                     put("user1", u1)
                     put("user2", u2)
