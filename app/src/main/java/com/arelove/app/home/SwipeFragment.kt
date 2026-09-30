@@ -27,6 +27,7 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -242,14 +243,12 @@ class SwipeFragment : Fragment() {
             try {
                 // SELECT user_id, interests.name FROM user_interests
                 // JOIN interests ON user_interests.interest_id = interests.id
-                // WHERE user_id IN (...) - usar consulta simple sin operador IN
+                // WHERE user_id IN (...)
                 val filas = SupabaseClient.client.postgrest["user_interests"].select(
                     columns = Columns.list("user_id", "interests(name)")
-                ).decodeList<JsonObject>()
-                val filtradas = filas.filter { fila ->
-                    val uid = textoDe(fila, "user_id") ?: return@filter false
-                    uid in userIds
-                }
+                ) {
+                    filter("user_id", FilterOperator.IN, userIds)
+                }.decodeList<JsonObject>()
 
                 val map = mutableMapOf<String, MutableList<String>>()
                 for (fila in filas) {

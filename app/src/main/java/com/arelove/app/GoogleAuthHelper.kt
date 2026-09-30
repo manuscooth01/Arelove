@@ -1,6 +1,7 @@
 package com.arelove.app
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -19,14 +20,31 @@ object GoogleAuthHelper {
     private const val WEB_CLIENT_ID =
         "607483592083-0fv7ivg4kqbdmjhda0auf6hidhefaa8d.apps.googleusercontent.com"
 
+    private const val TAG = "GoogleAuthHelper"
+
     /**
      * Muestra el selector nativo de cuentas de Google y devuelve el ID Token.
      *
      * - Lanza [Exception] con mensaje en español si el usuario cancela o si
      *   Credential Manager falla.
      * - Devuelve null si la credencial recibida no es la esperada.
+     * - Reintenta automáticamente una vez si falla la primera vez (CredentialManager en frío).
      */
     suspend fun obtenerIdToken(context: Context): String? {
+        return try {
+            intentarObtenerToken(context)
+        } catch (e: GetCredentialException) {
+            Log.w(TAG, "Primer intento falló, reintentando...", e)
+            try {
+                intentarObtenerToken(context)
+            } catch (e2: Exception) {
+                Log.e(TAG, "Reintento también falló", e2)
+                throw e2
+            }
+        }
+    }
+
+    private suspend fun intentarObtenerToken(context: Context): String? {
         // Opción: muestra todas las cuentas y autoselecciona si hay una sola
         val opcionGoogle = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)

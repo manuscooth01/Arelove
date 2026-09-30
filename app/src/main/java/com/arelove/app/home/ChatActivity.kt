@@ -201,23 +201,8 @@ class ChatActivity : AppCompatActivity() {
         val texto = binding.etMessage.text.toString().trim()
         if (texto.isBlank()) return
 
-        val tempId = "temp_${System.currentTimeMillis()}"
-        val tempMessage = MessageItem(
-            id = tempId,
-            chatId = chatId,
-            sender = currentUserId,
-            content = texto,
-            type = "text",
-            seen = true, // Los propios se marcan como vistos
-            createdAt = java.time.Instant.now().toString()
-        )
-
-        // Optimistic UI: añadir inmediatamente
-        messages.add(tempMessage)
-        adapter.notifyItemInserted(messages.size - 1)
-        binding.rvMessages.scrollToPosition(messages.size - 1)
-
-        binding.etMessage.setText("")
+        binding.progressBar.visibility = View.VISIBLE
+        binding.btnSend.isEnabled = false
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -227,15 +212,28 @@ class ChatActivity : AppCompatActivity() {
                     put("content", texto)
                     put("type", "text")
                 })
+
+                // Forzar recarga inmediata en lugar de optimistic UI
+                runOnUiThread {
+                    binding.etMessage.setText("")
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnSend.isEnabled = true
+                }
+
+                // Forzar recarga de mensajes para mostrar el mensaje real del servidor
+                cargarDatos()
+
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error enviando mensaje", e)
                 runOnUiThread {
-                    // Quitar mensaje temporal si falla
-                    val index = messages.indexOfFirst { it.id == tempId }
-                    if (index != -1) {
-                        messages.removeAt(index)
-                        adapter.notifyItemRemoved(index)
-                    }
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnSend.isEnabled = true
+                    AreloveDialog.show(
+                        this@ChatActivity,
+                        AreloveDialog.Tipo.ERROR,
+                        getString(R.string.dialog_error_title),
+                        AuthErrorMapper.traducir(this@ChatActivity, e.message)
+                    )
                 }
             }
         }

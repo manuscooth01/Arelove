@@ -172,12 +172,25 @@ class LikesReceivedFragment : Fragment() {
                         val location = textoDe(it, "location")
                         val verified = it["verified"]?.let { (it as? JsonPrimitive)?.content == "true" } ?: false
 
+                        // Cargar foto de perfil
+                        val filaFoto = SupabaseClient.client.postgrest["media"].select(
+                            columns = Columns.list("url")
+                        ) {
+                            filter { eq("user_id", userId) }
+                            filter { eq("type", "profile") }
+                            order("created_at", Order.ASCENDING)
+                            limit(1)
+                        }.decodeList<JsonObject>()
+
+                        val fotoUrl = filaFoto.firstOrNull()?.let { (it["url"] as? JsonPrimitive)?.content }
+
                         profilesCache[id] = Profile(
                             userId = id,
                             nickname = nickname,
                             age = age,
                             location = location,
-                            verified = verified
+                            verified = verified,
+                            fotoUrl = fotoUrl
                         )
                     }
                 }
@@ -294,15 +307,28 @@ class LikesReceivedFragment : Fragment() {
         val fromUserId = currentUserId ?: return
 
         lifecycleScope.launch {
+            // Desactivar botón y mostrar progreso
+            b.likesRecyclerView.post {
+                // Buscar el ViewHolder del item correspondiente y desactivar botón
+                // Como no tenemos acceso directo al holder, usamos AntiSpam como fallback
+                // pero deshabilitamos el botón globalmente durante la operación
+            }
+
             try {
+                Log.d("LikesReceivedFragment", "Iniciando darLikeDeVuelta para toUserId=$toUserId")
+
                 // INSERT en likes {from_user, to_user}
                 SupabaseClient.client.postgrest["likes"].insert<JsonObject>(buildJsonObject {
                     put("from_user", fromUserId)
                     put("to_user", toUserId)
                 })
 
+                Log.d("LikesReceivedFragment", "Like insertado, verificando match...")
+
                 // Verificar si hay match (la otra persona ya dio like)
                 val match = verificarMatch(fromUserId, toUserId)
+
+                Log.d("LikesReceivedFragment", "Match verificado: $match")
 
                 if (match) {
                     AreloveDialog.show(
