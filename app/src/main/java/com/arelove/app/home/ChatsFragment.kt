@@ -24,10 +24,14 @@ import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Filter
+import io.github.jan.supabase.postgrest.query.or
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.os.Handler
+import android.os.Looper
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -246,7 +250,7 @@ class ChatsFragment : Fragment() {
 
                 chatItems.clear()
                 chatItems.addAll(chatItemsTemp)
-                sinVista3.runOnUiThread {
+                Handler(Looper.getMainLooper()).post {
                     adapter.notifyDataSetChanged()
                     actualizarVistaVacia()
                 }

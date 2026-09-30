@@ -32,6 +32,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -296,11 +298,6 @@ class ChatActivity : AppCompatActivity() {
     private fun cancelarRealtime() {
         listeningJob?.cancel()
         listeningJob = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cancelarRealtime()
     }
 
     /** Adaptador para los mensajes. */
