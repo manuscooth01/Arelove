@@ -239,6 +239,8 @@ class SwipeFragment : Fragment() {
         TabLayoutMediator(b.photoIndicator, b.photoPager) { tab, position ->
             // Los tabs se configuran solos con el selector_photo_indicator
         }.attach()
+        // Mostrar/ocultar indicador según número de fotos
+        b.photoIndicator.visibility = if (urls.size > 1) View.VISIBLE else View.GONE
     }
 
     /** Precarga las fotos del siguiente perfil. */

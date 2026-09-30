@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * Fragment de Perfil - muestra avatar, nombre, email, opciones y botón logout.
+ * Fragment de Perfil - muestra avatar circular con inicial, nombre, email, opciones y botón logout.
  */
 class ProfileFragment : Fragment() {
 
@@ -71,7 +71,13 @@ class ProfileFragment : Fragment() {
                 sinVista.tvEmail.text = email
                 if (filas.isNotEmpty()) {
                     val nickname = filas[0]["nickname"] as? JsonPrimitive
-                    sinVista.tvName.text = nickname?.content.orEmpty()
+                    val nicknameStr = nickname?.content.orEmpty()
+                    sinVista.tvName.text = nicknameStr
+                    // Mostrar inicial en el avatar
+                    if (nicknameStr.isNotEmpty()) {
+                        sinVista.tvAvatarInitial.text = nicknameStr.first().uppercase()
+                        sinVista.tvAvatarInitial.visibility = View.VISIBLE
+                    }
                 }
             } catch (e: Exception) {
                 _binding?.tvEmail?.text = email

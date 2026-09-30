@@ -42,15 +42,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:background="@android:color/transparent"
                 app:tabBackground="@drawable/selector_photo_indicator"
                 app:tabGravity="center"
                 app:tabIndicatorHeight="0dp"
-                app:tabMaxWidth="8dp"
-                app:tabMinWidth="8dp"
+                app:tabMode="fixed"
+                app:tabPaddingStart="4dp"
                 app:tabPaddingEnd="4dp"
-                app:tabPaddingStart="4dp" />
+                app:tabMaxWidth="12dp"
+                app:tabMinWidth="12dp" />
 
             <!-- Gradiente + info al pie -->
             <LinearLayout
