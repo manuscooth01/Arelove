@@ -272,6 +272,9 @@
     <string name="profile_detail_zodiac">Signo zodiacal</string>
     <string name="profile_detail_occupation">Ocupación</string>
     <string name="profile_detail_favorite_music">Música favorita</string>
+    <string name="profile_detail_looking_pareja">Busca pareja</string>
+    <string name="profile_detail_looking_amistades">Busca amistades</string>
+    <string name="profile_detail_looking_ambos">Busca ambos</string>
 
     <!-- ==================== CHATS ==================== -->
     <string name="chats_empty_title">No tienes chats todavía</string>

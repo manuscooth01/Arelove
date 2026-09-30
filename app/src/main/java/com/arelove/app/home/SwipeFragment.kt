@@ -137,12 +137,11 @@ class SwipeFragment : Fragment() {
 
                 val likedUserIds = likesFilas.mapNotNull { (it["to_user"] as? JsonPrimitive)?.content }.toSet()
 
-                // SELECT from_user FROM likes WHERE to_user = currentUserId AND expires_at > now()
+                // SELECT from_user FROM likes WHERE to_user = currentUserId
                 val likesRecibidosFilas = SupabaseClient.client.postgrest["likes"].select(
                     columns = Columns.list("from_user")
                 ) {
                     filter { eq("to_user", userId) }
-                    filter { gte("expires_at", Instant.now().toString()) }
                 }.decodeList<JsonObject>()
 
                 val likesRecibidosUserIds = likesRecibidosFilas.mapNotNull { (it["from_user"] as? JsonPrimitive)?.content }.toSet()
@@ -169,8 +168,8 @@ class SwipeFragment : Fragment() {
                     .filter { it.isNotBlank() }
                     .toSet()
 
-                // Combinar todos los IDs a excluir
-                val excludedUserIds = likedUserIds + likesRecibidosUserIds + matchesUserIds
+                // Combinar todos los IDs a excluir + el propio usuario
+                val idsExcluidos = likedUserIds + likesRecibidosUserIds + matchesUserIds + userId
 
                 // SELECT id, nickname, age, location, looking_for, bio, verified, height, zodiac, occupation
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
@@ -191,7 +190,7 @@ class SwipeFragment : Fragment() {
                 profiles.clear()
                 profiles.addAll(
                     filas.mapNotNull { parseProfile(it) }
-                        .filter { perfil -> perfil.userId !in excludedUserIds }
+                        .filter { perfil -> perfil.userId !in idsExcluidos }
                 )
 
                 if (profiles.isEmpty()) {

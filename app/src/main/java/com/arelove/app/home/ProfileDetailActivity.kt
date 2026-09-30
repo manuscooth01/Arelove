@@ -72,7 +72,7 @@ class ProfileDetailActivity : AppCompatActivity() {
             try {
                 // Cargar perfil completo
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("nickname", "age", "location", "bio", "verified", "height", "zodiac", "occupation", "favorite_music")
+                    columns = Columns.list("nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "favorite_music")
                 ) {
                     filter { eq("id", userId) }
                     limit(1)
@@ -144,6 +144,22 @@ class ProfileDetailActivity : AppCompatActivity() {
 
         b.tvName.text = buildNameString(nickname, age)
         b.ivVerified.visibility = if (verified) View.VISIBLE else View.GONE
+
+        // "Busca pareja/amistades/ambos"
+        val lookingFor = (data["looking_for"] as? JsonPrimitive)?.content.orEmpty()
+        val lookingForRes = when (lookingFor) {
+            "pareja" -> R.string.profile_detail_looking_pareja
+            "amistades" -> R.string.profile_detail_looking_amistades
+            "ambos" -> R.string.profile_detail_looking_ambos
+            else -> null
+        }
+        if (lookingForRes != null) {
+            b.tvLookingFor.text = getString(lookingForRes)
+            b.tvLookingFor.visibility = View.VISIBLE
+        } else {
+            b.tvLookingFor.visibility = View.GONE
+        }
+
         b.tvLocation.text = location
         b.tvBio.text = bio
 
