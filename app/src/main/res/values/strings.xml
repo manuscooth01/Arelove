@@ -238,15 +238,17 @@
     <string name="tab_seguidos">Seguidos</string>
     <string name="tab_compartidos">Compartidos</string>
 
-    <!-- ==================== SWIPE Y MATCH ==================== -->
+<!-- ==================== SWIPE Y MATCH ==================== -->
     <string name="swipe_like">Me gusta</string>
     <string name="swipe_nope">No me gusta</string>
     <string name="match_title">¡Es un match!</string>
-    <string name="match_subtitle">También le gustaste. ¡Empiecen a hablar!</string>
+    <string name="match_subtitle">También le gustaste. ¡Empiezen a hablar!</string>
     <string name="match_btn_chat">Enviar mensaje</string>
     <string name="like_expires_in">Este like expira en %1$s</string>
     <string name="likes_empty">Nadie te ha dado like todavía</string>
     <string name="no_more_profiles">No hay más personas cerca por ahora</string>
+    <string name="no_more_profiles_title">¡Ya viste a todos!</string>
+    <string name="no_more_profiles_subtitle">Vuelve más tarde, hay gente nueva cada día</string>
     <string name="coming_soon">Próximamente</string>
 
     <!-- ==================== LIKES ==================== -->
@@ -282,6 +284,8 @@
     <string name="chat_input_hint">Escribe un mensaje...</string>
     <string name="chat_send">Enviar</string>
     <string name="chat_back">Atrás</string>
+    <string name="chat_more_options">Más opciones</string>
+    <string name="chat_attach">Adjuntar</string>
     <string name="chat_me">Yo</string>
     <string name="boost_title">Boost activado</string>
     <string name="boost_subtitle">Tu perfil será visible durante 20 minutos</string>
@@ -392,6 +396,7 @@
     <string name="delete_account">Eliminar cuenta</string>
     <string name="edit_profile">Editar perfil</string>
     <string name="change_photos">Cambiar fotos</string>
+    <string name="verification">Verificación</string>
     <string name="notification_new_match">Tienes un match nuevo</string>
     <string name="notification_new_message">Nuevo mensaje de %1$s</string>
 

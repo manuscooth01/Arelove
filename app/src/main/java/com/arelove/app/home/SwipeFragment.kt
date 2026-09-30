@@ -1,5 +1,6 @@
 package com.arelove.app.home
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.content.Intent
 import android.util.Log
@@ -7,8 +8,9 @@ import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import com.google.android.material.chip.Chip
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
@@ -79,7 +81,6 @@ class SwipeFragment : Fragment() {
     private fun configurarBotones() {
         binding.btnLike.setOnClickListener {
             if (AntiSpam.esDobleTap("btnLike")) return@setOnClickListener
-            // Pulse animation on like button
             binding.btnLike.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100)
                 .withEndAction {
                     binding.btnLike.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
@@ -90,7 +91,6 @@ class SwipeFragment : Fragment() {
 
         binding.btnDislike.setOnClickListener {
             if (AntiSpam.esDobleTap("btnDislike")) return@setOnClickListener
-            // Pulse animation on dislike button
             binding.btnDislike.animate().scaleX(1.15f).scaleY(1.15f).setDuration(100)
                 .withEndAction {
                     binding.btnDislike.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
@@ -117,7 +117,7 @@ class SwipeFragment : Fragment() {
         if (loading) return
         loading = true
         b.progressBar.visibility = View.VISIBLE
-        b.tvEmpty.visibility = View.GONE
+        b.llEmpty.visibility = View.GONE
         b.cardProfile.visibility = View.GONE
         b.llActions.visibility = View.GONE
 
@@ -190,14 +190,28 @@ class SwipeFragment : Fragment() {
                 val sinVista = _binding ?: return@launch
                 sinVista.progressBar.visibility = View.GONE
 
+                if (filas.isEmpty()) {
+                    sinVista.llEmpty.visibility = View.VISIBLE
+                    sinVista.llActions.visibility = View.GONE
+                    return@launch
+                }
+
+                // Batch load interests for all profiles at once (evita N+1)
+                val profileUserIds = filas.mapNotNull { textoDe(it, "id") }.filter { it !in idsExcluidos }
+                val interestsMap = if (profileUserIds.isNotEmpty()) {
+                    cargarInteresesBatch(profileUserIds)
+                } else {
+                    emptyMap<String, List<String>>()
+                }
+
                 profiles.clear()
                 profiles.addAll(
-                    filas.mapNotNull { parseProfile(it) }
+                    filas.mapNotNull { parseProfile(it, interestsMap[textoDe(it, "id") ?: ""] ?: emptyList()) }
                         .filter { perfil -> perfil.userId !in idsExcluidos }
                 )
 
                 if (profiles.isEmpty()) {
-                    sinVista.tvEmpty.visibility = View.VISIBLE
+                    sinVista.llEmpty.visibility = View.VISIBLE
                     sinVista.llActions.visibility = View.GONE
                 } else {
                     currentIndex = 0
@@ -222,8 +236,38 @@ class SwipeFragment : Fragment() {
         }
     }
 
+    /** Carga intereses de múltiples usuarios en una sola query (batch). */
+    private suspend fun cargarInteresesBatch(userIds: List<String>): Map<String, List<String>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                // SELECT user_id, interests.name FROM user_interests
+                // JOIN interests ON user_interests.interest_id = interests.id
+                // WHERE user_id IN (...) - usar consulta simple sin operador IN
+                val filas = SupabaseClient.client.postgrest["user_interests"].select(
+                    columns = Columns.list("user_id", "interests(name)")
+                ).decodeList<JsonObject>()
+                val filtradas = filas.filter { fila ->
+                    val uid = textoDe(fila, "user_id") ?: return@filter false
+                    uid in userIds
+                }
+
+                val map = mutableMapOf<String, MutableList<String>>()
+                for (fila in filas) {
+                    val uid = textoDe(fila, "user_id") ?: continue
+                    val interestObj = fila["interests"] as? JsonObject ?: continue
+                    val name = textoDe(interestObj, "name") ?: continue
+                    map.getOrPut(uid) { mutableListOf() }.add(name)
+                }
+                map.mapValues { (_, v) -> v.toList() }
+            } catch (e: Exception) {
+                Log.w("SwipeFragment", "Error cargando intereses batch", e)
+                emptyMap()
+            }
+        }
+    }
+
     /** Parsea un JsonObject de profiles a SwipeProfile (sin fotos aún). */
-    private fun parseProfile(fila: JsonObject): SwipeProfile? {
+    private fun parseProfile(fila: JsonObject, intereses: List<String>): SwipeProfile? {
         val userId = textoDe(fila, "id") ?: return null
         val nickname = textoDe(fila, "nickname") ?: return null
         val age = fila["age"]?.let { (it as? JsonPrimitive)?.content?.toIntOrNull() }
@@ -244,7 +288,8 @@ class SwipeFragment : Fragment() {
             fotos = emptyList(),
             height = height,
             zodiac = zodiac,
-            occupation = occupation
+            occupation = occupation,
+            intereses = intereses
         )
     }
 
@@ -252,9 +297,10 @@ class SwipeFragment : Fragment() {
     private fun mostrarPerfilActual() {
         val b = _binding ?: return
         if (currentIndex >= profiles.size) {
-            b.tvEmpty.visibility = View.VISIBLE
+            b.llEmpty.visibility = View.VISIBLE
             b.cardProfile.visibility = View.GONE
             b.llActions.visibility = View.GONE
+            b.cardNext.visibility = View.GONE
             return
         }
 
@@ -276,6 +322,9 @@ class SwipeFragment : Fragment() {
             b.tvOptionalDetails.visibility = View.GONE
         }
 
+        // Poblar chips de intereses
+        poblarChipsIntereses(perfil.intereses)
+
         // Animación de entrada de la card (fade + scale)
         b.cardProfile.alpha = 0f
         b.cardProfile.scaleX = 0.95f
@@ -290,11 +339,58 @@ class SwipeFragment : Fragment() {
 
         b.llActions.visibility = View.VISIBLE
 
+        // CardNext: mostrar si hay siguiente perfil
+        val haySiguiente = currentIndex + 1 < profiles.size
+        b.cardNext.visibility = if (haySiguiente) View.VISIBLE else View.GONE
+        if (haySiguiente) {
+            b.cardNext.alpha = 0.6f
+            b.cardNext.scaleX = 0.95f
+            b.cardNext.scaleY = 0.95f
+            b.cardNext.translationY = 8f
+        }
+
         // Configurar ViewPager2 con las fotos
         if (perfil.fotos.isEmpty()) {
             cargarFotosDePerfil(perfil)
         } else {
             setupPhotoPager(perfil.fotos)
+        }
+    }
+
+    /** Pobla el ChipGroup con los intereses del perfil. */
+    private fun poblarChipsIntereses(intereses: List<String>) {
+        val b = _binding ?: return
+        b.chipGroupInterests.removeAllViews()
+
+        if (intereses.isEmpty()) {
+            b.chipGroupInterests.visibility = View.GONE
+            return
+        }
+
+        b.chipGroupInterests.visibility = View.VISIBLE
+        val maxChips = 4
+        val chipsAMostrar = intereses.take(maxChips)
+
+        val marginEndPx = (8 * resources.displayMetrics.density).toInt()
+        val backgroundColor = resources.getColor(R.color.surface_container_high, requireContext().theme)
+        val strokeColor = resources.getColor(R.color.crimson_rim, requireContext().theme)
+        for (interes in chipsAMostrar) {
+            val chip = Chip(requireContext()).apply {
+                text = interes
+                isClickable = false
+                isCheckable = false
+                setTextAppearanceResource(R.style.Widget_Arelove_Chip_Small)
+                chipBackgroundColor = ColorStateList.valueOf(backgroundColor)
+                chipStrokeColor = ColorStateList.valueOf(strokeColor)
+            }
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginEnd = marginEndPx
+            }
+            chip.layoutParams = lp
+            b.chipGroupInterests.addView(chip)
         }
     }
 
@@ -339,48 +435,49 @@ class SwipeFragment : Fragment() {
         }
     }
 
-    /** Configura el ViewPager2 con las URLs de fotos. */
+    /** Configura el ViewPager2 con las URLs de fotos y barras tipo stories. */
     private fun setupPhotoPager(urls: List<String>) {
         val b = _binding ?: return
         val adapter = PhotoPagerAdapter(urls)
         b.photoPager.adapter = adapter
 
-        // Configurar indicadores lineales
-        actualizarIndicadores(urls.size, 0)
+        // Configurar barras tipo stories
+        actualizarBarrasStories(urls.size, 0)
 
         // Listener de cambio de página
         b.photoPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                actualizarIndicadores(urls.size, position)
+                actualizarBarrasStories(urls.size, position)
             }
         })
     }
 
-    /** Crea/actualiza los dots del indicador. */
-    private fun actualizarIndicadores(total: Int, actual: Int) {
+    /** Crea/actualiza las barras tipo stories (reemplazan dots). */
+    private fun actualizarBarrasStories(total: Int, actual: Int) {
         val b = _binding ?: return
-        b.llIndicators.removeAllViews()
+        b.llStoryIndicators.removeAllViews()
 
         if (total <= 1) {
-            b.llIndicators.visibility = View.GONE
+            b.llStoryIndicators.visibility = View.GONE
             return
         }
-        b.llIndicators.visibility = View.VISIBLE
+        b.llStoryIndicators.visibility = View.VISIBLE
 
-        val tamanoPx = (8 * resources.displayMetrics.density).toInt()
-        val margenPx = (4 * resources.displayMetrics.density).toInt()
+        val heightPx = (3 * resources.displayMetrics.density).toInt()
+        val marginPx = (4 * resources.displayMetrics.density).toInt()
+        val radiusPx = (2 * resources.displayMetrics.density).toInt()
 
         repeat(total) { i ->
-            val dot = ImageView(requireContext())
-            val lp = LinearLayout.LayoutParams(tamanoPx, tamanoPx)
-            lp.marginStart = margenPx
-            lp.marginEnd = margenPx
-            dot.layoutParams = lp
-            dot.setImageResource(
-                if (i == actual) R.drawable.indicator_dot_active
-                else R.drawable.indicator_dot_inactive
+            val bar = View(requireContext())
+            val lp = LinearLayout.LayoutParams(0, heightPx, 1f)
+            lp.marginEnd = marginPx
+            bar.layoutParams = lp
+            bar.background = resources.getDrawable(
+                if (i == actual) R.drawable.bg_story_bar_active
+                else R.drawable.bg_story_bar_inactive,
+                requireContext().theme
             )
-            b.llIndicators.addView(dot)
+            b.llStoryIndicators.addView(bar)
         }
     }
 
@@ -459,7 +556,6 @@ class SwipeFragment : Fragment() {
                 val sinVista = _binding ?: return@launch
                 sinVista.btnLike.isEnabled = true
                 sinVista.btnDislike.isEnabled = true
-                // Si es error de duplicado, no mostrar error, solo pasar al siguiente
                 if (e.message?.contains("duplicate") == true || e.message?.contains("unique constraint") == true) {
                     pasarPerfil()
                 } else {
@@ -478,7 +574,6 @@ class SwipeFragment : Fragment() {
     /** Verifica si la otra persona ya dio like (match). */
     private suspend fun verificarMatch(fromUserId: String, toUserId: String): Boolean {
         try {
-            // SELECT * FROM likes WHERE from_user = toUserId AND to_user = fromUserId AND expires_at > now()
             val filas = SupabaseClient.client.postgrest["likes"].select(
                 columns = Columns.list("id")
             ) {
@@ -488,9 +583,7 @@ class SwipeFragment : Fragment() {
             }.decodeList<JsonObject>()
 
             if (filas.isNotEmpty()) {
-                // Crear match
                 crearMatch(fromUserId, toUserId)
-                // Actualizar/bloquear el like original
                 actualizarLikeMutuo(fromUserId, toUserId)
                 return true
             }
@@ -510,7 +603,6 @@ class SwipeFragment : Fragment() {
                 put("user2", u2)
             })
 
-            // Crear chat asociado al match (si no existe)
             val chatExiste1 = SupabaseClient.client.postgrest["chats"].select(
                 columns = Columns.list("id")
             ) {
@@ -552,18 +644,29 @@ class SwipeFragment : Fragment() {
         }
     }
 
-    /** Pasa al siguiente perfil. */
+    /** Pasa al siguiente perfil con animación de cardNext. */
     private fun pasarPerfil() {
         val b = _binding ?: return
         currentIndex++
 
         if (currentIndex >= profiles.size) {
-            b.tvEmpty.visibility = View.VISIBLE
+            b.llEmpty.visibility = View.VISIBLE
             b.cardProfile.visibility = View.GONE
             b.llActions.visibility = View.GONE
+            b.cardNext.visibility = View.GONE
         } else {
-            mostrarPerfilActual()
-            precargarSiguiente()
+            // Animar cardNext subiendo a posición de cardProfile
+            b.cardNext.animate()
+                .translationY(0f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(300)
+                .withEndAction {
+                    mostrarPerfilActual()
+                    precargarSiguiente()
+                }
+                .start()
         }
     }
 

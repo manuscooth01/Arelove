@@ -13,5 +13,6 @@ data class SwipeProfile(
     val fotos: List<String>,
     val height: Int? = null,
     val zodiac: String? = null,
-    val occupation: String? = null
+    val occupation: String? = null,
+    val intereses: List<String> = emptyList()
 )

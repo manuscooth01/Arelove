@@ -106,6 +106,11 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.btnMore.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnMore")) return@setOnClickListener
+            // TODO: mostrar bottom sheet con opciones
+        }
+
         binding.rvMessages.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
         }
@@ -115,6 +120,20 @@ class ChatActivity : AppCompatActivity() {
         binding.btnSend.setOnClickListener {
             if (AntiSpam.esDobleTap("btnSend")) return@setOnClickListener
             enviarMensaje()
+        }
+
+        binding.btnAttach.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnAttach")) return@setOnClickListener
+            // TODO: abrir selector de adjuntos
+        }
+
+        binding.etMessage.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
+                enviarMensaje()
+                true
+            } else {
+                false
+            }
         }
     }
 

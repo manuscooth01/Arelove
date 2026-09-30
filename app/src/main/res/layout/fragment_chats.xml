@@ -38,11 +38,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/ic_nav_chats"
-                android:contentDescription="@string/nav_chats"
-                android:tint="@color/primary" />
+                android:id="@+id/ivEmptyIllustration"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/empty_likes"
+                android:contentDescription="@string/nav_chats" />
 
             <Space
                 android:layout_width="match_parent"

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Item de mensaje para ChatActivity.
-    Dos variantes: mensaje propio (derecha) y del otro (izquierda).
+    Item de mensaje para ChatActivity - Rediseño Bloque 2.
+    Burbujas con gradiente (propias) y surface_container_high (otro),
+    esquinas asimétricas (una cortada), timestamp dentro de la burbuja.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,8 +10,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp">
 
@@ -24,43 +25,47 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:maxWidth="280dp"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@color/surface_variant"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="1dp"
+        app:cardBackgroundColor="@color/surface_container_high"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/tvMessageOther"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="@font/poppins_regular"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp"
-            android:maxLines="5"
-            tools:text="Hola, ¿qué tal? ¿Cómo va todo?" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="10dp">
 
+            <TextView
+                android:id="@+id/tvMessageOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:maxLines="5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Hola, ¿qué tal? ¿Cómo va todo?" />
+
+            <TextView
+                android:id="@+id/tvTimeOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="14:32" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <!-- Timestamp mensaje del otro -->
-    <TextView
-        android:id="@+id/tvTimeOther"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/poppins_regular"
-        android:textColor="@color/text_secondary"
-        android:textSize="10sp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/cvMessageOther"
-        app:layout_constraintTop_toBottomOf="@id/cvMessageOther" />
 
     <!-- Mensaje PROPIO (derecha) -->
     <com.google.android.material.card.MaterialCardView
@@ -72,42 +77,52 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:maxWidth="280dp"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@color/primary"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/tvMessageOwn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="@font/poppins_regular"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:maxLines="5"
-            tools:text="Hola, todo bien por aquí" />
+        <!-- Fondo con gradiente 135° para mensaje propio -->
+        <View
+            android:id="@+id/vOwnBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_like_button_gradient" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/tvMessageOwn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:maxLines="5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Hola, todo bien por aquí" />
+
+            <TextView
+                android:id="@+id/tvTimeOwn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/on_primary"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="14:32" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <!-- Timestamp mensaje propio -->
-    <TextView
-        android:id="@+id/tvTimeOwn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginStart="8dp"
-        android:fontFamily="@font/poppins_regular"
-        android:textColor="@color/on_primary"
-        android:textSize="10sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@id/cvMessageOwn"
-        app:layout_constraintTop_toBottomOf="@id/cvMessageOwn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
