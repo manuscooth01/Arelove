@@ -103,7 +103,6 @@ class SwipeFragment : Fragment() {
 
     private fun configurarClickCard() {
         binding.cardProfile.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardProfile")) return@setOnClickListener
             val perfil = profiles.getOrNull(currentIndex) ?: return@setOnClickListener
             val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
                 putExtra("user_id", perfil.userId)

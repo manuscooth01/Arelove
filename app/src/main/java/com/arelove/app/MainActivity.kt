@@ -26,6 +26,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Pre-calentar CredentialManager para que la primera llamada a 
+        // Google Sign-In no falle
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                androidx.credentials.CredentialManager.create(this@MainActivity)
+            } catch (_: Exception) {
+                // Ignorar, solo queremos que el módulo se cargue
+            }
+        }
+
         // Precarga el cliente Supabase fuera del hilo principal
         lifecycleScope.launch(Dispatchers.IO) {
             SupabaseClient.client // fuerza la inicialización lazy

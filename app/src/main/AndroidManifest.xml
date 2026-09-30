@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- Cámara del paso 3; quien no tenga app de cámara puede usar la galería -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Permisos para notificaciones (Android 13+), audio y vibración -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature
         android:name="android.hardware.camera"

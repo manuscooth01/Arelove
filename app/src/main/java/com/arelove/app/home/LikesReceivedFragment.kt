@@ -341,6 +341,15 @@ class LikesReceivedFragment : Fragment() {
                     )
                 }
 
+                // Eliminar el like original (el que NOS dio el otro usuario)
+                // para que desaparezca de "Likes recibidos"
+                SupabaseClient.client.postgrest["likes"].delete {
+                    filter { eq("from_user", toUserId) }
+                    filter { eq("to_user", fromUserId) }
+                }
+
+                Log.d("LikesReceivedFragment", "Like original eliminado, recargando lista...")
+
                 // Recargar la lista para reflejar el nuevo estado
                 cargarLikesRecibidos()
 
