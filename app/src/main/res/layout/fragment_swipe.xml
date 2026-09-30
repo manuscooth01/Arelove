@@ -34,10 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="@font/poppins_semibold"
             android:text="@string/app_name"
-            android:textSize="18sp"
-            android:textColor="@color/primary" />
+            android:textAppearance="@style/Widget.Arelove.Wordmark" />
 
     </LinearLayout>
 

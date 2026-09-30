@@ -4,24 +4,14 @@
     android:height="120dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Corazón izquierdo (sólido) -->
-    <group
-        android:pivotX="12"
-        android:pivotY="12"
-        android:translateX="-2">
+    <group android:translateX="-1.5" android:translateY="0.5">
         <path
-            android:fillColor="#E53935"
+            android:fillColor="#FF5252"
             android:pathData="M12,21.35l-1.45,-1.32C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3 19.58,3 22,5.42 22,8.5c0,3.78 -3.4,6.86 -8.55,11.54L12,21.35z" />
     </group>
-    <!-- Corazón derecho (outline) -->
-    <group
-        android:pivotX="12"
-        android:pivotY="12"
-        android:translateX="2">
+    <group android:translateX="3" android:translateY="-1" android:scaleX="0.75" android:scaleY="0.75" android:pivotX="12" android:pivotY="12">
         <path
-            android:fillColor="#00000000"
-            android:strokeColor="#FF5252"
-            android:strokeWidth="1.5"
+            android:fillColor="#E53935"
             android:pathData="M12,21.35l-1.45,-1.32C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3 19.58,3 22,5.42 22,8.5c0,3.78 -3.4,6.86 -8.55,11.54L12,21.35z" />
     </group>
 </vector>

@@ -30,9 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppins_semibold"
         android:text="@string/app_name"
-        android:textAppearance="@style/Widget.Arelove.Title" />
+        android:textAppearance="@style/Widget.Arelove.Wordmark" />
 
     <TextView
         android:id="@+id/textSlogan"
