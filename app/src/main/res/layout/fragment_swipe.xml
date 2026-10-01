@@ -93,9 +93,7 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/photoPager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="false"
-                android:focusable="false" />
+                android:layout_height="match_parent" />
 
             <!-- Scrim superior: legibilidad de las barras de fotos sobre la imagen -->
             <View
@@ -124,14 +122,15 @@
 
             <!-- Gradiente + info al pie -->
             <LinearLayout
+                android:id="@+id/llProfileInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:background="@drawable/bg_profile_gradient_bottom"
                 android:orientation="vertical"
                 android:padding="20dp"
-                android:clickable="false"
-                android:focusable="false">
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -200,8 +199,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_marginEnd="6dp"
-                        android:contentDescription="@string/field_gender"
-                        android:visibility="gone" />
+                        android:contentDescription="@string/field_gender" />
 
                     <TextView
                         android:id="@+id/tvGender"

@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
@@ -146,7 +147,7 @@ class ProfileDetailActivity : AppCompatActivity() {
         b.tvName.text = buildNameString(nickname, age)
         b.ivVerified.visibility = if (verified) View.VISIBLE else View.GONE
 
-        // "Busca pareja/amistades/ambos"
+        // "Busca pareja/amistades/ambos" - con colores dinámicos
         val lookingFor = (data["looking_for"] as? JsonPrimitive)?.content.orEmpty()
         val lookingForRes = when (lookingFor) {
             "pareja" -> R.string.profile_detail_looking_pareja
@@ -154,14 +155,22 @@ class ProfileDetailActivity : AppCompatActivity() {
             "ambos" -> R.string.profile_detail_looking_ambos
             else -> null
         }
-        if (lookingForRes != null) {
+        val lookingForColor = when (lookingFor) {
+            "pareja" -> R.color.looking_pareja_color
+            "amistades" -> R.color.looking_amistades_color
+            "ambos" -> R.color.looking_ambos_color
+            else -> 0
+        }
+        if (lookingForRes != null && lookingForColor != 0) {
             b.tvLookingFor.text = getString(lookingForRes)
+            b.tvLookingFor.backgroundTintList =
+                ContextCompat.getColorStateList(this, lookingForColor)
             b.tvLookingFor.visibility = View.VISIBLE
         } else {
             b.tvLookingFor.visibility = View.GONE
         }
 
-        // Género
+        // Género - con ícono y colores dinámicos
         val genderRes = when (gender) {
             "hombre" -> R.string.gender_hombre
             "mujer" -> R.string.gender_mujer
@@ -174,9 +183,17 @@ class ProfileDetailActivity : AppCompatActivity() {
             "otro" -> R.drawable.ic_gender_other
             else -> 0
         }
-        if (genderRes != null && genderIcon != 0) {
+        val genderColor = when (gender) {
+            "hombre" -> R.color.gender_male_color
+            "mujer" -> R.color.gender_female_color
+            "otro" -> R.color.gender_other_color
+            else -> 0
+        }
+        if (genderRes != null && genderIcon != 0 && genderColor != 0) {
             b.tvGender.text = getString(genderRes)
             b.ivGenderIcon.setImageResource(genderIcon)
+            b.ivGenderIcon.setColorFilter(ContextCompat.getColor(this, genderColor))
+            b.tvGender.setTextColor(ContextCompat.getColor(this, genderColor))
             b.llGender.visibility = View.VISIBLE
         } else {
             b.llGender.visibility = View.GONE

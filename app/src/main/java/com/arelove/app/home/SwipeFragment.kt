@@ -6,11 +6,13 @@ import android.content.Intent
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.chip.Chip
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
@@ -28,6 +30,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
+import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -57,6 +60,10 @@ class SwipeFragment : Fragment() {
 
     private val photoLoadJobs = mutableMapOf<String, Job>()
 
+    /** Coordenadas iniciales para detectar tap en photoPager (sin romper swipe). */
+    private var tapXInicial = 0f
+    private var tapYInicial = 0f
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +77,41 @@ class SwipeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         configurarBotones()
         cargarPerfiles()
+
+        // Touch listener en photoPager para detectar tap y abrir perfil (sin romper swipe)
+        binding.photoPager.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    tapXInicial = event.x
+                    tapYInicial = event.y
+                    false
+                }
+                MotionEvent.ACTION_UP -> {
+                    val dx = abs(event.x - tapXInicial)
+                    val dy = abs(event.y - tapYInicial)
+                    if (dx < 15f && dy < 15f) {
+                        val perfil = profiles.getOrNull(currentIndex)
+                        if (perfil != null) {
+                            val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
+                                putExtra("user_id", perfil.userId)
+                            }
+                            startActivity(intent)
+                        }
+                    }
+                    false
+                }
+                else -> false
+            }
+        }
+
+        // Click en gradiente inferior también abre el perfil
+        binding.llProfileInfo.setOnClickListener {
+            val perfil = profiles.getOrNull(currentIndex) ?: return@setOnClickListener
+            val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
+                putExtra("user_id", perfil.userId)
+            }
+            startActivity(intent)
+        }
     }
 
     override fun onDestroyView() {
@@ -301,39 +343,57 @@ class SwipeFragment : Fragment() {
         b.tvBio.text = perfil.bio ?: ""
         b.ivVerified.visibility = if (perfil.verified) View.VISIBLE else View.GONE
 
-        // "Busca pareja/amistades/ambos"
+        // "Busca pareja/amistades/ambos" - con colores dinámicos
         when (perfil.lookingFor) {
             "pareja" -> {
-                b.tvLookingFor.text = getString(R.string.looking_pareja_short)
                 b.tvLookingFor.visibility = View.VISIBLE
+                b.tvLookingFor.text = getString(R.string.looking_pareja_short)
+                b.tvLookingFor.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.looking_pareja_color)
             }
             "amistades" -> {
-                b.tvLookingFor.text = getString(R.string.looking_amistades_short)
                 b.tvLookingFor.visibility = View.VISIBLE
+                b.tvLookingFor.text = getString(R.string.looking_amistades_short)
+                b.tvLookingFor.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.looking_amistades_color)
             }
             "ambos" -> {
-                b.tvLookingFor.text = getString(R.string.looking_ambos_short)
                 b.tvLookingFor.visibility = View.VISIBLE
+                b.tvLookingFor.text = getString(R.string.looking_ambos_short)
+                b.tvLookingFor.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.looking_ambos_color)
             }
             else -> b.tvLookingFor.visibility = View.GONE
         }
 
-        // Género
+        // Género - con ícono y colores dinámicos
         when (perfil.gender) {
             "hombre" -> {
-                b.tvGender.text = getString(R.string.gender_hombre)
-                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_male)
                 b.llGender.visibility = View.VISIBLE
+                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_male)
+                b.ivGenderIcon.setColorFilter(
+                    ContextCompat.getColor(requireContext(), R.color.gender_male_color))
+                b.tvGender.text = getString(R.string.gender_hombre)
+                b.tvGender.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.gender_male_color))
             }
             "mujer" -> {
-                b.tvGender.text = getString(R.string.gender_mujer)
-                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_female)
                 b.llGender.visibility = View.VISIBLE
+                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_female)
+                b.ivGenderIcon.setColorFilter(
+                    ContextCompat.getColor(requireContext(), R.color.gender_female_color))
+                b.tvGender.text = getString(R.string.gender_mujer)
+                b.tvGender.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.gender_female_color))
             }
             "otro" -> {
-                b.tvGender.text = getString(R.string.gender_otro)
-                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_other)
                 b.llGender.visibility = View.VISIBLE
+                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_other)
+                b.ivGenderIcon.setColorFilter(
+                    ContextCompat.getColor(requireContext(), R.color.gender_other_color))
+                b.tvGender.text = getString(R.string.gender_otro)
+                b.tvGender.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.gender_other_color))
             }
             else -> b.llGender.visibility = View.GONE
         }
@@ -468,15 +528,6 @@ class SwipeFragment : Fragment() {
         val b = _binding ?: return
         val adapter = PhotoPagerAdapter(urls)
         b.photoPager.adapter = adapter
-
-        // Click en la foto abre el detalle del perfil (sin romper el swipe horizontal)
-        b.photoPager.setOnClickListener {
-            val perfil = profiles.getOrNull(currentIndex) ?: return@setOnClickListener
-            val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
-                putExtra("user_id", perfil.userId)
-            }
-            startActivity(intent)
-        }
 
         // Configurar barras tipo stories
         actualizarBarrasStories(urls.size, 0)
