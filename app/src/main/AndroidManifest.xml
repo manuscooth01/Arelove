@@ -64,6 +64,12 @@
             android:theme="@style/Theme.Arelove"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- uCrop: Activity para recortar imágenes -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <!-- Comparte la foto temporal con la app de cámara (paso 3) -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -74,6 +80,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- uCrop Activity para recortar fotos -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>
 

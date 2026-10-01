@@ -373,8 +373,11 @@ class Step3PhotosFragment : Fragment() {
      */
     private fun abrirCrop(uriOriginal: Uri) {
         val contexto = context ?: return
-        val destino = Uri.fromFile(
-            File(contexto.cacheDir, "crop_${System.currentTimeMillis()}.jpg")
+        val archivoDestino = File(contexto.cacheDir, "crop_${System.currentTimeMillis()}.jpg")
+        val destino = FileProvider.getUriForFile(
+            contexto,
+            "${contexto.packageName}.fileprovider",
+            archivoDestino
         )
         val opciones = UCrop.Options().apply {
             setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG)
