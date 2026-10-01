@@ -382,7 +382,7 @@ class Step3PhotosFragment : Fragment() {
             setToolbarTitle("Ajusta tu foto")
             setToolbarColor(ContextCompat.getColor(contexto, R.color.primary))
             setStatusBarColor(ContextCompat.getColor(contexto, R.color.primary_dark))
-            setToolbarWidgetColor(ContextCompat.getColor(contexto, R.color.white))
+            setToolbarWidgetColor(ContextCompat.getColor(contexto, android.R.color.white))
             setActiveControlsWidgetColor(ContextCompat.getColor(contexto, R.color.primary))
             setHideBottomControls(false)
             setFreeStyleCropEnabled(true)
