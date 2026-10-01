@@ -479,6 +479,7 @@ class Step3PhotosFragment : Fragment() {
                 }
             }
         }
+        jobsSubida += job
     }
 
     /**
@@ -486,8 +487,6 @@ class Step3PhotosFragment : Fragment() {
      */
     private fun procesarFoto(uri: Uri) {
         abrirCrop(uri)
-    }
-        jobsSubida += job
     }
 
     /** Enseña un diálogo de error cuando la subida no puede ni empezar. */
