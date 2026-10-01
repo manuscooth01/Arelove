@@ -24,3 +24,4 @@ secrets.properties
 # Sistema
 .DS_Store
 *.log
+.env

@@ -135,6 +135,12 @@ class Step1BasicFragment : Fragment() {
                 binding.tvLookingError.visibility = View.GONE
             }
         }
+
+        binding.chipGroupGender.setOnCheckedStateChangeListener { _, idsSeleccionados ->
+            if (idsSeleccionados.isNotEmpty()) {
+                binding.tvGenderError.visibility = View.GONE
+            }
+        }
     }
 
     /** Abre el calendario al tocar el campo o su ícono. */
@@ -406,7 +412,7 @@ class Step1BasicFragment : Fragment() {
                 val fila = SupabaseClient.client.postgrest["profiles"].select(
                     columns = Columns.list(
                         "nickname", "birthdate", "location", "looking_for",
-                        "latitude", "longitude"
+                        "gender", "latitude", "longitude"
                     )
                 ) {
                     filter { eq("id", userId) }
@@ -451,6 +457,14 @@ class Step1BasicFragment : Fragment() {
                     "amistades" -> b.chipAmistades.isChecked = true
                     "ambos" -> b.chipAmbos.isChecked = true
                 }
+
+                // Género
+                when (textoDe(fila, "gender")) {
+                    "hombre" -> b.chipHombre.isChecked = true
+                    "mujer" -> b.chipMujer.isChecked = true
+                    "otro" -> b.chipOtro.isChecked = true
+                    "prefiero_no_decir" -> b.chipPrefieroNoDecir.isChecked = true
+                }
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error cargando el Paso 1", e)
             }
@@ -483,6 +497,15 @@ class Step1BasicFragment : Fragment() {
         else -> null
     }
 
+    /** Género seleccionado en los chips, o null si no hay ninguno. */
+    private fun generoSeleccionado(): String? = when (binding.chipGroupGender.checkedChipId) {
+        R.id.chipHombre -> "hombre"
+        R.id.chipMujer -> "mujer"
+        R.id.chipOtro -> "otro"
+        R.id.chipPrefieroNoDecir -> "prefiero_no_decir"
+        else -> null
+    }
+
     /**
      * Valida los campos del paso 1 y, si todo está correcto, hace un UPSERT
      * en la tabla `profiles` con id = auth.uid().
@@ -503,6 +526,7 @@ class Step1BasicFragment : Fragment() {
         val fechaTexto = b.etBirthdate.text?.toString()?.trim().orEmpty()
         val location = b.etLocation.text?.toString()?.trim().orEmpty()
         val buscando = buscandoSeleccionado()
+        val genero = generoSeleccionado()
 
         if (nickname.isEmpty()) {
             b.tilNickname.error = getString(R.string.required_field)
@@ -542,6 +566,12 @@ class Step1BasicFragment : Fragment() {
             return
         }
 
+        if (genero == null) {
+            b.tvGenderError.text = getString(R.string.error_gender_required)
+            b.tvGenderError.visibility = View.VISIBLE
+            return
+        }
+
         if (guardando) return
         guardando = true
 
@@ -563,6 +593,7 @@ class Step1BasicFragment : Fragment() {
                     put("birthdate", fecha.toString()) // ISO: YYYY-MM-DD
                     put("location", location)
                     put("looking_for", buscando)
+                    put("gender", genero)
 
                     if (coords != null) {
                         put("latitude", coords.latitude)

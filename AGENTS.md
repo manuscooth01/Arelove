@@ -64,3 +64,17 @@ Para no reintroducir regresiones de rendimiento, estas optimizaciones ya están 
 
 - Termux (aarch64), JDK 17, wrapper Gradle 8.2 ya cacheado. AGP 8.2.2 / Kotlin 1.9.22 / compileSdk 34 / minSdk 29 / Java 17.
 - Los APK descargados viven en `apk/` (gitignored); `*.keystore` y `*.base64` también.
+
+## Convención de nombres del APK
+
+- El APK de debug SIEMPRE se descarga como: `Arelove-v1-debug.apk`
+- Ruta destino: `/storage/emulated/0/Download/Arelove-v1-debug.apk`
+- Al descargar un nuevo build:
+    cd ~/Arelove && \
+    rm -f /storage/emulated/0/Download/Arelove-v1-debug.apk && \
+    rm -rf apk && \
+    gh run download $(gh run list --limit 1 --json databaseId --jq '.[0].databaseId') \
+        -n arelove-debug-apk -D apk && \
+    cp apk/app-debug.apk /storage/emulated/0/Download/Arelove-v1-debug.apk && \
+    termux-open /storage/emulated/0/Download/Arelove-v1-debug.apk
+- NO usar sufijos v2, v3, etc. El nombre es fijo para evitar confusión.

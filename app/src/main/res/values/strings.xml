@@ -95,6 +95,14 @@
     <string name="age_min_18">Debes tener 18 años o más</string>
     <string name="required_field">Este campo es obligatorio</string>
 
+    <!-- Género -->
+    <string name="field_gender">Género</string>
+    <string name="gender_hombre">Hombre</string>
+    <string name="gender_mujer">Mujer</string>
+    <string name="gender_otro">Otro</string>
+    <string name="gender_prefiero_no_decir">Prefiero no decir</string>
+    <string name="error_gender_required">Elige tu género</string>
+
     <!-- Validaciones del paso 1 (fecha de nacimiento) -->
     <string name="validation_min_age">Debes ser mayor de 18 años</string>
     <string name="validation_invalid_birthdate">Fecha de nacimiento inválida</string>
@@ -141,6 +149,7 @@
     <string name="profile_step3_error_min">Sube al menos 2 fotos para continuar</string>
     <string name="photo_take">Hacer foto</string>
     <string name="photo_pick">Elegir de la galería</string>
+    <string name="photo_tip">Consejo: ajusta tu foto antes de subirla para que se vea mejor</string>
     <string name="photo_uploading">Subiendo…</string>
     <string name="photo_add">+</string>
     <string name="photo_remove">Quitar foto</string>
@@ -259,6 +268,7 @@
     <string name="likes_received_empty_subtitle">Sigue deslizando en Descubrir</string>
     <string name="likes_received_button_profile">Ver perfil</string>
     <string name="likes_received_button_like_back">Dar like de vuelta</string>
+    <string name="likes_pass">Pasar</string>
     <string name="likes_match_empty_title">Aún no tienes matches</string>
     <string name="likes_match_empty_subtitle">Cuando alguien devuelva tu like, aparecerá aquí</string>
     <string name="likes_match_button_chat">Abrir chat</string>
@@ -277,6 +287,9 @@
     <string name="profile_detail_looking_pareja">Busca pareja</string>
     <string name="profile_detail_looking_amistades">Busca amistades</string>
     <string name="profile_detail_looking_ambos">Busca ambos</string>
+    <string name="looking_pareja_short">Busca pareja</string>
+    <string name="looking_amistades_short">Busca amistades</string>
+    <string name="looking_ambos_short">Busca ambos</string>
 
     <!-- ==================== CHATS ==================== -->
     <string name="chats_empty_title">No tienes chats todavía</string>

@@ -63,7 +63,7 @@ class ProfileFragment : Fragment() {
 
                 // Cargar nickname y foto desde profiles y media
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("nickname")
+                    columns = Columns.list("nickname", "gender")
                 ) {
                     filter { eq("id", userId) }
                     limit(1)
@@ -79,6 +79,21 @@ class ProfileFragment : Fragment() {
                     if (nicknameStr.isNotEmpty()) {
                         sinVista.tvAvatarInitial.text = nicknameStr.first().uppercase()
                         sinVista.tvAvatarInitial.visibility = View.VISIBLE
+                    }
+
+                    // Género
+                    val gender = (filas[0]["gender"] as? JsonPrimitive)?.content.orEmpty()
+                    val genderRes = when (gender) {
+                        "hombre" -> R.string.gender_hombre
+                        "mujer" -> R.string.gender_mujer
+                        "otro" -> R.string.gender_otro
+                        else -> null
+                    }
+                    if (genderRes != null) {
+                        sinVista.tvGender.text = getString(genderRes)
+                        sinVista.tvGender.visibility = View.VISIBLE
+                    } else {
+                        sinVista.tvGender.visibility = View.GONE
                     }
                 }
 

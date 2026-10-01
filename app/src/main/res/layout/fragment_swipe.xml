@@ -16,17 +16,17 @@
         android:id="@+id/llHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="12dp"
+        android:paddingTop="16dp"
         android:paddingBottom="8dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/logo_arelove"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
@@ -35,9 +35,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
             android:text="@string/app_name"
-            android:textAppearance="@style/Widget.Arelove.Wordmark" />
+            android:textSize="22sp"
+            android:letterSpacing="0.05"
+            android:textColor="@color/primary"
+            android:fontFamily="@font/poppins_bold" />
+    </LinearLayout>
 
     </LinearLayout>
 
@@ -156,6 +160,32 @@
                     android:textSize="14sp"
                     android:alpha="0.9"
                     tools:text="Caracas, Venezuela" />
+
+                <TextView
+                    android:id="@+id/tvLookingFor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_chip_looking"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:textColor="@color/on_primary_container"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_chip_looking"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:textColor="@color/on_primary_container"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvBio"

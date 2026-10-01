@@ -270,6 +270,11 @@ class LikesReceivedFragment : Fragment() {
                     if (AntiSpam.esDobleTap("btnLikeBack")) return@setOnClickListener
                     darLikeDeVuelta(item.fromUserId)
                 }
+
+                binding.btnPass.setOnClickListener {
+                    if (AntiSpam.esDobleTap("btnPass")) return@setOnClickListener
+                    pasarLike(item.fromUserId)
+                }
             }
         }
 
@@ -305,68 +310,70 @@ class LikesReceivedFragment : Fragment() {
     private fun darLikeDeVuelta(toUserId: String) {
         val b = _binding ?: return
         val fromUserId = currentUserId ?: return
+        b.progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            // Desactivar botón y mostrar progreso
-            b.likesRecyclerView.post {
-                // Buscar el ViewHolder del item correspondiente y desactivar botón
-                // Como no tenemos acceso directo al holder, usamos AntiSpam como fallback
-                // pero deshabilitamos el botón globalmente durante la operación
-            }
-
+            var exito = false
             try {
-                Log.d("LikesReceivedFragment", "Iniciando darLikeDeVuelta para toUserId=$toUserId")
-
-                // INSERT en likes {from_user, to_user}
+                // INSERT del like mutuo
                 SupabaseClient.client.postgrest["likes"].insert<JsonObject>(buildJsonObject {
                     put("from_user", fromUserId)
                     put("to_user", toUserId)
                 })
 
-                Log.d("LikesReceivedFragment", "Like insertado, verificando match...")
-
-                // Verificar si hay match (la otra persona ya dio like)
+                // Verificar si hay match
                 val match = verificarMatch(fromUserId, toUserId)
 
-                Log.d("LikesReceivedFragment", "Match verificado: $match")
-
                 if (match) {
+                    // DELETE del like original para que desaparezca
+                    SupabaseClient.client.postgrest["likes"].delete {
+                        filter { eq("from_user", toUserId) }
+                        filter { eq("to_user", fromUserId) }
+                    }
+
                     AreloveDialog.show(
                         requireContext(),
                         AreloveDialog.Tipo.SUCCESS,
                         getString(R.string.match_title),
-                        getString(R.string.match_subtitle),
-                        getString(R.string.match_btn_chat),
-                        onPositive = { /* por ahora solo cierra */ }
+                        getString(R.string.match_subtitle)
                     )
+                    exito = true
                 }
+            } catch (e: Exception) {
+                Log.e("LikesReceived", "Error darLikeDeVuelta", e)
+                AreloveDialog.show(
+                    requireContext(),
+                    AreloveDialog.Tipo.ERROR,
+                    getString(R.string.dialog_error_title),
+                    ErrorSanitizer.limpiar(e.message ?: "Error")
+                )
+            } finally {
+                b.progressBar.visibility = View.GONE
+                if (exito) {
+                    cargarLikesRecibidos()
+                }
+            }
+        }
+    }
 
-                // Eliminar el like original (el que NOS dio el otro usuario)
-                // para que desaparezca de "Likes recibidos"
+    /** Pasa el like sin dar match (elimina el like recibido). */
+    private fun pasarLike(toUserId: String) {
+        val b = _binding ?: return
+        val fromUserId = currentUserId ?: return
+        b.progressBar.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                // DELETE del like original (rechazar)
                 SupabaseClient.client.postgrest["likes"].delete {
                     filter { eq("from_user", toUserId) }
                     filter { eq("to_user", fromUserId) }
                 }
-
-                Log.d("LikesReceivedFragment", "Like original eliminado, recargando lista...")
-
-                // Recargar la lista para reflejar el nuevo estado
-                cargarLikesRecibidos()
-
             } catch (e: Exception) {
-                Log.e("LikesReceivedFragment", "Error dando like de vuelta", e)
-                if (e.message?.contains("duplicate") == true || e.message?.contains("unique constraint") == true) {
-                    // Ignorar error de duplicado, ya que puede ser un like existente
-                    cargarLikesRecibidos()
-                } else {
-                    mostrarError(
-                        getString(
-                            R.string.profile_error_save_detail,
-                            getString(R.string.error_generic),
-                            ErrorSanitizer.limpiar(e.message ?: e.toString())
-                        )
-                    )
-                }
+                Log.e("LikesReceived", "Error pasarLike", e)
+            } finally {
+                b.progressBar.visibility = View.GONE
+                cargarLikesRecibidos()
             }
         }
     }

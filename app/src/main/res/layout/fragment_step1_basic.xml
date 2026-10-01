@@ -165,16 +165,79 @@
             </com.google.android.material.chip.ChipGroup>
         </LinearLayout>
 
-        <!-- Error de la selección "Busco" -->
-        <TextView
-            android:id="@+id/tvLookingError"
+<!-- Error de la selección "Busco" -->
+    <TextView
+        android:id="@+id/tvLookingError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/error"
+        android:textSize="13sp"
+        android:visibility="gone"
+        tools:text="Elige qué buscas" />
+
+    <!-- Género -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="@string/field_gender"
+        android:textColor="@color/on_surface"
+        android:textSize="15sp" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipHombre"
+            style="@style/Widget.Arelove.Chip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/error"
-            android:textSize="13sp"
-            android:visibility="gone"
-            tools:text="Elige qué buscas" />
+            android:checkable="true"
+            android:text="@string/gender_hombre" />
 
-    </LinearLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipMujer"
+            style="@style/Widget.Arelove.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/gender_mujer" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipOtro"
+            style="@style/Widget.Arelove.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/gender_otro" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipPrefieroNoDecir"
+            style="@style/Widget.Arelove.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/gender_prefiero_no_decir" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Error de género -->
+    <TextView
+        android:id="@+id/tvGenderError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/error"
+        android:textSize="13sp"
+        android:visibility="gone"
+        tools:text="Elige tu género" />
+
+</LinearLayout>
 </ScrollView>

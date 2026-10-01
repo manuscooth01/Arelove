@@ -72,7 +72,7 @@ class ProfileDetailActivity : AppCompatActivity() {
             try {
                 // Cargar perfil completo
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "favorite_music")
+                    columns = Columns.list("nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "favorite_music", "gender")
                 ) {
                     filter { eq("id", userId) }
                     limit(1)
@@ -141,6 +141,7 @@ class ProfileDetailActivity : AppCompatActivity() {
         val zodiac = (data["zodiac"] as? JsonPrimitive)?.content.orEmpty()
         val occupation = (data["occupation"] as? JsonPrimitive)?.content.orEmpty()
         val favoriteMusic = (data["favorite_music"] as? JsonPrimitive)?.content.orEmpty()
+        val gender = (data["gender"] as? JsonPrimitive)?.content.orEmpty()
 
         b.tvName.text = buildNameString(nickname, age)
         b.ivVerified.visibility = if (verified) View.VISIBLE else View.GONE
@@ -158,6 +159,20 @@ class ProfileDetailActivity : AppCompatActivity() {
             b.tvLookingFor.visibility = View.VISIBLE
         } else {
             b.tvLookingFor.visibility = View.GONE
+        }
+
+        // Género
+        val genderRes = when (gender) {
+            "hombre" -> R.string.gender_hombre
+            "mujer" -> R.string.gender_mujer
+            "otro" -> R.string.gender_otro
+            else -> null
+        }
+        if (genderRes != null) {
+            b.tvGender.text = getString(genderRes)
+            b.tvGender.visibility = View.VISIBLE
+        } else {
+            b.tvGender.visibility = View.GONE
         }
 
         b.tvLocation.text = location

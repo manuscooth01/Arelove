@@ -12,6 +12,16 @@
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 
+    <!-- Consejo para la foto -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:gravity="center"
+        android:text="@string/photo_tip"
+        android:textColor="@color/on_surface_variant"
+        android:textSize="13sp" />
+
     <!-- Hacer foto -->
     <LinearLayout
         android:id="@+id/rowTakePhoto"

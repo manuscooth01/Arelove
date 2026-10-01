@@ -178,7 +178,7 @@ class SwipeFragment : Fragment() {
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
                 // ORDER BY verified DESC, created_at DESC LIMIT 30
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "created_at")
+                    columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "gender", "created_at")
                 ) {
                     filter { neq("id", userId) }
                     filter { eq("profile_completed", true) }
@@ -275,6 +275,7 @@ class SwipeFragment : Fragment() {
         val height = fila["height"]?.let { (it as? JsonPrimitive)?.content?.toIntOrNull() }
         val zodiac = textoDe(fila, "zodiac")
         val occupation = textoDe(fila, "occupation")
+        val lookingFor = textoDe(fila, "looking_for")
 
         return SwipeProfile(
             userId = userId,
@@ -287,7 +288,8 @@ class SwipeFragment : Fragment() {
             height = height,
             zodiac = zodiac,
             occupation = occupation,
-            intereses = intereses
+            intereses = intereses,
+            lookingFor = lookingFor
         )
     }
 
@@ -307,6 +309,40 @@ class SwipeFragment : Fragment() {
         b.tvLocation.text = perfil.location ?: ""
         b.tvBio.text = perfil.bio ?: ""
         b.ivVerified.visibility = if (perfil.verified) View.VISIBLE else View.GONE
+
+        // "Busca pareja/amistades/ambos"
+        when (perfil.lookingFor) {
+            "pareja" -> {
+                b.tvLookingFor.text = getString(R.string.looking_pareja_short)
+                b.tvLookingFor.visibility = View.VISIBLE
+            }
+            "amistades" -> {
+                b.tvLookingFor.text = getString(R.string.looking_amistades_short)
+                b.tvLookingFor.visibility = View.VISIBLE
+            }
+            "ambos" -> {
+                b.tvLookingFor.text = getString(R.string.looking_ambos_short)
+                b.tvLookingFor.visibility = View.VISIBLE
+            }
+            else -> b.tvLookingFor.visibility = View.GONE
+        }
+
+        // Género
+        when (perfil.gender) {
+            "hombre" -> {
+                b.tvGender.text = getString(R.string.gender_hombre)
+                b.tvGender.visibility = View.VISIBLE
+            }
+            "mujer" -> {
+                b.tvGender.text = getString(R.string.gender_mujer)
+                b.tvGender.visibility = View.VISIBLE
+            }
+            "otro" -> {
+                b.tvGender.text = getString(R.string.gender_otro)
+                b.tvGender.visibility = View.VISIBLE
+            }
+            else -> b.tvGender.visibility = View.GONE
+        }
 
         // Mostrar detalles opcionales (altura, zodiaco, ocupación)
         val optionalParts = mutableListOf<String>()
