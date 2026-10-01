@@ -168,11 +168,18 @@ class ProfileDetailActivity : AppCompatActivity() {
             "otro" -> R.string.gender_otro
             else -> null
         }
-        if (genderRes != null) {
+        val genderIcon = when (gender) {
+            "hombre" -> R.drawable.ic_gender_male
+            "mujer" -> R.drawable.ic_gender_female
+            "otro" -> R.drawable.ic_gender_other
+            else -> 0
+        }
+        if (genderRes != null && genderIcon != 0) {
             b.tvGender.text = getString(genderRes)
-            b.tvGender.visibility = View.VISIBLE
+            b.ivGenderIcon.setImageResource(genderIcon)
+            b.llGender.visibility = View.VISIBLE
         } else {
-            b.tvGender.visibility = View.GONE
+            b.llGender.visibility = View.GONE
         }
 
         b.tvLocation.text = location

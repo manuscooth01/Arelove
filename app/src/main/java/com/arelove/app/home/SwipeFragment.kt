@@ -331,17 +331,20 @@ class SwipeFragment : Fragment() {
         when (perfil.gender) {
             "hombre" -> {
                 b.tvGender.text = getString(R.string.gender_hombre)
-                b.tvGender.visibility = View.VISIBLE
+                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_male)
+                b.llGender.visibility = View.VISIBLE
             }
             "mujer" -> {
                 b.tvGender.text = getString(R.string.gender_mujer)
-                b.tvGender.visibility = View.VISIBLE
+                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_female)
+                b.llGender.visibility = View.VISIBLE
             }
             "otro" -> {
                 b.tvGender.text = getString(R.string.gender_otro)
-                b.tvGender.visibility = View.VISIBLE
+                b.ivGenderIcon.setImageResource(R.drawable.ic_gender_other)
+                b.llGender.visibility = View.VISIBLE
             }
-            else -> b.tvGender.visibility = View.GONE
+            else -> b.llGender.visibility = View.GONE
         }
 
         // Mostrar detalles opcionales (altura, zodiaco, ocupación)

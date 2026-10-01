@@ -1,6 +1,7 @@
 package com.arelove.app.profile
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
@@ -26,6 +27,7 @@ import com.arelove.app.databinding.FragmentStep3PhotosBinding
 import com.arelove.app.databinding.ItemPhotoBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
+import com.yalantis.ucrop.UCrop
 import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.github.jan.supabase.gotrue.auth
@@ -112,6 +114,19 @@ class Step3PhotosFragment : Fragment() {
                 abrirCamara()
             } else {
                 mostrarPermisoDenegado()
+            }
+        }
+
+    private val launcherCrop =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val croppedUri = UCrop.getOutput(result.data!!)
+                if (croppedUri != null) {
+                    procesarFotoDespuesDeCrop(croppedUri)
+                }
+            } else if (result.resultCode == UCrop.RESULT_ERROR) {
+                val error = UCrop.getError(result.data!!)
+                Log.e("Step3Photos", "Crop error: ${error?.message}")
             }
         }
 
@@ -354,11 +369,38 @@ class Step3PhotosFragment : Fragment() {
     }
 
     /**
+     * Abre la pantalla de recorte (uCrop) antes de procesar la foto.
+     */
+    private fun abrirCrop(uriOriginal: Uri) {
+        val contexto = context ?: return
+        val destino = Uri.fromFile(
+            File(contexto.cacheDir, "crop_${System.currentTimeMillis()}.jpg")
+        )
+        val opciones = UCrop.Options().apply {
+            setCompressionFormat(android.graphics.Bitmap.CompressFormat.JPEG)
+            setCompressionQuality(90)
+            setToolbarTitle("Ajusta tu foto")
+            setToolbarColor(ContextCompat.getColor(contexto, R.color.primary))
+            setStatusBarColor(ContextCompat.getColor(contexto, R.color.primary_dark))
+            setToolbarWidgetColor(ContextCompat.getColor(contexto, R.color.white))
+            setActiveControlsWidgetColor(ContextCompat.getColor(contexto, R.color.primary))
+            setHideBottomControls(false)
+            setFreeStyleCropEnabled(true)
+            withAspectRatio(3f, 4f)
+            setCircleDimmedLayer(false)
+        }
+        val intent = UCrop.of(uriOriginal, destino)
+            .withOptions(opciones)
+            .getIntent(contexto)
+        launcherCrop.launch(intent)
+    }
+
+    /**
      * Recomprime [uri], calcula su hash y, si no es una foto repetida de esta
      * sesión, reserva la casilla en la rejilla y lanza la subida.
      * La fila de `media` se guarda al terminar la subida.
      */
-    private fun procesarFoto(uri: Uri) {
+    private fun procesarFotoDespuesDeCrop(uri: Uri) {
         if (cargando || fotos.size >= MAX_FOTOS) return
 
         // Anti-spam: una foto como máximo cada INTERVALO_SUBIDA_MS
@@ -437,6 +479,14 @@ class Step3PhotosFragment : Fragment() {
                 }
             }
         }
+    }
+
+    /**
+     * Punto de entrada al elegir una foto: abre el crop antes de procesar.
+     */
+    private fun procesarFoto(uri: Uri) {
+        abrirCrop(uri)
+    }
         jobsSubida += job
     }
 

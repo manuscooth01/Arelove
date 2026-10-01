@@ -201,7 +201,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checkable="true"
-            android:text="@string/gender_hombre" />
+            android:text="@string/gender_hombre"
+            app:chipIcon="@drawable/ic_gender_male"
+            app:chipIconSize="16dp" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipMujer"
@@ -209,7 +211,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checkable="true"
-            android:text="@string/gender_mujer" />
+            android:text="@string/gender_mujer"
+            app:chipIcon="@drawable/ic_gender_female"
+            app:chipIconSize="16dp" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipOtro"
@@ -217,7 +221,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checkable="true"
-            android:text="@string/gender_otro" />
+            android:text="@string/gender_otro"
+            app:chipIcon="@drawable/ic_gender_other"
+            app:chipIconSize="16dp" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipPrefieroNoDecir"

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Pantalla de Perfil - Rediseño Bloque 2.
-    Avatar 120dp con borde rojo 2dp, badge verificación, cards elevadas, logout compacto.
+    Pantalla de Perfil - Rediseño MEJORA 3.
+    Header con avatar, badge verificación, género con ícono.
+    Cards agrupadas en 3 secciones: Tu cuenta, Seguridad, Descubre más.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,7 +20,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:paddingTop="24dp"
-        android:paddingBottom="32dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -75,15 +76,34 @@
             android:layout_width="match_parent"
             android:layout_height="16dp" />
 
-        <TextView
-            android:id="@+id/tvName"
+        <!-- Nombre + badge verificado + chip género en línea horizontal -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="@string/nav_profile"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            tools:text="María García" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="@string/nav_profile"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                tools:text="María García" />
+
+            <!-- Badge verificado verde al lado del nombre -->
+            <ImageView
+                android:id="@+id/ivNameVerified"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/profile_verified"
+                android:src="@drawable/ic_verified"
+                android:visibility="gone"
+                android:tint="@color/online_green" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvEmail"
@@ -94,29 +114,62 @@
             android:textSize="14sp"
             tools:text="maria@ejemplo.com" />
 
-        <TextView
-            android:id="@+id/tvGender"
+        <!-- Chip género con ícono al lado del email -->
+        <LinearLayout
+            android:id="@+id/llGender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:background="@drawable/bg_chip_looking"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:textColor="@color/on_primary_container"
-            android:textSize="12sp"
-            android:visibility="gone"
-            tools:text="Hombre" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivGenderIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="6dp"
+                android:contentDescription="@string/field_gender" />
+
+            <TextView
+                android:id="@+id/tvGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_looking"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/on_primary_container"
+                android:textSize="12sp" />
+        </LinearLayout>
     </LinearLayout>
+
+    <!-- SECCIÓN 1: Tu cuenta -->
+    <TextView
+        android:id="@+id/tvSectionAccount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="@string/profile_section_account"
+        android:textColor="@color/on_surface_variant"
+        android:textSize="13sp"
+        android:letterSpacing="0.05"
+        android:textAllCaps="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileHeader" />
 
     <!-- Card Editar perfil -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardEditProfile"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
         android:padding="16dp"
         app:cardCornerRadius="20dp"
@@ -125,11 +178,11 @@
         app:strokeWidth="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profileHeader">
+        app:layout_constraintTop_toBottomOf="@id/tvSectionAccount">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -160,9 +213,9 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardChangePhotos"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
         android:padding="16dp"
         app:cardCornerRadius="20dp"
@@ -175,7 +228,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -202,13 +255,13 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Card Verificación -->
+    <!-- Card Mi género -->
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardVerification"
+        android:id="@+id/cardMyGender"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
         android:padding="16dp"
         app:cardCornerRadius="20dp"
@@ -221,7 +274,71 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_gender_other"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/field_gender"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/text_secondary" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- SECCIÓN 2: Seguridad -->
+    <TextView
+        android:id="@+id/tvSectionSecurity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="@string/profile_section_security"
+        android:textColor="@color/on_surface_variant"
+        android:textSize="13sp"
+        android:letterSpacing="0.05"
+        android:textAllCaps="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardMyGender" />
+
+    <!-- Card Verificación -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardVerification"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:padding="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surface_container_high"
+        app:strokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSectionSecurity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -252,9 +369,9 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSettings"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
         android:padding="16dp"
         app:cardCornerRadius="20dp"
@@ -267,7 +384,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -294,6 +411,163 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- SECCIÓN 3: Descubre más -->
+    <TextView
+        android:id="@+id/tvSectionMore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="@string/profile_section_more"
+        android:textColor="@color/on_surface_variant"
+        android:textSize="13sp"
+        android:letterSpacing="0.05"
+        android:textAllCaps="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardSettings" />
+
+    <!-- Card Mis intereses -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardInterests"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:padding="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surface_container_high"
+        app:strokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSectionMore">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_favorite"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/profile_interests"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/text_secondary" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Card Mi actividad -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardActivity"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:padding="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surface_container_high"
+        app:strokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardInterests">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_trending_up"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/profile_activity"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/text_secondary" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Card Invitar amigos -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardInvite"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        android:padding="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surface_container_high"
+        app:strokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_share"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/profile_invite"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/text_secondary" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Botón cerrar sesión compacto, alineado a la izquierda -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
@@ -308,7 +582,7 @@
         android:textAllCaps="false"
         android:textColor="@color/primary"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardSettings"
+        app:layout_constraintTop_toBottomOf="@id/cardInvite"
         app:strokeColor="@color/primary"
         app:strokeWidth="1.5dp" />
 

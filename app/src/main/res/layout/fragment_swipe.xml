@@ -172,8 +172,8 @@
                     android:textColor="@color/on_primary_container"
                     android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/tvGender"
+                <LinearLayout
+                    android:id="@+id/llGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -182,8 +182,24 @@
                     android:paddingEnd="10dp"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
-                    android:textColor="@color/on_primary_container"
-                    android:textSize="12sp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/ivGenderIcon"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="6dp"
+                        android:contentDescription="@string/field_gender"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvGender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/on_primary_container"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvBio"

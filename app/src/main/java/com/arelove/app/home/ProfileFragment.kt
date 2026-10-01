@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.MainActivity
@@ -42,6 +43,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         cargarPerfil()
         configurarLogout()
+        configurarCards()
     }
 
     override fun onDestroyView() {
@@ -89,11 +91,18 @@ class ProfileFragment : Fragment() {
                         "otro" -> R.string.gender_otro
                         else -> null
                     }
-                    if (genderRes != null) {
+                    val genderIcon = when (gender) {
+                        "hombre" -> R.drawable.ic_gender_male
+                        "mujer" -> R.drawable.ic_gender_female
+                        "otro" -> R.drawable.ic_gender_other
+                        else -> 0
+                    }
+                    if (genderRes != null && genderIcon != 0) {
                         sinVista.tvGender.text = getString(genderRes)
-                        sinVista.tvGender.visibility = View.VISIBLE
+                        sinVista.ivGenderIcon.setImageResource(genderIcon)
+                        sinVista.llGender.visibility = View.VISIBLE
                     } else {
-                        sinVista.tvGender.visibility = View.GONE
+                        sinVista.llGender.visibility = View.GONE
                     }
                 }
 
@@ -129,6 +138,50 @@ class ProfileFragment : Fragment() {
             if (AntiSpam.esDobleTap("btnLogout")) return@setOnClickListener
             cerrarSesion()
         }
+    }
+
+    private fun configurarCards() {
+        binding.cardEditProfile.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardEditProfile")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardChangePhotos.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardChangePhotos")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardMyGender.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardMyGender")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardVerification.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardSettings.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardSettings")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardInterests.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardInterests")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardActivity.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardActivity")) return@setOnClickListener
+            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+        }
+        binding.cardInvite.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardInvite")) return@setOnClickListener
+            compartirApp()
+        }
+    }
+
+    private fun compartirApp() {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.profile_invite_message))
+        }
+        val chooser = Intent.createChooser(intent, getString(R.string.profile_invite))
+        startActivity(chooser)
     }
 
     private fun cerrarSesion() {

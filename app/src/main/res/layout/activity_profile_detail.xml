@@ -116,16 +116,30 @@
                     android:visibility="gone"
                     tools:text="Busca pareja" />
 
-                <TextView
-                    android:id="@+id/tvGender"
+                <LinearLayout
+                    android:id="@+id/llGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:textColor="@color/primary"
-                    android:textSize="14sp"
-                    android:visibility="gone"
-                    tools:text="Hombre" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/ivGenderIcon"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="6dp"
+                        android:contentDescription="@string/field_gender" />
+
+                    <TextView
+                        android:id="@+id/tvGender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvLocation"
