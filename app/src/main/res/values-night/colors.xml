@@ -84,4 +84,12 @@
     <!-- Canvas gradient center -->
     <color name="canvas_gradient_center">#4A0E17</color>
 
+    <!-- ==================== COLORES GÉNERO Y BÚSQUEDA (MODO OSCURO) ==================== -->
+    <color name="gender_male_color">#60A5FA</color>
+    <color name="gender_female_color">#F472B6</color>
+    <color name="gender_other_color">#A78BFA</color>
+    <color name="looking_pareja_color">#EF5350</color>
+    <color name="looking_amistades_color">#34D399</color>
+    <color name="looking_ambos_color">#FBBF24</color>
+
 </resources>

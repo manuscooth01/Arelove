@@ -101,4 +101,12 @@
     <!-- Canvas gradient center -->
     <color name="canvas_gradient_center">#4A0E17</color>
 
+    <!-- ==================== COLORES GÉNERO Y BÚSQUEDA ==================== -->
+    <color name="gender_male_color">#3B82F6</color>
+    <color name="gender_female_color">#EC4899</color>
+    <color name="gender_other_color">#8B5CF6</color>
+    <color name="looking_pareja_color">#E53935</color>
+    <color name="looking_amistades_color">#10B981</color>
+    <color name="looking_ambos_color">#F59E0B</color>
+
 </resources>
