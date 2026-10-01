@@ -168,18 +168,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun configurarCards() {
-        // Tu cuenta
+        // Tu cuenta: "Editar perfil" abre el asistente completo (datos,
+        // intereses y fotos se editan recorriendo sus pasos con "Siguiente")
         binding.cardEditProfile.setOnClickListener {
             if (AntiSpam.esDobleTap("cardEditProfile")) return@setOnClickListener
             abrirAsistente(0)
-        }
-        binding.cardInterests.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardInterests")) return@setOnClickListener
-            abrirAsistente(1)
-        }
-        binding.cardChangePhotos.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardChangePhotos")) return@setOnClickListener
-            abrirAsistente(2)
         }
         binding.cardVerification.setOnClickListener {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener

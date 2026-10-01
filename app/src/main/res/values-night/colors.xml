@@ -99,5 +99,6 @@
     <color name="profile_on_dark_muted">#C9B9BB</color>
     <color name="profile_option_bg">#241F20</color>
     <color name="profile_option_stroke">#3F3537</color>
+    <color name="profile_icon_tile_bg">#3A1E20</color>
 
 </resources>
