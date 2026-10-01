@@ -149,8 +149,6 @@
                         android:visibility="gone" />
 </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-
                 <TextView
                     android:id="@+id/tvLocation"
                     android:layout_width="match_parent"
