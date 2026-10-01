@@ -149,7 +149,9 @@
                         android:contentDescription="@string/profile_verified"
                         android:src="@drawable/ic_verified"
                         android:visibility="gone" />
-                </LinearLayout>
+</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/tvLocation"
