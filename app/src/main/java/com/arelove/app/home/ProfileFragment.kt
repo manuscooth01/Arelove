@@ -173,13 +173,13 @@ class ProfileFragment : Fragment() {
             if (AntiSpam.esDobleTap("cardEditProfile")) return@setOnClickListener
             abrirAsistente(0)
         }
+        binding.cardInterests.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardInterests")) return@setOnClickListener
+            abrirAsistente(1)
+        }
         binding.cardChangePhotos.setOnClickListener {
             if (AntiSpam.esDobleTap("cardChangePhotos")) return@setOnClickListener
             abrirAsistente(2)
-        }
-        binding.cardMyGender.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardMyGender")) return@setOnClickListener
-            abrirAsistente(0)
         }
         binding.cardVerification.setOnClickListener {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
@@ -205,19 +205,6 @@ class ProfileFragment : Fragment() {
         }
 
         // Descubre más
-        binding.cardInterests.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardInterests")) return@setOnClickListener
-            abrirAsistente(1)
-        }
-        binding.cardActivity.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardActivity")) return@setOnClickListener
-            AreloveDialog.show(
-                requireContext(),
-                AreloveDialog.Tipo.INFO,
-                getString(R.string.soon_title),
-                getString(R.string.soon_msg)
-            )
-        }
         binding.cardInvite.setOnClickListener {
             if (AntiSpam.esDobleTap("cardInvite")) return@setOnClickListener
             compartirApp()
@@ -251,7 +238,7 @@ class ProfileFragment : Fragment() {
                 v.tvVerificationStatus.text = getString(R.string.verification_status_empty)
             }
             v.tvVerificationStatus.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.on_surface_variant)
+                ContextCompat.getColor(requireContext(), R.color.profile_on_dark_muted)
             )
         }
     }

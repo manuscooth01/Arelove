@@ -2,10 +2,12 @@
 <!--
     Pantalla de Perfil - Rediseño.
     Header con avatar, badge verificación, género con ícono.
-    Secciones: Tu cuenta (con estado de verificación),
+    Secciones: Tu cuenta (editar, intereses, fotos, verificación),
     Ayuda y legal (términos, privacidad, comunidad, FAQ),
-    Descubre más (intereses, actividad, invitar, ajustes).
-    ScrollView permite desplazarse cuando el contenido supera la pantalla.
+    Descubre más (invitar, ajustes).
+    Fondo siempre oscuro: colores profile_on_dark* fijos en ambos modos.
+    Cards con estilo Widget.Arelove.Card (borde 1dp) y wrap_content para
+    que no recorten con fuente grande.
 -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,8 +21,7 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/bg_canvas_gradient">
+    android:orientation="vertical">
 
     <!-- Header del perfil -->
     <LinearLayout
@@ -96,7 +97,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="@string/nav_profile"
-                android:textColor="@color/text_primary"
+                android:textAppearance="@style/Widget.Arelove.Title"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="24sp"
                 tools:text="María García" />
 
@@ -117,8 +119,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
+            android:textAppearance="@style/Widget.Arelove.Subtitle"
+            android:textColor="@color/profile_on_dark_muted"
             tools:text="maria@ejemplo.com" />
 
         <!-- Chip género con ícono al lado del email -->
@@ -126,7 +128,7 @@
             android:id="@+id/llGender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:visibility="gone">
@@ -143,6 +145,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_chip_looking"
+                android:fontFamily="@font/poppins_medium"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:paddingTop="4dp"
@@ -162,28 +165,32 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="@string/profile_section_account"
-        android:textColor="@color/on_surface_variant"
+        android:textAllCaps="true"
+        android:textColor="@color/profile_on_dark_muted"
         android:textSize="13sp"
-        android:letterSpacing="0.05"
-        android:textAllCaps="true" />
+        android:letterSpacing="0.05" />
 
     <!-- Card Editar perfil -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardEditProfile"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -192,41 +199,94 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_edit"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/edit_profile"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Card Mis intereses -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardInterests"
+        style="@style/Widget.Arelove.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_favorite"
+                android:tint="@color/profile_on_dark_muted" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/profile_interests"
+                android:textColor="@color/profile_on_dark"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Card Cambiar fotos -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardChangePhotos"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -235,81 +295,42 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_camera"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/change_photos"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Card Género -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardMyGender"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_gender_other"
-                android:tint="@color/text_secondary" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/field_gender"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Card Verificación con estado dinámico -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardVerification"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -327,21 +348,22 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_shield"
-                    android:tint="@color/text_secondary" />
+                    android:tint="@color/profile_on_dark_muted" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="@string/verification"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/profile_on_dark"
                     android:textSize="15sp" />
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_right"
-                    android:tint="@color/text_secondary" />
+                    android:tint="@color/profile_on_dark_muted" />
             </LinearLayout>
 
             <!-- Estado: Verificado / En revisión / Sin verificar -->
@@ -351,8 +373,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="2dp"
-                android:textColor="@color/on_surface_variant"
-                android:textSize="12sp"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@color/profile_on_dark_muted"
+                android:textSize="13sp"
                 android:visibility="gone"
                 tools:text="Sin verificar" />
         </LinearLayout>
@@ -368,28 +391,32 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="@string/profile_section_help"
-        android:textColor="@color/on_surface_variant"
+        android:textAllCaps="true"
+        android:textColor="@color/profile_on_dark_muted"
         android:textSize="13sp"
-        android:letterSpacing="0.05"
-        android:textAllCaps="true" />
+        android:letterSpacing="0.05" />
 
     <!-- Card Términos y condiciones -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardTerms"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -398,41 +425,46 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_info"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/profile_terms"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Card Política de privacidad -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardPrivacy"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -441,41 +473,46 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_lock"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/legal_privacidad_title"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Card Reglas de la comunidad -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardCommunity"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -484,41 +521,46 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_group"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/legal_comunidad_title"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Card Preguntas frecuentes -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardFaq"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -527,21 +569,22 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_help"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/profile_faq"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -555,114 +598,32 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="@string/profile_section_more"
-        android:textColor="@color/on_surface_variant"
+        android:textAllCaps="true"
+        android:textColor="@color/profile_on_dark_muted"
         android:textSize="13sp"
-        android:letterSpacing="0.05"
-        android:textAllCaps="true" />
-
-    <!-- Card Mis intereses -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardInterests"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_favorite"
-                android:tint="@color/text_secondary" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/profile_interests"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Card Mi actividad -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardActivity"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_trending_up"
-                android:tint="@color/text_secondary" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/profile_activity"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+        android:letterSpacing="0.05" />
 
     <!-- Card Invitar amigos -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInvite"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -671,41 +632,46 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_share"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/profile_invite"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Card Ajustes -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSettings"
+        style="@style/Widget.Arelove.Card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/surface_container_high"
-        app:strokeWidth="0dp">
+        android:minHeight="64dp"
+        app:cardBackgroundColor="@color/profile_option_bg"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingTop="14dp"
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingBottom="14dp"
+        app:strokeColor="@color/profile_option_stroke"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -714,21 +680,22 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_settings"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/settings"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/profile_on_dark"
                 android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_right"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

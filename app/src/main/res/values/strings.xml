@@ -258,11 +258,9 @@
     <string name="no_more_profiles">No hay más personas cerca por ahora</string>
     <string name="no_more_profiles_title">¡Ya viste a todos!</string>
     <string name="no_more_profiles_subtitle">Vuelve más tarde, hay gente nueva cada día</string>
-    <string name="coming_soon">Próximamente</string>
 
     <!-- ==================== MEJORAS PERFIL (MEJORA 3) ==================== -->
     <string name="profile_section_account">Tu cuenta</string>
-    <string name="profile_section_security">Seguridad</string>
     <string name="profile_section_more">Descubre más</string>
     <string name="profile_interests">Mis intereses</string>
     <string name="profile_activity">Mi actividad</string>
@@ -485,8 +483,6 @@
     <string name="verification_status_empty">Sin verificar · Pulsa para verificar</string>
     <string name="settings_title">Ajustes</string>
     <string name="settings_account">Cuenta</string>
-    <string name="settings_account_subtitle">Correo asociado a tu cuenta</string>
-    <string name="settings_help">Ayuda</string>
     <string name="settings_delete_account">Eliminar cuenta</string>
     <string name="settings_delete_account_msg">Para eliminar tu cuenta escríbenos a soporte@arelove.app y la gestionamos en 48 horas.</string>
     <string name="settings_version">Versión</string>
@@ -495,7 +491,5 @@
     <string name="verification_done_msg">Tu perfil ya muestra el sello de verificado por Arelove.</string>
     <string name="verification_rejected_title">Verificación rechazada</string>
     <string name="verification_rejected_msg">Tu selfie no pudo validarse. Puedes volver a tomarla cuando quieras.</string>
-    <string name="soon_title">Muy pronto</string>
-    <string name="soon_msg">Estamos terminando esta sección. ¡Ya puedes usar el resto de Arelove!</string>
 
 </resources>

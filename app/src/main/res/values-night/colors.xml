@@ -92,4 +92,12 @@
     <color name="looking_amistades_color">#34D399</color>
     <color name="looking_ambos_color">#FBBF24</color>
 
+    <!-- ==================== PERFIL / AJUSTES - SOBRE FONDO SIEMPRE OSCURO ==================== -->
+    <!-- Mismos valores que en modo claro: el fondo es siempre oscuro y el contraste
+         no debe cambiar con el sistema. -->
+    <color name="profile_on_dark">#F5ECEE</color>
+    <color name="profile_on_dark_muted">#C9B9BB</color>
+    <color name="profile_option_bg">#241F20</color>
+    <color name="profile_option_stroke">#3F3537</color>
+
 </resources>

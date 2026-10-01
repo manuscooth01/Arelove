@@ -1,6 +1,5 @@
 package com.arelove.app
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.arelove.app.databinding.ActivitySettingsBinding
@@ -9,9 +8,10 @@ import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
 
 /**
- * Pantalla de Ajustes de Arelove: cuenta (correo y eliminación) y ayuda.
- * La eliminación de cuenta se gestiona por correo (soporte@arelove.app)
- * porque la SDK de Supabase no permite borrar usuarios desde el cliente.
+ * Pantalla de Ajustes de Arelove: cuenta (correo) y eliminación de cuenta.
+ * La eliminación se gestiona por correo (soporte@arelove.app) porque la SDK
+ * de Supabase no permite borrar usuarios desde el cliente. Lo legal
+ * (términos, privacidad, comunidad, FAQ) vive solo en el perfil.
  */
 class SettingsActivity : AppCompatActivity() {
 
@@ -33,16 +33,6 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.btnCloseSettings.setOnClickListener { finish() }
 
-        binding.cardSettingsPrivacy.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardSettingsPrivacy")) return@setOnClickListener
-            abrirLegal("privacidad")
-        }
-
-        binding.cardSettingsFaq.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardSettingsFaq")) return@setOnClickListener
-            abrirLegal("faq")
-        }
-
         binding.cardDeleteAccount.setOnClickListener {
             if (AntiSpam.esDobleTap("cardDeleteAccount")) return@setOnClickListener
             AreloveDialog.show(
@@ -52,14 +42,5 @@ class SettingsActivity : AppCompatActivity() {
                 getString(R.string.settings_delete_account_msg)
             )
         }
-    }
-
-    /** Abre la pantalla legal con el tipo indicado. */
-    private fun abrirLegal(tipo: String) {
-        startActivity(
-            Intent(this, LegalActivity::class.java).apply {
-                putExtra(LegalActivity.EXTRA_TIPO, tipo)
-            }
-        )
     }
 }
