@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.LegalActivity
 import com.arelove.app.MainActivity
+import com.arelove.app.ProfileSetupActivity
 import com.arelove.app.R
+import com.arelove.app.SettingsActivity
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentProfileBinding
 import com.arelove.app.ui.AreloveDialog
@@ -25,12 +26,16 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * Fragment de Perfil - muestra avatar circular con inicial, nombre, email, opciones y botón logout.
+ * Fragment de Perfil - muestra avatar circular con inicial, nombre, email,
+ * estado de verificación, opciones y botón logout.
  */
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    /** true si el equipo de Arelove ya verificó la identidad del usuario. */
+    private var perfilVerificado = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,9 +48,14 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cargarPerfil()
         configurarLogout()
         configurarCards()
+    }
+
+    /** Recarga los datos cada vez que el usuario vuelve a la pestaña (p. ej. tras editar). */
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) cargarPerfil()
     }
 
     override fun onDestroyView() {
@@ -65,9 +75,9 @@ class ProfileFragment : Fragment() {
                     return@launch
                 }
 
-                // Cargar nickname y foto desde profiles y media
+                // Cargar nickname, género y verificación desde profiles
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("nickname", "gender")
+                    columns = Columns.list("nickname", "gender", "verified", "verification_photo_url")
                 ) {
                     filter { eq("id", userId) }
                     limit(1)
@@ -114,6 +124,13 @@ class ProfileFragment : Fragment() {
                     } else {
                         sinVista.llGender.visibility = View.GONE
                     }
+
+                    // Estado de verificación (badges del header + subtítulo de la card)
+                    val verificado = filas[0]["verified"]
+                        ?.let { (it as? JsonPrimitive)?.content == "true" } ?: false
+                    val selfieUrl = filas[0]["verification_photo_url"]
+                        ?.let { (it as? JsonPrimitive)?.content }.orEmpty()
+                    pintarVerificacion(verificado, selfieUrl)
                 }
 
                 // Cargar foto de perfil desde media
@@ -151,46 +168,113 @@ class ProfileFragment : Fragment() {
     }
 
     private fun configurarCards() {
+        // Tu cuenta
         binding.cardEditProfile.setOnClickListener {
             if (AntiSpam.esDobleTap("cardEditProfile")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+            abrirAsistente(0)
         }
         binding.cardChangePhotos.setOnClickListener {
             if (AntiSpam.esDobleTap("cardChangePhotos")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+            abrirAsistente(2)
         }
         binding.cardMyGender.setOnClickListener {
             if (AntiSpam.esDobleTap("cardMyGender")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+            abrirAsistente(0)
         }
         binding.cardVerification.setOnClickListener {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+            alPulsarVerificacion()
         }
-        binding.cardSettings.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardSettings")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
-        }
-        binding.cardInterests.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardInterests")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
-        }
-        binding.cardActivity.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardActivity")) return@setOnClickListener
-            Toast.makeText(requireContext(), getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
-        }
-        binding.cardInvite.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardInvite")) return@setOnClickListener
-            compartirApp()
-        }
+
+        // Ayuda y legal
         binding.cardTerms.setOnClickListener {
             if (AntiSpam.esDobleTap("cardTerms")) return@setOnClickListener
             abrirLegal("terminos")
+        }
+        binding.cardPrivacy.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardPrivacy")) return@setOnClickListener
+            abrirLegal("privacidad")
+        }
+        binding.cardCommunity.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardCommunity")) return@setOnClickListener
+            abrirLegal("comunidad")
         }
         binding.cardFaq.setOnClickListener {
             if (AntiSpam.esDobleTap("cardFaq")) return@setOnClickListener
             abrirLegal("faq")
         }
+
+        // Descubre más
+        binding.cardInterests.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardInterests")) return@setOnClickListener
+            abrirAsistente(1)
+        }
+        binding.cardActivity.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardActivity")) return@setOnClickListener
+            AreloveDialog.show(
+                requireContext(),
+                AreloveDialog.Tipo.INFO,
+                getString(R.string.soon_title),
+                getString(R.string.soon_msg)
+            )
+        }
+        binding.cardInvite.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardInvite")) return@setOnClickListener
+            compartirApp()
+        }
+        binding.cardSettings.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardSettings")) return@setOnClickListener
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
+    }
+
+    /** Pinta badges de verificación del header y el estado de la card. */
+    private fun pintarVerificacion(verificado: Boolean, selfieUrl: String) {
+        perfilVerificado = verificado
+        val v = _binding ?: return
+
+        if (verificado) {
+            v.ivVerifiedBadge.visibility = View.VISIBLE
+            v.ivNameVerified.visibility = View.VISIBLE
+            v.tvVerificationStatus.visibility = View.VISIBLE
+            v.tvVerificationStatus.text = getString(R.string.verification_status_verified)
+            v.tvVerificationStatus.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.online_green)
+            )
+        } else {
+            v.ivVerifiedBadge.visibility = View.GONE
+            v.ivNameVerified.visibility = View.GONE
+            v.tvVerificationStatus.visibility = View.VISIBLE
+            if (selfieUrl.isNotEmpty()) {
+                v.tvVerificationStatus.text = getString(R.string.verification_status_pending)
+            } else {
+                v.tvVerificationStatus.text = getString(R.string.verification_status_empty)
+            }
+            v.tvVerificationStatus.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.on_surface_variant)
+            )
+        }
+    }
+
+    /** Acción de la card Verificación: confirmación si ya está verificado, si no abre el paso 5. */
+    private fun alPulsarVerificacion() {
+        if (perfilVerificado) {
+            AreloveDialog.show(
+                requireContext(),
+                AreloveDialog.Tipo.SUCCESS,
+                getString(R.string.verification_done_title),
+                getString(R.string.verification_done_msg)
+            )
+        } else {
+            abrirAsistente(4)
+        }
+    }
+
+    /** Abre el asistente de perfil en modo edición, directamente en el paso indicado (0..4). */
+    private fun abrirAsistente(paso: Int) {
+        startActivity(Intent(requireContext(), ProfileSetupActivity::class.java).apply {
+            putExtra(ProfileSetupActivity.EXTRA_PASO, paso)
+        })
     }
 
     /** Abre la pantalla legal con el tipo indicado. */

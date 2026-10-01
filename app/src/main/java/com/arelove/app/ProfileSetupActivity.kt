@@ -45,6 +45,9 @@ class ProfileSetupActivity : AppCompatActivity() {
     /** Número total de pasos del asistente. */
     private val totalPasos = 5
 
+    /** true cuando el asistente se abre para editar un paso concreto desde el perfil. */
+    private var modoEdicion = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileSetupBinding.inflate(layoutInflater)
@@ -60,10 +63,18 @@ class ProfileSetupActivity : AppCompatActivity() {
 
         configurarViewPager()
 
-        // Retoma el paso donde se quedó la última vez (si sigue en rango)
-        val ultimoPaso = prefs.getInt(claveUltimoPaso, -1)
-        if (ultimoPaso in 0 until totalPasos) {
-            binding.viewPager.currentItem = ultimoPaso
+        // Modo edición: el perfil pide un paso concreto (no se retoma ni se guarda
+        // el paso anterior del asistente)
+        val pasoInicial = intent.getIntExtra(EXTRA_PASO, -1)
+        modoEdicion = pasoInicial in 0 until totalPasos
+        if (modoEdicion) {
+            binding.viewPager.currentItem = pasoInicial
+        } else {
+            // Retoma el paso donde se quedó la última vez (si sigue en rango)
+            val ultimoPaso = prefs.getInt(claveUltimoPaso, -1)
+            if (ultimoPaso in 0 until totalPasos) {
+                binding.viewPager.currentItem = ultimoPaso
+            }
         }
 
         configurarBotones()
@@ -81,7 +92,10 @@ class ProfileSetupActivity : AppCompatActivity() {
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 // Recuerda el paso para retomarlo si el usuario sale a medias
-                prefs.edit().putInt(claveUltimoPaso, position).apply()
+                // (en modo edición no se toca, para no pisar el progreso real)
+                if (!modoEdicion) {
+                    prefs.edit().putInt(claveUltimoPaso, position).apply()
+                }
                 actualizarIndicador(position)
             }
         })
@@ -213,6 +227,11 @@ class ProfileSetupActivity : AppCompatActivity() {
     }
 
     private fun irAHome() {
+        // Modo edición: solo cerrar y volver al perfil que abrió el asistente
+        if (modoEdicion) {
+            finish()
+            return
+        }
         // Perfil terminado: el asistente ya no tiene nada que retomar
         prefs.edit().remove(claveUltimoPaso).apply()
         startActivity(Intent(this, HomeActivity::class.java))
@@ -228,6 +247,9 @@ class ProfileSetupActivity : AppCompatActivity() {
         val actual = binding.viewPager.currentItem
         if (actual > 0) {
             binding.viewPager.currentItem = actual - 1
+        } else if (modoEdicion) {
+            // Edición desde el perfil: volver directo (no hay perfil pendiente)
+            finish()
         } else {
             MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.dialog_warning_title))
@@ -260,5 +282,14 @@ class ProfileSetupActivity : AppCompatActivity() {
             3 -> Step4OptionalFragment()
             else -> Step5VerificationFragment()
         }
+    }
+
+    companion object {
+        /**
+         * Extra opcional con el índice del paso (0..4) que se abre directamente.
+         * Si se pasa, el asistente entra en modo edición: no retoma ni guarda
+         * el progreso del asistente y al terminar solo hace finish().
+         */
+        const val EXTRA_PASO = "paso_inicial"
     }
 }
