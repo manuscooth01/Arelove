@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.arelove.app.LegalActivity
 import com.arelove.app.MainActivity
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -182,6 +183,21 @@ class ProfileFragment : Fragment() {
             if (AntiSpam.esDobleTap("cardInvite")) return@setOnClickListener
             compartirApp()
         }
+        binding.cardTerms.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardTerms")) return@setOnClickListener
+            abrirLegal("terminos")
+        }
+        binding.cardFaq.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardFaq")) return@setOnClickListener
+            abrirLegal("faq")
+        }
+    }
+
+    /** Abre la pantalla legal con el tipo indicado. */
+    private fun abrirLegal(tipo: String) {
+        startActivity(Intent(requireContext(), LegalActivity::class.java).apply {
+            putExtra("tipo", tipo)
+        })
     }
 
     private fun compartirApp() {

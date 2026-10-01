@@ -43,6 +43,12 @@
             android:name=".RegisterActivity"
             android:exported="false" />
 
+        <!-- Pantalla legal: Términos, Privacidad, Comunidad, FAQ -->
+        <activity
+            android:name=".LegalActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Asistente de perfil (5 pasos) -->
         <activity
             android:name=".ProfileSetupActivity"

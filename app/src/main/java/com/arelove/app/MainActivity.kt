@@ -127,5 +127,20 @@ class MainActivity : AppCompatActivity() {
             if (AntiSpam.esDobleTap("buttonRegister")) return@setOnClickListener
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+
+        binding.tvTerminos.setOnClickListener {
+            abrirLegal("terminos")
+        }
+
+        binding.tvPrivacidad.setOnClickListener {
+            abrirLegal("privacidad")
+        }
+    }
+
+    /** Abre la pantalla legal con el tipo indicado ("terminos", "privacidad", etc.). */
+    private fun abrirLegal(tipo: String) {
+        startActivity(Intent(this, LegalActivity::class.java).apply {
+            putExtra("tipo", tipo)
+        })
     }
 }

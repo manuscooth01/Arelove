@@ -465,4 +465,17 @@
     <string name="setup_continue">Continuar</string>
     <string name="setup_exit">Salir</string>
 
+    <!-- ==================== LEGAL (TÉRMINOS Y PRIVACIDAD) ==================== -->
+    <string name="legal_terminos_title">Términos y condiciones</string>
+    <string name="legal_privacidad_title">Política de privacidad</string>
+    <string name="legal_comunidad_title">Reglas de la comunidad</string>
+    <string name="legal_faq_title">Preguntas frecuentes</string>
+    <string name="legal_link_terminos">Términos</string>
+    <string name="legal_link_privacidad">Política</string>
+    <string name="legal_accept_prefix">Al continuar aceptas los </string>
+    <string name="legal_accept_and"> y </string>
+    <string name="profile_terms">Términos y condiciones</string>
+    <string name="profile_faq">Preguntas frecuentes</string>
+    <string name="legal_close">Cerrar</string>
+
 </resources>

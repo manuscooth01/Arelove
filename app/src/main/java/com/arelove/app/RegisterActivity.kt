@@ -58,6 +58,18 @@ class RegisterActivity : AppCompatActivity() {
         binding.cbTerms.setOnCheckedChangeListener { _, checked ->
             if (checked) binding.cbTerms.error = null
         }
+
+        binding.tvTerminos.setOnClickListener {
+            startActivity(Intent(this, LegalActivity::class.java).apply {
+                putExtra("tipo", "terminos")
+            })
+        }
+
+        binding.tvPrivacidad.setOnClickListener {
+            startActivity(Intent(this, LegalActivity::class.java).apply {
+                putExtra("tipo", "privacidad")
+            })
+        }
     }
 
     private fun configurarCampos() {

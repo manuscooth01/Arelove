@@ -53,6 +53,18 @@ class LoginActivity : AppCompatActivity() {
 
         binding.ivTogglePassword.alpha = 0.4f
         binding.ivTogglePassword.setOnClickListener { alternarPassword() }
+
+        binding.tvTerminos.setOnClickListener {
+            startActivity(Intent(this, LegalActivity::class.java).apply {
+                putExtra("tipo", "terminos")
+            })
+        }
+
+        binding.tvPrivacidad.setOnClickListener {
+            startActivity(Intent(this, LegalActivity::class.java).apply {
+                putExtra("tipo", "privacidad")
+            })
+        }
     }
 
     private fun configurarCampos() {

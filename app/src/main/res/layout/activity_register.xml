@@ -150,6 +150,52 @@
             android:textColor="@color/on_surface"
             android:textSize="13sp" />
 
+        <!-- Links clickeables a Términos y Privacidad -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/legal_accept_prefix"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvTerminos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/legal_link_terminos"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/legal_accept_and"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvPrivacidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/legal_link_privacidad"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
         <!-- Botón crear cuenta -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegister"
