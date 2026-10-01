@@ -3,19 +3,27 @@
     Pantalla de Perfil - Rediseño MEJORA 3.
     Header con avatar, badge verificación, género con ícono.
     Cards agrupadas en 3 secciones: Tu cuenta, Seguridad, Descubre más.
+    ScrollView permite desplazarse cuando el contenido supera la pantalla.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_canvas_gradient"
+    android:fillViewport="true">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="@drawable/bg_canvas_gradient">
 
     <!-- Header del perfil -->
     <LinearLayout
         android:id="@+id/profileHeader"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
@@ -148,7 +156,7 @@
     <!-- SECCIÓN 1: Tu cuenta -->
     <TextView
         android:id="@+id/tvSectionAccount"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
@@ -166,7 +174,7 @@
     <!-- Card Editar perfil -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardEditProfile"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -212,7 +220,7 @@
     <!-- Card Cambiar fotos -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardChangePhotos"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -258,7 +266,7 @@
     <!-- Card Mi género -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardMyGender"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -304,7 +312,7 @@
     <!-- SECCIÓN 2: Seguridad -->
     <TextView
         android:id="@+id/tvSectionSecurity"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
@@ -322,7 +330,7 @@
     <!-- Card Verificación -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardVerification"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -368,7 +376,7 @@
     <!-- Card Configuración -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSettings"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -414,7 +422,7 @@
     <!-- Card Términos y condiciones -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardTerms"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -460,7 +468,7 @@
     <!-- Card Preguntas frecuentes -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardFaq"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -506,7 +514,7 @@
     <!-- SECCIÓN 3: Descubre más -->
     <TextView
         android:id="@+id/tvSectionMore"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
@@ -524,7 +532,7 @@
     <!-- Card Mis intereses -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInterests"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -570,7 +578,7 @@
     <!-- Card Mi actividad -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardActivity"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -616,7 +624,7 @@
     <!-- Card Invitar amigos -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInvite"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
@@ -678,4 +686,5 @@
         app:strokeColor="@color/primary"
         app:strokeWidth="1.5dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
+</ScrollView>

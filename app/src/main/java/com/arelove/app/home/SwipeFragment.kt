@@ -76,6 +76,7 @@ class SwipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configurarBotones()
+        configurarSwipeRefresh()
         cargarPerfiles()
 
         // Touch listener en photoPager para detectar tap y abrir perfil (sin romper swipe)
@@ -119,6 +120,21 @@ class SwipeFragment : Fragment() {
         photoLoadJobs.values.forEach { it.cancel() }
         photoLoadJobs.clear()
         _binding = null
+    }
+
+    /** Pull-to-refresh: recarga la lista de perfiles deslizando hacia abajo. */
+    private fun configurarSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeResources(R.color.primary)
+        binding.swipeRefresh.setOnRefreshListener {
+            if (loading) {
+                // Ya hay una carga en curso: solo cerramos el indicador
+                binding.swipeRefresh.isRefreshing = false
+            } else {
+                currentIndex = 0
+                profiles.clear()
+                cargarPerfiles()
+            }
+        }
     }
 
     private fun configurarBotones() {
@@ -263,6 +279,7 @@ class SwipeFragment : Fragment() {
                 )
             } finally {
                 loading = false
+                _binding?.swipeRefresh?.isRefreshing = false
             }
         }
     }
