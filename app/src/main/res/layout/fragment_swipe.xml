@@ -43,8 +43,6 @@
             android:fontFamily="@font/poppins_bold" />
     </LinearLayout>
 
-    </LinearLayout>
-
     <!-- Card siguiente (apilada detrás) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardNext"
