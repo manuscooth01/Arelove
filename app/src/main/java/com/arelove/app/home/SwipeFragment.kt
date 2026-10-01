@@ -276,6 +276,7 @@ class SwipeFragment : Fragment() {
         val zodiac = textoDe(fila, "zodiac")
         val occupation = textoDe(fila, "occupation")
         val lookingFor = textoDe(fila, "looking_for")
+        val gender = textoDe(fila, "gender")
 
         return SwipeProfile(
             userId = userId,
@@ -289,7 +290,8 @@ class SwipeFragment : Fragment() {
             zodiac = zodiac,
             occupation = occupation,
             intereses = intereses,
-            lookingFor = lookingFor
+            lookingFor = lookingFor,
+            gender = gender
         )
     }
 

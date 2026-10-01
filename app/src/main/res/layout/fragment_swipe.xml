@@ -85,13 +85,17 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clickable="false"
+            android:focusable="false">
 
             <!-- Foto -->
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/photoPager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:focusable="false" />
 
             <!-- Scrim superior: legibilidad de las barras de fotos sobre la imagen -->
             <View
@@ -99,7 +103,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_gravity="top"
-                android:background="@drawable/bg_profile_gradient_top" />
+                android:background="@drawable/bg_profile_gradient_top"
+                android:clickable="false"
+                android:focusable="false" />
 
             <!-- Barras indicadoras tipo stories (reemplazan dots) -->
             <LinearLayout
@@ -112,7 +118,9 @@
                 android:layout_marginTop="12dp"
                 android:orientation="horizontal"
                 android:weightSum="6"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:clickable="false"
+                android:focusable="false" />
 
             <!-- Gradiente + info al pie -->
             <LinearLayout
@@ -121,7 +129,9 @@
                 android:layout_gravity="bottom"
                 android:background="@drawable/bg_profile_gradient_bottom"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:clickable="false"
+                android:focusable="false">
 
                 <LinearLayout
                     android:layout_width="match_parent"
