@@ -64,11 +64,6 @@
             android:theme="@style/Theme.Arelove"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity
-            android:name=".home.ProfileDetailActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Arelove" />
-
         <!-- uCrop: Activity para recortar imágenes -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

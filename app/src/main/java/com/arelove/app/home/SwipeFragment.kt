@@ -101,16 +101,6 @@ class SwipeFragment : Fragment() {
         }
     }
 
-    private fun configurarClickCard() {
-        binding.cardProfile.setOnClickListener {
-            val perfil = profiles.getOrNull(currentIndex) ?: return@setOnClickListener
-            val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
-                putExtra("user_id", perfil.userId)
-            }
-            startActivity(intent)
-        }
-    }
-
     /** Carga la lista inicial de perfiles desde Supabase. */
     private fun cargarPerfiles() {
         val b = _binding ?: return
@@ -217,7 +207,6 @@ class SwipeFragment : Fragment() {
                     currentIndex = 0
                     sinVista.cardProfile.visibility = View.VISIBLE
                     sinVista.llActions.visibility = View.VISIBLE
-                    configurarClickCard()
                     mostrarPerfilActual()
                     precargarSiguiente()
                 }
@@ -479,6 +468,15 @@ class SwipeFragment : Fragment() {
         val b = _binding ?: return
         val adapter = PhotoPagerAdapter(urls)
         b.photoPager.adapter = adapter
+
+        // Click en la foto abre el detalle del perfil (sin romper el swipe horizontal)
+        b.photoPager.setOnClickListener {
+            val perfil = profiles.getOrNull(currentIndex) ?: return@setOnClickListener
+            val intent = Intent(requireContext(), ProfileDetailActivity::class.java).apply {
+                putExtra("user_id", perfil.userId)
+            }
+            startActivity(intent)
+        }
 
         // Configurar barras tipo stories
         actualizarBarrasStories(urls.size, 0)
