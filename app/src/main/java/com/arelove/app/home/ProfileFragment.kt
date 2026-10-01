@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.MainActivity
@@ -97,9 +98,17 @@ class ProfileFragment : Fragment() {
                         "otro" -> R.drawable.ic_gender_other
                         else -> 0
                     }
-                    if (genderRes != null && genderIcon != 0) {
+                    val genderColor = when (gender) {
+                        "hombre" -> R.color.gender_male_color
+                        "mujer" -> R.color.gender_female_color
+                        "otro" -> R.color.gender_other_color
+                        else -> 0
+                    }
+                    if (genderRes != null && genderIcon != 0 && genderColor != 0) {
                         sinVista.tvGender.text = getString(genderRes)
                         sinVista.ivGenderIcon.setImageResource(genderIcon)
+                        sinVista.ivGenderIcon.setColorFilter(ContextCompat.getColor(requireContext(), genderColor))
+                        sinVista.tvGender.setTextColor(ContextCompat.getColor(requireContext(), genderColor))
                         sinVista.llGender.visibility = View.VISIBLE
                     } else {
                         sinVista.llGender.visibility = View.GONE
