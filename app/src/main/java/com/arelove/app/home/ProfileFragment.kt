@@ -85,7 +85,12 @@ class ProfileFragment : Fragment() {
     private fun cargarEsAdmin() {
         lifecycleScope.launch {
             val esAdmin = AdminChecker.esAdmin()
-            _binding?.cardAdmin?.visibility = if (esAdmin) View.VISIBLE else View.GONE
+            // Doble comprobación: sin sesión no se enseña la card, aunque
+            // la caché dijera true. Se consulta la sesión DESPUÉS de
+            // esAdmin(), que ya ha esperado a awaitInitialization().
+            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+            _binding?.cardAdmin?.visibility =
+                if (esAdmin && userId != null) View.VISIBLE else View.GONE
         }
     }
 
@@ -404,8 +409,11 @@ class ProfileFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 SupabaseClient.client.auth.signOut()
+                // El rol admin no sobrevive al cambio de usuario
+                AdminChecker.invalidarCache()
                 irAInicio()
             } catch (e: Exception) {
+                AdminChecker.invalidarCache()
                 AreloveDialog.show(
                     requireContext(),
                     AreloveDialog.Tipo.ERROR,

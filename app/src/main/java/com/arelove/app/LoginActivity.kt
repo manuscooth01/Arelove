@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.ActivityLoginBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
@@ -190,6 +191,8 @@ class LoginActivity : AppCompatActivity() {
      * aquí no se hace ninguna llamada de red.
      */
     private fun navegarAMain() {
+        // Nueva sesión: olvidamos el rol admin cacheado (caché por usuario)
+        AdminChecker.invalidarCache()
         val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }

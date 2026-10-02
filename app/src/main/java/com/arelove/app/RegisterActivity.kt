@@ -10,6 +10,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.ActivityRegisterBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
@@ -116,6 +117,8 @@ class RegisterActivity : AppCompatActivity() {
      * para que al terminar el setup no se vuelva al registro.
      */
     private fun abrirProfileSetup() {
+        // Cuenta nueva: nunca hereda el rol admin cacheado
+        AdminChecker.invalidarCache()
         val intent = Intent(this, ProfileSetupActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
