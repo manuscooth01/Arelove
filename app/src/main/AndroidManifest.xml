@@ -111,12 +111,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- uCrop Activity para recortar fotos -->
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
     </application>
 
 </manifest>

@@ -28,6 +28,7 @@ android {
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -76,11 +77,11 @@ dependencies {
     // Supabase BOM (para alinear versiones de todos los módulos)
     implementation platform('io.github.jan-tennert.supabase:bom:2.1.0')
 
-    // Módulos de Supabase
+    // Módulos de Supabase (sin el de Realtime: el chat usa polling y el
+    // módulo no se instala, así que sólo añadía peso al APK)
     implementation 'io.github.jan-tennert.supabase:postgrest-kt'
     implementation 'io.github.jan-tennert.supabase:gotrue-kt'
     implementation 'io.github.jan-tennert.supabase:storage-kt'
-    implementation 'io.github.jan-tennert.supabase:realtime-kt'
 
     // Carga de imágenes de perfil (paso 3 del asistente)
     implementation 'io.coil-kt:coil:2.5.0'

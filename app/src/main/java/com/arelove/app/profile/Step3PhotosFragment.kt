@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arelove.app.BuildConfig
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.PhotoUploadHelper
 import com.arelove.app.R
@@ -707,7 +708,10 @@ class Step3PhotosFragment : Fragment() {
                         crossfade(true)
                         listener(
                             onError = { _, result ->
-                                Log.e(TAG_LOG, "Coil error cargando $url", result.throwable)
+                                // La URL de Storage no se vuelca en release (VUL-13)
+                                if (BuildConfig.DEBUG) {
+                                    Log.e(TAG_LOG, "Coil error cargando $url", result.throwable)
+                                }
                             }
                         )
                     }

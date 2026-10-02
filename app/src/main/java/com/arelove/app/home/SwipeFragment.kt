@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.arelove.app.BuildConfig
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.PhotoUploadHelper
 import com.arelove.app.R
@@ -562,7 +563,10 @@ class SwipeFragment : Fragment() {
                 // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
-                Log.e("SwipeFragment", "Error cargando fotos de $userId", e)
+                // El id no se vuelca en release (VUL-13)
+                if (BuildConfig.DEBUG) {
+                    Log.e("SwipeFragment", "Error cargando fotos de $userId", e)
+                }
                 val sinVista = _binding ?: return@launch
                 setupPhotoPager(emptyList())
             }

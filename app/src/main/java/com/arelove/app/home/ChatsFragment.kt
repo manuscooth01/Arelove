@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.arelove.app.BuildConfig
 import com.arelove.app.ErrorSanitizer
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -182,7 +183,10 @@ class ChatsFragment : Fragment() {
                             // y nunca se traga (regla de corrutinas de Kotlin).
                             throw e
                         } catch (e: Exception) {
-                            Log.e("ChatsFragment", "Error cargando perfil $otroId", e)
+                            // El id no se vuelca en release (VUL-13)
+                            if (BuildConfig.DEBUG) {
+                                Log.e("ChatsFragment", "Error cargando perfil $otroId", e)
+                            }
                         }
                     }
                     perfilesJobs.add(job)
