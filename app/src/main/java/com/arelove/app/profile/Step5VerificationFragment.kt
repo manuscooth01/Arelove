@@ -44,6 +44,12 @@ import java.io.File
  * Se puede saltar el paso con "Saltar por ahora" o avanzar con "Siguiente":
  * ambas rutas llaman al mismo [validarYGuardar], que sin selfie pide
  * confirmación antes de terminar el asistente.
+ *
+ * También se usa fuera del asistente, alojado por [MyVerificationActivity]
+ * con el modo edición ([modoEdicion]): allí se ocultan la cabecera interna
+ * (la pone la Activity) y "Saltar por ahora" (solo sirve para avanzar el
+ * asistente). La subida y el estado son idénticos y la pantalla se cierra
+ * con la X, nunca sola.
  */
 class Step5VerificationFragment : Fragment() {
 
@@ -106,6 +112,18 @@ class Step5VerificationFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val modoEdicion = arguments?.getBoolean(ARG_MODO_EDICION, false) == true
+        if (modoEdicion) {
+            // La cabecera la pinta MyVerificationActivity
+            binding.tvTitle.visibility = View.GONE
+            binding.tvSubtitle.visibility = View.GONE
+
+            // "Saltar por ahora" solo avanza el asistente: emite CLAVE_AVANZAR
+            // a ProfileSetupActivity, y aquí nadie la escucha (botón muerto).
+            // Si ya hay selfie, mostrarSelfieSubida() lo oculta igualmente.
+            binding.btnSkip.visibility = View.GONE
+        }
+
         binding.btnTakeSelfie.setOnClickListener {
             if (AntiSpam.esDobleTap("btnTakeSelfie")) return@setOnClickListener
             pedirPermisoCamara()
@@ -546,6 +564,17 @@ class Step5VerificationFragment : Fragment() {
          * (validarYGuardar con su aviso de no verificar).
          */
         const val CLAVE_AVANZAR = "avanzar_paso5"
+
+        /** Argumento que activa el modo edición ([modoEdicion]). */
+        private const val ARG_MODO_EDICION = "modo_edicion"
+
+        /**
+         * Instancia para [MyVerificationActivity]: el mismo paso, pero sin
+         * cabecera interna ni botón "Saltar" (los gestiona la Activity).
+         */
+        fun modoEdicion(): Step5VerificationFragment = Step5VerificationFragment().apply {
+            arguments = Bundle().apply { putBoolean(ARG_MODO_EDICION, true) }
+        }
 
         /** Etiqueta para el log de errores de este paso. */
         private const val TAG_LOG = "Step5Verification"

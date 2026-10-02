@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.LegalActivity
 import com.arelove.app.MainActivity
-import com.arelove.app.ProfileSetupActivity
 import com.arelove.app.R
 import com.arelove.app.SettingsActivity
 import com.arelove.app.SupabaseClient
@@ -18,6 +17,7 @@ import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.FragmentProfileBinding
 import com.arelove.app.profile.EditProfileActivity
 import com.arelove.app.profile.MyPhotosActivity
+import com.arelove.app.profile.MyVerificationActivity
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
@@ -251,6 +251,8 @@ class ProfileFragment : Fragment() {
             if (AntiSpam.esDobleTap("cardMyPhotos")) return@setOnClickListener
             startActivity(Intent(requireContext(), MyPhotosActivity::class.java))
         }
+        // Verificación: confirmación si ya está verificado, si no abre la
+        // pantalla de verificación suelta (sin el asistente de 5 pasos)
         binding.cardVerification.setOnClickListener {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
             alPulsarVerificacion()
@@ -373,7 +375,7 @@ class ProfileFragment : Fragment() {
         return elemento.content == "true"
     }
 
-    /** Acción de la card Verificación: confirmación si ya está verificado, si no abre el paso 5. */
+    /** Acción de la card Verificación: confirmación si ya está verificado, si no abre MyVerificationActivity. */
     private fun alPulsarVerificacion() {
         if (perfilVerificado) {
             AreloveDialog.show(
@@ -383,15 +385,8 @@ class ProfileFragment : Fragment() {
                 getString(R.string.verification_done_msg)
             )
         } else {
-            abrirAsistente(4)
+            startActivity(Intent(requireContext(), MyVerificationActivity::class.java))
         }
-    }
-
-    /** Abre el asistente de perfil en modo edición, directamente en el paso indicado (0..4). */
-    private fun abrirAsistente(paso: Int) {
-        startActivity(Intent(requireContext(), ProfileSetupActivity::class.java).apply {
-            putExtra(ProfileSetupActivity.EXTRA_PASO, paso)
-        })
     }
 
     /** Abre la pantalla legal con el tipo indicado. */

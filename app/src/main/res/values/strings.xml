@@ -484,6 +484,7 @@
     <string name="my_photos">Mis fotos</string>
     <string name="my_photos_hint">La primera foto es la que se muestra en tu perfil.</string>
     <string name="my_photos_done">Listo</string>
+    <string name="my_verification_title">Verificación de identidad</string>
 
     <!-- Edición directa del perfil (fuera del asistente) -->
     <string name="edit_profile_save">Guardar cambios</string>

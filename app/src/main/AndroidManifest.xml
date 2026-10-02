@@ -67,6 +67,12 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Verificación de identidad (fuera del asistente) -->
+        <activity
+            android:name=".profile.MyVerificationActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Asistente de perfil (5 pasos) -->
         <activity
             android:name=".ProfileSetupActivity"
