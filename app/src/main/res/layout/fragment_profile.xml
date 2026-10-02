@@ -89,20 +89,35 @@
                 app:layout_constraintEnd_toEndOf="@id/ivAvatar" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
-
-        <!-- Nombre del perfil (el "Verificado" vive en el chip de abajo) -->
-        <TextView
-            android:id="@+id/tvName"
+        <!-- Nombre + check de verificación, centrados en pantalla
+             (el Space de 16dp pasa a layout_marginTop del bloque) -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_bold"
-            android:text="@string/nav_profile"
-            android:textColor="@color/profile_on_dark"
-            android:textSize="26sp"
-            tools:text="María García" />
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:text="@string/nav_profile"
+                android:textColor="@color/profile_on_dark"
+                android:textSize="26sp"
+                tools:text="Manuel" />
+
+            <ImageView
+                android:id="@+id/ivVerifiedName"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/profile_verified"
+                android:src="@drawable/ic_verified"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvEmail"

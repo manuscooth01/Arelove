@@ -301,6 +301,7 @@ class ProfileFragment : Fragment() {
 
         if (verificado) {
             v.ivVerifiedBadge.visibility = View.VISIBLE
+            v.ivVerifiedName.visibility = View.VISIBLE
             v.llVerifiedChip.visibility = View.VISIBLE
             v.tvVerificationStatus.visibility = View.VISIBLE
             v.tvVerificationStatus.text = getString(R.string.verification_status_verified)
@@ -309,6 +310,7 @@ class ProfileFragment : Fragment() {
             )
         } else {
             v.ivVerifiedBadge.visibility = View.GONE
+            v.ivVerifiedName.visibility = View.GONE
             v.llVerifiedChip.visibility = View.GONE
             v.tvVerificationStatus.visibility = View.VISIBLE
             if (selfieUrl.isNotEmpty()) {
