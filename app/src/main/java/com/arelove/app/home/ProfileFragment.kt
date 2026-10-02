@@ -189,12 +189,13 @@ class ProfileFragment : Fragment() {
                 }
 
                 // SELECT count(*) FROM user_interests WHERE user_id = userId
+                // (countOrNull() devuelve Long: lo pasamos a Int para la cuenta)
                 val intereses = SupabaseClient.client.postgrest["user_interests"]
                     .select(head = true) {
                         filter { eq("user_id", userId) }
                         count(Count.EXACT)
                     }
-                    .countOrNull() ?: 0
+                    .countOrNull()?.toInt() ?: 0
 
                 // Banner de completitud con los 13 indicadores del perfil
                 if (filas.isNotEmpty()) {
