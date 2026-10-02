@@ -6,10 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- Cámara del paso 3; quien no tenga app de cámara puede usar la galería -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- Permisos para notificaciones (Android 13+), audio y vibración -->
+    <!-- Notificaciones (Android 13+); grabacion de audio y vibracion
+         se retiraron por no usarse (VUL-15) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -17,7 +16,9 @@
 
     <application
         android:name=".AreloveApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@drawable/ic_launcher"
         android:roundIcon="@drawable/ic_launcher"
         android:label="@string/app_name"

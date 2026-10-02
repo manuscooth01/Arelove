@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Raices que el FileProvider expone a otras apps (VUL-14).
+    Antes declaraba "path=." para cache/files/external: cualquier URI
+    concedida daba acceso a TODOS los ficheros de la app (selfies
+    temporales, caché de Coil, etc). Ahora solo existen subcarpetas
+    concretas: cacheDir/fotos, cacheDir/selfie y cacheDir/crop.
+    Nota: crop vive en cacheDir (interna), por eso es cache-path y no
+    external-cache-path: con external-cache-path el getUriForFile de
+    Step3PhotosFragment.abrirCrop lanzaria IllegalArgumentException.
+-->
 <paths>
-    <cache-path name="fotos_cache" path="." />
-    <files-path name="fotos_files" path="." />
-    <external-path name="external_files" path="." />
-    <external-files-path name="external_files" path="." />
+    <cache-path name="fotos_cache" path="fotos/" />
+    <cache-path name="selfie_cache" path="selfie/" />
+    <cache-path name="crop_cache" path="crop/" />
+    <files-path name="fotos_files" path="fotos/" />
 </paths>

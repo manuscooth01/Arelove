@@ -241,7 +241,8 @@ class SwipeFragment : Fragment() {
                 // SELECT id, nickname, age, location, looking_for, bio, verified, height, zodiac, occupation
                 // FROM profiles WHERE id != currentUserId AND profile_completed = true
                 // ORDER BY verified DESC, created_at DESC LIMIT 30
-                val filas = SupabaseClient.client.postgrest["profiles"].select(
+                // Otros usuarios: vista segura sin lat/lng/birthdate (VUL-01)
+                val filas = SupabaseClient.client.postgrest["profiles_publicos"].select(
                     columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "gender", "created_at")
                 ) {
                     filter { neq("id", userId) }

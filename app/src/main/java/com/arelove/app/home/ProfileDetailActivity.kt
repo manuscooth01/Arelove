@@ -72,7 +72,8 @@ class ProfileDetailActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Cargar perfil completo
-                val filas = SupabaseClient.client.postgrest["profiles"].select(
+                // Perfil ajeno: vista segura sin lat/lng/birthdate (VUL-01)
+                val filas = SupabaseClient.client.postgrest["profiles_publicos"].select(
                     columns = Columns.list("nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "favorite_music", "gender")
                 ) {
                     filter { eq("id", userId) }

@@ -154,7 +154,8 @@ class ChatsFragment : Fragment() {
                 for (otroId in otrosUserIds) {
                     val job = lifecycleScope.launch(Dispatchers.IO) {
                         try {
-                            val filasPerfil = SupabaseClient.client.postgrest["profiles"].select(
+                            // Perfil ajeno (cabecera del chat): vista segura (VUL-01)
+                            val filasPerfil = SupabaseClient.client.postgrest["profiles_publicos"].select(
                                 columns = Columns.list("nickname")
                             ) {
                                 filter { eq("id", otroId) }

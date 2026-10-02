@@ -199,7 +199,10 @@ class Step5VerificationFragment : Fragment() {
         val contexto = context ?: return
 
         try {
-            val archivo = File(contexto.cacheDir, "arelove_selfie_${System.currentTimeMillis()}.jpg")
+            // Subcarpeta propia (VUL-14): el FileProvider solo expone cacheDir/selfie
+            val carpetaSelfie = File(contexto.cacheDir, "selfie")
+            carpetaSelfie.mkdirs()
+            val archivo = File(carpetaSelfie, "arelove_selfie_${System.currentTimeMillis()}.jpg")
             val uri = FileProvider.getUriForFile(
                 contexto,
                 "${contexto.packageName}.fileprovider",

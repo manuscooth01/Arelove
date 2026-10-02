@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Reglas de extraccion de datos (Android 12+).
+    Excluye TODO: ni la copia de nube (Auto Backup) ni la transferencia
+    dispositivo a dispositivo copian las preferencias donde Supabase
+    guarda la sesion (tokens de acceso y refresco) ni los ficheros de
+    la app. VUL-10.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="file" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="file" path="." />
+    </device-transfer>
+</data-extraction-rules>

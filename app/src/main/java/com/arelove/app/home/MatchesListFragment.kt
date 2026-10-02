@@ -155,7 +155,8 @@ class MatchesListFragment : Fragment() {
             try {
                 profilesCache.clear()
                 userIds.forEach { uid ->
-                    val fila = SupabaseClient.client.postgrest["profiles"].select(
+                    // Perfil ajeno: vista segura sin lat/lng/birthdate (VUL-01)
+                    val fila = SupabaseClient.client.postgrest["profiles_publicos"].select(
                         columns = Columns.list("id", "nickname", "age", "location", "verified")
                     ) {
                         filter { eq("id", uid) }

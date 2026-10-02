@@ -101,7 +101,10 @@ object PhotoUploadHelper {
                 val almacen = SupabaseClient.client.storage[bucket]
                 almacen.upload(path, bytes)
                 val url = almacen.publicUrl(path)
-                Log.d(TAG_LOG, "Foto subida, URL: $url")
+                // La URL del bucket no se vuelca en release (VUL-13)
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG_LOG, "Foto subida, URL: $url")
+                }
                 url
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error subiendo la foto", e)
@@ -131,7 +134,10 @@ object PhotoUploadHelper {
                     "${SupabaseClient.SUPABASE_URL}/storage/v1/$relativa"
                 }
             } catch (e: Exception) {
-                Log.e(TAG_LOG, "Error creando signed URL: ${e.message}", e)
+                // El mensaje puede contener la signed URL con su token (VUL-13)
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG_LOG, "Error creando signed URL: ${e.message}", e)
+                }
                 null
             }
         }
@@ -157,7 +163,10 @@ object PhotoUploadHelper {
             try {
                 val path = extraerPath(url, bucket)
                 if (path == null) {
-                    Log.e(TAG_LOG, "No se reconoce la ruta de la foto: $url")
+                    // La URL completa solo en debug (VUL-13)
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG_LOG, "No se reconoce la ruta de la foto: $url")
+                    }
                     return@withContext false
                 }
                 SupabaseClient.client.storage[bucket].delete(path)

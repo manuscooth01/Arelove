@@ -5,7 +5,6 @@ import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.SettingsSessionManager
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
 
 /**
@@ -35,7 +34,9 @@ object SupabaseClient {
             }
             install(Postgrest) // consultas a las tablas
             install(Storage) // fotos de perfil en el bucket "avatars"
-            install(Realtime) // tiempo real para chats
+            // Realtime se omita a proposito: el chat funciona con polling
+            // cada 5 segundos (ChatActivity.suscribirRealtime). Se instalara
+            // cuando se implemente de verdad el tiempo real (VUL-16).
         }
     }
 }

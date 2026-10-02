@@ -46,6 +46,8 @@ android {
 
     buildFeatures {
         viewBinding true
+        // Necesario para usar BuildConfig.DEBUG (logs condicionales de VUL-13)
+        buildConfig true
     }
 }
 

@@ -335,7 +335,10 @@ class Step3PhotosFragment : Fragment() {
         val contexto = context ?: return
 
         try {
-            val archivo = File(contexto.cacheDir, "arelove_${System.currentTimeMillis()}.jpg")
+            // Subcarpeta propia (VUL-14): el FileProvider solo expone cacheDir/fotos
+            val carpetaFotos = File(contexto.cacheDir, "fotos")
+            carpetaFotos.mkdirs()
+            val archivo = File(carpetaFotos, "arelove_${System.currentTimeMillis()}.jpg")
             val uri = FileProvider.getUriForFile(
                 contexto,
                 "${contexto.packageName}.fileprovider",
@@ -373,7 +376,10 @@ class Step3PhotosFragment : Fragment() {
      */
     private fun abrirCrop(uriOriginal: Uri) {
         val contexto = context ?: return
-        val archivoDestino = File(contexto.cacheDir, "crop_${System.currentTimeMillis()}.jpg")
+        // Subcarpeta propia (VUL-14): el FileProvider solo expone cacheDir/crop
+        val carpetaCrop = File(contexto.cacheDir, "crop")
+        carpetaCrop.mkdirs()
+        val archivoDestino = File(carpetaCrop, "crop_${System.currentTimeMillis()}.jpg")
         val destino = FileProvider.getUriForFile(
             contexto,
             "${contexto.packageName}.fileprovider",
