@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.arelove.app.ErrorSanitizer
+import com.arelove.app.HomeActivity
 import com.arelove.app.PhotoUploadHelper
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
@@ -364,6 +365,9 @@ class LikesReceivedFragment : Fragment() {
                 b.progressBar.visibility = View.GONE
                 if (exito) {
                     cargarLikesRecibidos()
+                    // Match: se borro el like recibido, hay que bajar el
+                    // badge del bottom nav
+                    (activity as? HomeActivity)?.actualizarBadgeLikes()
                 }
             }
         }
@@ -391,6 +395,9 @@ class LikesReceivedFragment : Fragment() {
             } finally {
                 b.progressBar.visibility = View.GONE
                 cargarLikesRecibidos()
+                // Rechazo: el like desaparece, el badge debe bajar (o
+                // ocultarse si llega a 0)
+                (activity as? HomeActivity)?.actualizarBadgeLikes()
             }
         }
     }

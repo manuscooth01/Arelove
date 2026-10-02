@@ -39,10 +39,15 @@ class HomeActivity : AppCompatActivity() {
         binding.bottomNav.setupWithNavController(navController)
 
         // Configurar badge en el tab de Likes
-        configurarBadgeLikes()
+        actualizarBadgeLikes()
     }
 
-    private fun configurarBadgeLikes() {
+    /**
+     * Consulta los likes recibidos (sin caducar) y refresca el badge del
+     * tab de Likes. Se llama al iniciar y desde LikesReceivedFragment
+     * tras cada rechazo o match, para que el contador no se quede viejo.
+     */
+    fun actualizarBadgeLikes() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val session = SupabaseClient.client.auth.currentSessionOrNull()
