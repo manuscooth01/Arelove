@@ -271,26 +271,34 @@
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
         app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp"
         app:rippleColor="@color/on_primary">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_edit"
-                android:tint="@color/primary" />
+                android:backgroundTint="@color/primary">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_edit"
+                    android:tint="@color/primary" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -306,7 +314,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/profile_sub_edit_profile"
                     android:textColor="@color/profile_on_dark_muted"
                     android:textSize="12sp" />
@@ -315,6 +323,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -331,26 +340,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_gallery"
-                android:tint="@color/secondary_coral" />
+                android:backgroundTint="@color/secondary_coral">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_gallery"
+                    android:tint="@color/secondary_coral" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -366,7 +383,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/profile_sub_my_photos"
                     android:textColor="@color/profile_on_dark_muted"
                     android:textSize="12sp" />
@@ -375,6 +392,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -419,59 +437,66 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
-            android:orientation="vertical">
+            android:minHeight="40dp"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+            <FrameLayout
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_icon_circle"
+                android:backgroundTint="@color/online_green">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/bg_icon_circle"
-                    android:padding="7dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/ic_shield"
                     android:tint="@color/online_green" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:fontFamily="@font/poppins_medium"
                     android:text="@string/verification"
                     android:textColor="@color/profile_on_dark"
                     android:textSize="15sp" />
 
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:alpha="0.6"
-                    android:src="@drawable/ic_chevron_right"
-                    android:tint="@color/profile_on_dark_muted" />
+                <!-- Estado: Verificado / En revisión / Sin verificar -->
+                <TextView
+                    android:id="@+id/tvVerificationStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/profile_on_dark_muted"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="Selfie en revisión" />
             </LinearLayout>
 
-            <!-- Estado: Verificado / En revisión / Sin verificar -->
-            <TextView
-                android:id="@+id/tvVerificationStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:layout_marginTop="1dp"
-                android:fontFamily="@font/poppins_medium"
-                android:textColor="@color/profile_on_dark_muted"
-                android:textSize="12sp"
-                android:visibility="gone"
-                tools:text="Selfie en revisión" />
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.6"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -485,26 +510,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_settings"
-                android:tint="@color/profile_on_dark_muted" />
+                android:backgroundTint="@color/profile_on_dark_muted">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_settings"
+                    android:tint="@color/profile_on_dark_muted" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -520,7 +553,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/profile_sub_settings"
                     android:textColor="@color/profile_on_dark_muted"
                     android:textSize="12sp" />
@@ -529,6 +562,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -573,26 +607,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_info"
-                android:tint="@color/profile_on_dark_muted" />
+                android:backgroundTint="@color/profile_on_dark_muted">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_info"
+                    android:tint="@color/profile_on_dark_muted" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_medium"
@@ -603,6 +645,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -619,26 +662,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_lock"
-                android:tint="@color/profile_on_dark_muted" />
+                android:backgroundTint="@color/profile_on_dark_muted">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_lock"
+                    android:tint="@color/profile_on_dark_muted" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_medium"
@@ -649,6 +700,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -665,26 +717,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_group"
-                android:tint="@color/profile_on_dark_muted" />
+                android:backgroundTint="@color/profile_on_dark_muted">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_group"
+                    android:tint="@color/profile_on_dark_muted" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_medium"
@@ -695,6 +755,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -711,26 +772,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_help"
-                android:tint="@color/profile_on_dark_muted" />
+                android:backgroundTint="@color/profile_on_dark_muted">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_help"
+                    android:tint="@color/profile_on_dark_muted" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_medium"
@@ -741,6 +810,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -785,26 +855,34 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:contentPaddingStart="16dp"
-        app:contentPaddingEnd="16dp">
+        app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_share"
-                android:tint="@color/profile_on_dark_muted" />
+                android:backgroundTint="@color/profile_on_dark_muted">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_share"
+                    android:tint="@color/profile_on_dark_muted" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -820,7 +898,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/profile_sub_invite"
                     android:textColor="@color/profile_on_dark_muted"
                     android:textSize="12sp" />
@@ -829,6 +907,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />
@@ -848,6 +927,8 @@
         android:visibility="gone"
         app:contentPaddingStart="16dp"
         app:contentPaddingEnd="16dp"
+        app:contentPaddingTop="12dp"
+        app:contentPaddingBottom="12dp"
         app:strokeColor="@color/primary"
         app:strokeWidth="1dp"
         tools:visibility="visible">
@@ -856,20 +937,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
+            android:minHeight="40dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="7dp"
-                android:src="@drawable/ic_trending_up"
-                android:tint="@color/primary" />
+                android:backgroundTint="@color/primary">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_trending_up"
+                    android:tint="@color/primary" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -885,7 +972,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/profile_sub_admin"
                     android:textColor="@color/profile_on_dark_muted"
                     android:textSize="12sp" />
@@ -894,6 +981,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
                 android:alpha="0.6"
                 android:src="@drawable/ic_chevron_right"
                 android:tint="@color/profile_on_dark_muted" />

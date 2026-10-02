@@ -66,6 +66,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="@drawable/bg_icon_circle"
+            android:backgroundTint="@color/primary"
             android:contentDescription="@string/edit_profile"
             android:padding="14dp"
             android:src="@drawable/ic_edit"
