@@ -54,6 +54,12 @@
             android:name=".SettingsActivity"
             android:exported="false" />
 
+        <!-- Pantalla de edición de datos de perfil (en construcción) -->
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Asistente de perfil (5 pasos) -->
         <activity
             android:name=".ProfileSetupActivity"

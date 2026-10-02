@@ -478,6 +478,11 @@
 
     <!-- ==================== PERFIL: SECCIONES Y AJUSTES ==================== -->
     <string name="profile_section_help">Ayuda y legal</string>
+    <string name="profile_section_security">Seguridad</string>
+    <string name="profile_completion">Tu perfil está al %1$d%%</string>
+    <string name="profile_badge_verified">Verificado</string>
+    <string name="my_photos">Mis fotos</string>
+    <string name="edit_profile_placeholder">En construcción. Próximamente podrás editar todos tus datos.</string>
     <string name="verification_status_verified">Verificado por Arelove</string>
     <string name="verification_status_pending">Selfie en revisión</string>
     <string name="verification_status_empty">Sin verificar · Pulsa para verificar</string>

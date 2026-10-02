@@ -77,6 +77,7 @@ class SwipeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         configurarBotones()
         configurarSwipeRefresh()
+        aplicarBordeCardPerfil()
         cargarPerfiles()
 
         // Touch listener en photoPager para detectar tap y abrir perfil (sin romper swipe)
@@ -120,6 +121,21 @@ class SwipeFragment : Fragment() {
         photoLoadJobs.values.forEach { it.cancel() }
         photoLoadJobs.clear()
         _binding = null
+    }
+
+    /**
+     * Fija el drawable con borde crimson en la card principal.
+     *
+     * MaterialCardView descarta android:background durante la inflación
+     * (su fondo lo pinta él con app:cardBackgroundColor), así que el
+     * degradado/borde de bg_card_rim hay que aplicarlo tras inflar.
+     */
+    private fun aplicarBordeCardPerfil() {
+        val b = _binding ?: return
+        b.cardProfile.background = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.bg_card_rim
+        )
     }
 
     /** Pull-to-refresh: recarga la lista de perfiles deslizando hacia abajo. */

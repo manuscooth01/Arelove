@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.arelove.app.EditProfileActivity
 import com.arelove.app.LegalActivity
 import com.arelove.app.MainActivity
 import com.arelove.app.ProfileSetupActivity
@@ -21,8 +22,11 @@ import coil.load
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Count
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -50,6 +54,23 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         configurarLogout()
         configurarCards()
+        aplicarFondoDegradado()
+    }
+
+    /**
+     * Aplica el degradado de fondo a las tarjetas del perfil.
+     *
+     * No puede ir en el XML: MaterialCardView descarta android:background
+     * durante la inflación (su fondo lo pinta él con app:cardBackgroundColor,
+     * que solo admite un color sólido). La única vía es fijarlo tras inflar.
+     */
+    private fun aplicarFondoDegradado() {
+        val v = _binding ?: return
+        listOf(
+            v.cardCompletion, v.cardEditProfile, v.cardMyPhotos,
+            v.cardVerification, v.cardTerms, v.cardPrivacy,
+            v.cardCommunity, v.cardFaq, v.cardInvite, v.cardSettings
+        ).forEach { it.setBackgroundResource(R.drawable.bg_profile_card) }
     }
 
     /** Recarga los datos cada vez que el usuario vuelve a la pestaña (p. ej. tras editar). */
@@ -75,13 +96,18 @@ class ProfileFragment : Fragment() {
                     return@launch
                 }
 
-                // Cargar nickname, género y verificación desde profiles
+                // Cargar datos del perfil desde profiles (incluye los campos
+                // que cuenta el banner de completitud)
                 val filas = SupabaseClient.client.postgrest["profiles"].select(
-                    columns = Columns.list("nickname", "gender", "verified", "verification_photo_url")
+                    columns = Columns.list(
+                        "nickname", "gender", "verified", "verification_photo_url",
+                        "age", "location", "looking_for", "bio", "height",
+                        "zodiac", "occupation", "favorite_music"
+                    )
                 ) {
                     filter { eq("id", userId) }
                     limit(1)
-                }.decodeList<kotlinx.serialization.json.JsonObject>()
+                }.decodeList<JsonObject>()
 
                 val sinVista = _binding ?: return@launch
                 sinVista.tvEmail.text = email
@@ -131,17 +157,24 @@ class ProfileFragment : Fragment() {
                     val selfieUrl = filas[0]["verification_photo_url"]
                         ?.let { (it as? JsonPrimitive)?.content }.orEmpty()
                     pintarVerificacion(verificado, selfieUrl)
+
+                    // Fila de chips visible si hay género o verificación
+                    sinVista.llHeaderChips.visibility =
+                        if (sinVista.llGender.visibility == View.VISIBLE ||
+                            sinVista.llVerifiedChip.visibility == View.VISIBLE
+                        ) View.VISIBLE else View.GONE
                 }
 
-                // Cargar foto de perfil desde media
+                // Fotos de perfil desde media (también alimenta el contador
+                // del banner de completitud; el tope de 50 solo acota la query)
                 val filasMedia = SupabaseClient.client.postgrest["media"].select(
                     columns = Columns.list("url")
                 ) {
                     filter { eq("user_id", userId) }
                     filter { eq("type", "profile") }
                     order("created_at", Order.ASCENDING)
-                    limit(1)
-                }.decodeList<kotlinx.serialization.json.JsonObject>()
+                    limit(50)
+                }.decodeList<JsonObject>()
 
                 if (filasMedia.isNotEmpty()) {
                     val fotoUrl = filasMedia[0]["url"] as? JsonPrimitive
@@ -153,6 +186,19 @@ class ProfileFragment : Fragment() {
                         }
                         sinVista2.tvAvatarInitial.visibility = View.GONE
                     }
+                }
+
+                // SELECT count(*) FROM user_interests WHERE user_id = userId
+                val intereses = SupabaseClient.client.postgrest["user_interests"]
+                    .select(head = true) {
+                        filter { eq("user_id", userId) }
+                        count(Count.EXACT)
+                    }
+                    .countOrNull() ?: 0
+
+                // Banner de completitud con los 13 indicadores del perfil
+                if (filas.isNotEmpty()) {
+                    pintarCompletitud(filas[0], intereses, filasMedia.size)
                 }
             } catch (e: Exception) {
                 _binding?.tvEmail?.text = email
@@ -168,11 +214,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun configurarCards() {
-        // Tu cuenta: "Editar perfil" abre el asistente completo (datos,
-        // intereses y fotos se editan recorriendo sus pasos con "Siguiente")
+        // Tu cuenta: "Editar perfil" abre la pantalla de edición (en
+        // construcción) y "Mis fotos" el asistente directo en el paso 3
         binding.cardEditProfile.setOnClickListener {
             if (AntiSpam.esDobleTap("cardEditProfile")) return@setOnClickListener
-            abrirAsistente(0)
+            startActivity(Intent(requireContext(), EditProfileActivity::class.java))
+        }
+        binding.cardMyPhotos.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardMyPhotos")) return@setOnClickListener
+            abrirAsistente(2)
         }
         binding.cardVerification.setOnClickListener {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
@@ -215,7 +265,7 @@ class ProfileFragment : Fragment() {
 
         if (verificado) {
             v.ivVerifiedBadge.visibility = View.VISIBLE
-            v.ivNameVerified.visibility = View.VISIBLE
+            v.llVerifiedChip.visibility = View.VISIBLE
             v.tvVerificationStatus.visibility = View.VISIBLE
             v.tvVerificationStatus.text = getString(R.string.verification_status_verified)
             v.tvVerificationStatus.setTextColor(
@@ -223,7 +273,7 @@ class ProfileFragment : Fragment() {
             )
         } else {
             v.ivVerifiedBadge.visibility = View.GONE
-            v.ivNameVerified.visibility = View.GONE
+            v.llVerifiedChip.visibility = View.GONE
             v.tvVerificationStatus.visibility = View.VISIBLE
             if (selfieUrl.isNotEmpty()) {
                 v.tvVerificationStatus.text = getString(R.string.verification_status_pending)
@@ -234,6 +284,55 @@ class ProfileFragment : Fragment() {
                 ContextCompat.getColor(requireContext(), R.color.profile_on_dark_muted)
             )
         }
+    }
+
+    /**
+     * Pinta el banner de completitud: cuenta los 13 indicadores del perfil
+     * (10 datos sueltos + intereses + fotos + selfie verificada) y
+     * muestra el porcentaje cumplido.
+     */
+    private fun pintarCompletitud(fila: JsonObject, intereses: Int, fotos: Int) {
+        val v = _binding ?: return
+
+        var total = 0
+        var cumplidos = 0
+        fun contar(cumple: Boolean) {
+            total++
+            if (cumple) cumplidos++
+        }
+
+        contar(tieneValor(fila, "nickname"))
+        contar(tieneValor(fila, "age"))
+        contar(tieneValor(fila, "location"))
+        contar(tieneValor(fila, "looking_for"))
+        contar(tieneValor(fila, "gender"))
+        contar(tieneValor(fila, "bio"))
+        contar(tieneValor(fila, "height"))
+        contar(tieneValor(fila, "zodiac"))
+        contar(tieneValor(fila, "occupation"))
+        contar(tieneValor(fila, "favorite_music"))
+        contar(intereses >= 3)
+        contar(fotos >= 2)
+        contar(esVerdadero(fila, "verified"))
+
+        val porcentaje = if (total == 0) 0 else (cumplidos * 100) / total
+        v.tvProfileCompletion.text = getString(R.string.profile_completion, porcentaje)
+        v.progressProfileCompletion.progress = porcentaje
+        v.cardCompletion.visibility = View.VISIBLE
+    }
+
+    /** true si la clave existe en la fila y no está vacía / null. */
+    private fun tieneValor(fila: JsonObject, clave: String): Boolean {
+        val elemento = fila[clave] as? JsonPrimitive ?: return false
+        if (elemento is JsonNull) return false
+        return elemento.content.trim().isNotEmpty()
+    }
+
+    /** true si la columna booleana de la fila vale true. */
+    private fun esVerdadero(fila: JsonObject, clave: String): Boolean {
+        val elemento = fila[clave] as? JsonPrimitive ?: return false
+        if (elemento is JsonNull) return false
+        return elemento.content == "true"
     }
 
     /** Acción de la card Verificación: confirmación si ya está verificado, si no abre el paso 5. */

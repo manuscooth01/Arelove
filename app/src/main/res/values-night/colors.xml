@@ -98,7 +98,9 @@
     <color name="profile_on_dark">#F5ECEE</color>
     <color name="profile_on_dark_muted">#C9B9BB</color>
     <color name="profile_option_bg">#241F20</color>
+    <color name="profile_option_bg_end">#2F2829</color>
     <color name="profile_option_stroke">#3F3537</color>
     <color name="profile_icon_tile_bg">#3A1E20</color>
+    <color name="profile_verified_chip_bg">#1F3A21</color>
 
 </resources>

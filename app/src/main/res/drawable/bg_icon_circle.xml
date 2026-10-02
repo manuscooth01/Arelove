@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Disco de 40dp detrás del icono de cada tarjeta del perfil.
+     Color fijo (profile_icon_tile_bg) para que el fondo, que es siempre
+     oscuro, no dependa del modo del sistema; sobre él sirven los iconos
+     de marca (primary, secondary_coral, online_green) y el neutro
+     (profile_on_dark_muted). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/profile_icon_tile_bg" />
+</shape>
