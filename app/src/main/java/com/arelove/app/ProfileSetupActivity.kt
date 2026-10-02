@@ -7,9 +7,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.arelove.app.databinding.ActivityProfileSetupBinding
+import com.arelove.app.notifications.FcmTokenManager
 import com.arelove.app.profile.Step1BasicFragment
 import com.arelove.app.profile.Step2InterestsFragment
 import com.arelove.app.profile.Step3PhotosFragment
@@ -18,6 +20,7 @@ import com.arelove.app.profile.Step5VerificationFragment
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 /**
  * Asistente de creación de perfil de Arelove.
@@ -234,6 +237,10 @@ class ProfileSetupActivity : AppCompatActivity() {
         }
         // Perfil terminado: el asistente ya no tiene nada que retomar
         prefs.edit().remove(claveUltimoPaso).apply()
+        // Registra el token FCM del dispositivo con el perfil ya completo
+        lifecycleScope.launch {
+            FcmTokenManager.registrarToken()
+        }
         startActivity(Intent(this, HomeActivity::class.java))
         finish()
     }

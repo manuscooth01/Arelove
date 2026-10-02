@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import com.arelove.app.databinding.ActivityMainBinding
+import com.arelove.app.notifications.FcmTokenManager
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
@@ -105,6 +106,11 @@ class MainActivity : AppCompatActivity() {
 
             val session = SupabaseClient.client.auth.currentSessionOrNull()
             if (session != null) {
+                // Registra el token FCM en un coroutine aparte para no
+                // retrasar la navegacion
+                lifecycleScope.launch {
+                    FcmTokenManager.registrarToken()
+                }
                 try {
                     val destino = if (ProfileChecker.perfilCompleto()) {
                         HomeActivity::class.java

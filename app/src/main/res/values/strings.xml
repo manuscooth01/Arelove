@@ -433,6 +433,8 @@
     <string name="verification">Verificación</string>
     <string name="notification_new_match">Tienes un match nuevo</string>
     <string name="notification_new_message">Nuevo mensaje de %1$s</string>
+    <string name="notification_channel_name">Arelove</string>
+    <string name="notification_channel_description">Notificaciones de likes, matches y mensajes</string>
 
     <!-- ==================== LISTAS ==================== -->
     <string-array name="zodiac_signs">

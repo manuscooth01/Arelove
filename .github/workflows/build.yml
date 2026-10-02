@@ -37,6 +37,12 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
+      - name: Decodificar google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
       - name: Compilar APK de debug
         run: ./gradlew assembleDebug --stacktrace
         env:
@@ -48,6 +54,10 @@ jobs:
       - name: Limpiar keystore
         if: always()
         run: rm -f arelove.keystore
+
+      - name: Limpiar google-services.json
+        if: always()
+        run: rm -f app/google-services.json
 
       - name: Subir APK como artifact
         uses: actions/upload-artifact@v4
