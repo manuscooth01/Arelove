@@ -60,7 +60,7 @@
          (MaterialCardView ignora android:background al inflar); si ese
          degradado no llega a aplicarse queda este color plano con borde. -->
     <style name="Widget.Arelove.ProfileCard" parent="Widget.Material3.CardView.Outlined">
-        <item name="cardCornerRadius">20dp</item>
+        <item name="cardCornerRadius">16dp</item>
         <item name="cardElevation">0dp</item>
         <item name="cardBackgroundColor">@color/profile_option_bg</item>
         <item name="strokeColor">@color/profile_option_stroke</item>

@@ -478,11 +478,22 @@
 
     <!-- ==================== PERFIL: SECCIONES Y AJUSTES ==================== -->
     <string name="profile_section_help">Ayuda y legal</string>
-    <string name="profile_section_security">Seguridad</string>
+    <string name="profile_section_security">Seguridad y privacidad</string>
     <string name="profile_completion">Tu perfil está al %1$d%%</string>
     <string name="profile_badge_verified">Verificado</string>
     <string name="my_photos">Mis fotos</string>
     <string name="edit_profile_placeholder">En construcción. Próximamente podrás editar todos tus datos.</string>
+
+    <!-- Subtítulos de las tarjetas del perfil (12sp bajo cada título) -->
+    <string name="profile_sub_edit_profile">Bio, datos físicos, intereses</string>
+    <string name="profile_sub_my_photos">Sube, ordena o elimina fotos</string>
+    <string name="profile_sub_settings">Notificaciones, privacidad</string>
+    <string name="profile_sub_invite">Comparte Arelove</string>
+    <string name="profile_sub_admin">Solo visible para admins</string>
+
+    <!-- Panel de administración (solo profiles.is_admin = true) -->
+    <string name="profile_admin_panel">Panel de administración</string>
+    <string name="profile_admin_msg">Panel de administración en construcción. Próximamente podrás verificar usuarios desde aquí.</string>
     <string name="verification_status_verified">Verificado por Arelove</string>
     <string name="verification_status_pending">Selfie en revisión</string>
     <string name="verification_status_empty">Sin verificar · Pulsa para verificar</string>

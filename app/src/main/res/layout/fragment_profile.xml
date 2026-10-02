@@ -2,12 +2,15 @@
 <!--
     Pantalla de Perfil - Rediseño.
     Header con avatar (borde rojo + sombra), nombre en bold, chips de género
-    y verificado. Banner de completitud del perfil. Secciones con barrita
-    roja: Tu cuenta (editar + fotos), Seguridad (verificación),
-    Ayuda y legal (términos, privacidad, comunidad, FAQ) y
-    Descubre más (invitar, ajustes).
+    y verificado. Banner de completitud del perfil.
+    Secciones: Tu cuenta (editar + fotos), Seguridad y privacidad
+    (verificación + ajustes), Ayuda y legal (términos, privacidad,
+    comunidad, FAQ) y Descubre más (invitar + panel admin, este solo
+    visible para profiles.is_admin = true).
     Tarjetas con estilo Widget.Arelove.ProfileCard: fondo con degradado
-    fijo oscuro, esquinas 20dp, disco de 40dp con el icono y chevrón.
+    fijo oscuro, esquinas 16dp, disco de 32dp con el icono y chevrón.
+    Altura compacta: minHeight 56dp, icono 32dp, título 15sp y subtítulo
+    12sp (para diferenciar las opciones que se parecen entre sí).
     Fondo siempre oscuro: colores profile_on_dark* fijos en ambos modos.
 -->
 <ScrollView
@@ -260,36 +263,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp"
         app:rippleColor="@color/on_primary">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_edit"
                 android:tint="@color/primary" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/edit_profile"
-                android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/edit_profile"
+                    android:textColor="@color/profile_on_dark"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/profile_sub_edit_profile"
+                    android:textColor="@color/profile_on_dark_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="18dp"
@@ -307,35 +324,49 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_gallery"
                 android:tint="@color/secondary_coral" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/my_photos"
-                android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/my_photos"
+                    android:textColor="@color/profile_on_dark"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/profile_sub_my_photos"
+                    android:textColor="@color/profile_on_dark_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="18dp"
@@ -346,7 +377,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- SECCIÓN 2: Seguridad -->
+    <!-- SECCIÓN 2: Seguridad y privacidad -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -374,23 +405,23 @@
             android:letterSpacing="0.05" />
     </LinearLayout>
 
-    <!-- Card Verificación con estado dinámico -->
+    <!-- Card Verificación: el subtítulo es el estado dinámico -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardVerification"
         style="@style/Widget.Arelove.ProfileCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -400,11 +431,11 @@
                 android:gravity="center_vertical">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="16dp"
                     android:background="@drawable/bg_icon_circle"
-                    android:padding="9dp"
+                    android:padding="7dp"
                     android:src="@drawable/ic_shield"
                     android:tint="@color/online_green" />
 
@@ -415,7 +446,7 @@
                     android:fontFamily="@font/poppins_medium"
                     android:text="@string/verification"
                     android:textColor="@color/profile_on_dark"
-                    android:textSize="16sp" />
+                    android:textSize="15sp" />
 
                 <ImageView
                     android:layout_width="18dp"
@@ -430,13 +461,73 @@
                 android:id="@+id/tvVerificationStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="56dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="1dp"
                 android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/profile_on_dark_muted"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:visibility="gone"
-                tools:text="Sin verificar" />
+                tools:text="Selfie en revisión" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Card Ajustes (movida aquí desde Descubre más) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSettings"
+        style="@style/Widget.Arelove.ProfileCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="56dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_icon_circle"
+                android:padding="7dp"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/profile_on_dark_muted" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/settings"
+                    android:textColor="@color/profile_on_dark"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/profile_sub_settings"
+                    android:textColor="@color/profile_on_dark_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:alpha="0.6"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/profile_on_dark_muted" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -475,24 +566,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_info"
                 android:tint="@color/profile_on_dark_muted" />
 
@@ -503,7 +594,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:text="@string/profile_terms"
                 android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="18dp"
@@ -521,24 +612,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_lock"
                 android:tint="@color/profile_on_dark_muted" />
 
@@ -549,7 +640,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:text="@string/legal_privacidad_title"
                 android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="18dp"
@@ -567,24 +658,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_group"
                 android:tint="@color/profile_on_dark_muted" />
 
@@ -595,7 +686,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:text="@string/legal_comunidad_title"
                 android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="18dp"
@@ -613,24 +704,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_help"
                 android:tint="@color/profile_on_dark_muted" />
 
@@ -641,7 +732,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:text="@string/profile_faq"
                 android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
 
             <ImageView
                 android:layout_width="18dp"
@@ -687,35 +778,49 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
+                android:padding="7dp"
                 android:src="@drawable/ic_share"
                 android:tint="@color/profile_on_dark_muted" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/profile_invite"
-                android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/profile_invite"
+                    android:textColor="@color/profile_on_dark"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/profile_sub_invite"
+                    android:textColor="@color/profile_on_dark_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="18dp"
@@ -726,42 +831,61 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Card Ajustes -->
+    <!-- Card Panel de administración: solo visible si profiles.is_admin = true
+         (AdminChecker). Borde y título en rojo de marca para distinguirla. -->
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardSettings"
+        android:id="@+id/cardAdmin"
         style="@style/Widget.Arelove.ProfileCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:contentPaddingStart="20dp"
-        app:contentPaddingEnd="20dp">
+        android:visibility="gone"
+        app:contentPaddingStart="16dp"
+        app:contentPaddingEnd="16dp"
+        app:strokeColor="@color/primary"
+        app:strokeWidth="1dp"
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="72dp"
+            android:minHeight="56dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_icon_circle"
-                android:padding="9dp"
-                android:src="@drawable/ic_settings"
-                android:tint="@color/profile_on_dark_muted" />
+                android:padding="7dp"
+                android:src="@drawable/ic_trending_up"
+                android:tint="@color/primary" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/settings"
-                android:textColor="@color/profile_on_dark"
-                android:textSize="16sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/profile_admin_panel"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/profile_sub_admin"
+                    android:textColor="@color/profile_on_dark_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="18dp"

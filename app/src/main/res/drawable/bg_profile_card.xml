@@ -9,5 +9,5 @@
         android:angle="0"
         android:endColor="@color/profile_option_bg_end"
         android:startColor="@color/profile_option_bg" />
-    <corners android:radius="20dp" />
+    <corners android:radius="16dp" />
 </shape>

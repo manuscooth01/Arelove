@@ -15,6 +15,7 @@ import com.arelove.app.ProfileSetupActivity
 import com.arelove.app.R
 import com.arelove.app.SettingsActivity
 import com.arelove.app.SupabaseClient
+import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.FragmentProfileBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
@@ -55,6 +56,7 @@ class ProfileFragment : Fragment() {
         configurarLogout()
         configurarCards()
         aplicarFondoDegradado()
+        cargarEsAdmin()
     }
 
     /**
@@ -69,8 +71,22 @@ class ProfileFragment : Fragment() {
         listOf(
             v.cardCompletion, v.cardEditProfile, v.cardMyPhotos,
             v.cardVerification, v.cardTerms, v.cardPrivacy,
-            v.cardCommunity, v.cardFaq, v.cardInvite, v.cardSettings
+            v.cardCommunity, v.cardFaq, v.cardInvite, v.cardSettings,
+            v.cardAdmin
         ).forEach { it.setBackgroundResource(R.drawable.bg_profile_card) }
+    }
+
+    /**
+     * Muestra la card "Panel de administración" solo si profiles.is_admin
+     * es true para el usuario actual (AdminChecker, con caché de 5 min).
+     * Por defecto la card está oculta en el XML, así que un usuario
+     * normal nunca la llega a ver.
+     */
+    private fun cargarEsAdmin() {
+        lifecycleScope.launch {
+            val esAdmin = AdminChecker.esAdmin()
+            _binding?.cardAdmin?.visibility = if (esAdmin) View.VISIBLE else View.GONE
+        }
     }
 
     /** Recarga los datos cada vez que el usuario vuelve a la pestaña (p. ej. tras editar). */
@@ -229,6 +245,11 @@ class ProfileFragment : Fragment() {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
             alPulsarVerificacion()
         }
+        // Seguridad y privacidad: "Ajustes" se movió aquí desde Descubre más
+        binding.cardSettings.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardSettings")) return@setOnClickListener
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
 
         // Ayuda y legal
         binding.cardTerms.setOnClickListener {
@@ -253,9 +274,15 @@ class ProfileFragment : Fragment() {
             if (AntiSpam.esDobleTap("cardInvite")) return@setOnClickListener
             compartirApp()
         }
-        binding.cardSettings.setOnClickListener {
-            if (AntiSpam.esDobleTap("cardSettings")) return@setOnClickListener
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        // Solo admins (visibilidad decidida en cargarEsAdmin)
+        binding.cardAdmin.setOnClickListener {
+            if (AntiSpam.esDobleTap("cardAdmin")) return@setOnClickListener
+            AreloveDialog.show(
+                requireContext(),
+                AreloveDialog.Tipo.INFO,
+                getString(R.string.profile_admin_panel),
+                getString(R.string.profile_admin_msg)
+            )
         }
     }
 
