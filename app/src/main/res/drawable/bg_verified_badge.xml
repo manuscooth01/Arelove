@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Disco tras el check de verificación: circulo con anillo verde
+     para que el icono se separe del fondo (foto del avatar o del
+     gradiente de la card de swipe). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/surface_container_high" />
+    <stroke
+        android:width="2dp"
+        android:color="@color/online_green" />
+</shape>

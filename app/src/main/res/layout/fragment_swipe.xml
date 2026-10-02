@@ -146,25 +146,35 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/tvName"
-                        android:layout_width="0dp"
+                    <!-- Nombre + check: el bloque es wrap_content para que
+                         el check quede inmediatamente a la derecha del
+                         texto (si tvName pesara 1, el check se iría al
+                         borde derecho de la card) -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:textColor="@android:color/white"
-                        android:textSize="26sp"
-                        tools:text="María, 25" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/ivVerified"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="6dp"
-                        android:contentDescription="@string/profile_verified"
-                        android:src="@drawable/ic_verified"
-                        android:visibility="gone" />
-</LinearLayout>
+                        <TextView
+                            android:id="@+id/tvName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:textColor="@android:color/white"
+                            android:textSize="26sp"
+                            tools:text="María, 25" />
+
+                        <ImageView
+                            android:id="@+id/ivVerified"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_marginStart="8dp"
+                            android:contentDescription="@string/profile_verified"
+                            android:src="@drawable/ic_verified"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvLocation"
