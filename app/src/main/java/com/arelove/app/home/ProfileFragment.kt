@@ -300,7 +300,6 @@ class ProfileFragment : Fragment() {
         val v = _binding ?: return
 
         if (verificado) {
-            v.ivVerifiedBadge.visibility = View.VISIBLE
             v.ivVerifiedName.visibility = View.VISIBLE
             v.llVerifiedChip.visibility = View.VISIBLE
             v.tvVerificationStatus.visibility = View.VISIBLE
@@ -309,7 +308,6 @@ class ProfileFragment : Fragment() {
                 ContextCompat.getColor(requireContext(), R.color.online_green)
             )
         } else {
-            v.ivVerifiedBadge.visibility = View.GONE
             v.ivVerifiedName.visibility = View.GONE
             v.llVerifiedChip.visibility = View.GONE
             v.tvVerificationStatus.visibility = View.VISIBLE
