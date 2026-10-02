@@ -23,6 +23,7 @@ import com.arelove.app.profile.MyVerificationActivity
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
+import com.onesignal.OneSignal
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -405,8 +406,13 @@ class ProfileFragment : Fragment() {
     private fun cerrarSesion() {
         lifecycleScope.launch {
             try {
-                // Borra el token FCM mientras la sesion aun esta activa
+                // 1. Borra el player id en la BD mientras la sesion del
+                //    usuario que se va sigue activa
                 OneSignalManager.desregistrar()
+                // 2. Logout de OneSignal: el proximo usuario del mismo
+                //    dispositivo registrara su propio player id
+                OneSignal.logout()
+                // 3. Logout de Supabase
                 SupabaseClient.client.auth.signOut()
                 // El rol admin no sobrevive al cambio de usuario
                 AdminChecker.invalidarCache()

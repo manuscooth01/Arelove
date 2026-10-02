@@ -106,8 +106,8 @@ class MainActivity : AppCompatActivity() {
 
             val session = SupabaseClient.client.auth.currentSessionOrNull()
             if (session != null) {
-                // Registra el token FCM en un coroutine aparte para no
-                // retrasar la navegacion
+                // Registra el player id de OneSignal en un coroutine aparte
+                // para no retrasar la navegacion
                 lifecycleScope.launch {
                     OneSignalManager.registrarPlayerId()
                 }

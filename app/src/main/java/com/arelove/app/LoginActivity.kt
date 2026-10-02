@@ -10,6 +10,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.ActivityLoginBinding
+import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
@@ -206,6 +207,10 @@ class LoginActivity : AppCompatActivity() {
     private fun navegarAMain() {
         // Nueva sesión: olvidamos el rol admin cacheado (caché por usuario)
         AdminChecker.invalidarCache()
+        // Vincula el player id de OneSignal al usuario recién autenticado
+        lifecycleScope.launch {
+            OneSignalManager.registrarPlayerId()
+        }
         val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }

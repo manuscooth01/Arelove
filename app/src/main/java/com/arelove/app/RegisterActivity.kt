@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.ActivityRegisterBinding
+import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import com.google.android.material.textfield.TextInputEditText
@@ -119,6 +120,10 @@ class RegisterActivity : AppCompatActivity() {
     private fun abrirProfileSetup() {
         // Cuenta nueva: nunca hereda el rol admin cacheado
         AdminChecker.invalidarCache()
+        // Vincula el player id de OneSignal a la cuenta recién creada
+        lifecycleScope.launch {
+            OneSignalManager.registrarPlayerId()
+        }
         val intent = Intent(this, ProfileSetupActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }

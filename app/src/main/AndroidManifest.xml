@@ -154,6 +154,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- Extensión de OneSignal: icono y color de marca en cada push -->
+        <meta-data
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:value="com.arelove.app.notifications.AreloveNotificationService" />
+
     </application>
 
 </manifest>

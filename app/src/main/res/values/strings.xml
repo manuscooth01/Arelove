@@ -435,6 +435,11 @@
     <string name="notification_new_message">Nuevo mensaje de %1$s</string>
     <string name="notification_channel_name">Arelove</string>
     <string name="notification_channel_description">Notificaciones de likes, matches y mensajes</string>
+    <!-- Canales de OneSignal (uno por tipo de notificación) -->
+    <string name="notif_channel_general">General</string>
+    <string name="notif_channel_messages">Mensajes</string>
+    <string name="notif_channel_matches">Matches</string>
+    <string name="notif_channel_likes">Likes</string>
 
     <!-- ==================== LISTAS ==================== -->
     <string-array name="zodiac_signs">
