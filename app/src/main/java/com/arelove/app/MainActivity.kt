@@ -1,6 +1,7 @@
 package com.arelove.app
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,9 +16,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import com.arelove.app.databinding.ActivityMainBinding
+import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.handleDeeplinks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.activity.result.ActivityResultLauncher
 
@@ -30,6 +34,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    // true cuando un enlace de recuperación ya resolvió (sesión importada o
+    // error mostrado): evita avisos y navegaciones duplicadas
+    private var enlaceResuelto = false
+
     private val launcherPermisoNotificaciones =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -41,6 +49,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Enlace de recuperación de contraseña (com.arelove.app://auth/reset):
+        // se procesa aquí y no se continúa con la pantalla de bienvenida.
+        if (esEnlaceRecuperacion()) {
+            procesarEnlaceRecuperacion()
+            return
+        }
 
         // Pre-calentar CredentialManager para que la primera llamada a 
         // Google Sign-In no falle
@@ -117,6 +132,89 @@ class MainActivity : AppCompatActivity() {
                 mostrarContenido()
             }
         }
+    }
+
+    /**
+     * true si el Intent viene del deep link de recuperación de contraseña.
+     * El scheme y el host se comprueban contra REDIRECT_RECUPERACION, que es
+     * justo lo que el SDK compara con la configuración de Auth.
+     */
+    private fun esEnlaceRecuperacion(): Boolean {
+        val datos = intent.data ?: return false
+        val esperado = Uri.parse(SupabaseClient.REDIRECT_RECUPERACION)
+        return datos.scheme == esperado.scheme && datos.host == esperado.host
+    }
+
+    /**
+     * Importa la sesión de recovery que trae el enlace y abre la pantalla de
+     * nueva contraseña. Si el enlace no trae tokens (caducado, ya usado o con
+     * error) se avisa y se va al login.
+     */
+    private fun procesarEnlaceRecuperacion() {
+        val fragmento = intent.data?.fragment
+        if (fragmento.isNullOrBlank() || fragmento.contains("error") ||
+            !fragmento.contains("type=recovery")
+        ) {
+            avisoEnlaceInvalido()
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                // Espera a que GoTrue termine de cargar la sesión guardada en disco
+                SupabaseClient.client.auth.awaitInitialization()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
+            } catch (e: Exception) {
+                Log.e("MainActivity", "awaitInitialization falló", e)
+            }
+
+            // El SDK lee el fragmento, importa la sesión y llama a esto
+            SupabaseClient.client.handleDeeplinks(intent) { _ ->
+                runOnUiThread {
+                    if (enlaceResuelto) return@runOnUiThread
+                    enlaceResuelto = true
+                    abrirNuevaContrasena()
+                }
+            }
+        }
+
+        // Si el SDK no devuelve sesión (enlace mal formado o red caída) no
+        // dejamos la splash colgada
+        lifecycleScope.launch {
+            delay(10_000)
+            avisoEnlaceInvalido()
+        }
+    }
+
+    private fun avisoEnlaceInvalido() {
+        if (enlaceResuelto || isFinishing) return
+        enlaceResuelto = true
+        AreloveDialog.show(
+            this,
+            AreloveDialog.Tipo.WARNING,
+            getString(R.string.dialog_warning_title),
+            getString(R.string.error_reset_link),
+            onPositive = { irALogin() }
+        )
+    }
+
+    /** Abre la pantalla de nueva contraseña y limpia la pila de la bienvenida. */
+    private fun abrirNuevaContrasena() {
+        startActivity(Intent(this, ResetPasswordActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+        finish()
+    }
+
+    /** Va al login sin dejar la bienvenida en el historial. */
+    private fun irALogin() {
+        startActivity(Intent(this, LoginActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+        finish()
     }
 
     private fun mostrarContenido() {

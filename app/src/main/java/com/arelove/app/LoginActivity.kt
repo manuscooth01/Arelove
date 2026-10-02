@@ -55,6 +55,11 @@ class LoginActivity : AppCompatActivity() {
         binding.ivTogglePassword.alpha = 0.4f
         binding.ivTogglePassword.setOnClickListener { alternarPassword() }
 
+        binding.tvForgotPassword.setOnClickListener {
+            if (AntiSpam.esDobleTap("tvForgotPassword")) return@setOnClickListener
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+
         binding.tvTerminos.setOnClickListener {
             startActivity(Intent(this, LegalActivity::class.java).apply {
                 putExtra("tipo", "terminos")

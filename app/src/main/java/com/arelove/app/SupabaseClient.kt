@@ -23,6 +23,11 @@ object SupabaseClient {
 
     private const val SUPABASE_ANON_KEY = "sb_publishable_b7PwA4bBaiW6FEEonnmnIQ_AWsN6Bgv"
 
+    // Deep link de recuperación de contraseña. Tiene que estar en la lista de
+    // Redirect URLs de Supabase (Authentication > URL Configuration); scheme y
+    // host de aquí son los que instala(Auth) compara en handleDeeplinks.
+    internal const val REDIRECT_RECUPERACION = "com.arelove.app://auth/reset"
+
     val client: SupabaseClient by lazy {
         createSupabaseClient(
             supabaseUrl = SUPABASE_URL,
@@ -31,6 +36,10 @@ object SupabaseClient {
             install(Auth) { // registro, login y verificación por correo
                 // Guarda la sesión en SharedPreferences para sobrevivir reinicios
                 sessionManager = SettingsSessionManager()
+                // handleDeeplinks sólo actúa si el scheme y el host del Intent
+                // coinciden con estos (com.arelove.app://auth/reset)
+                scheme = "com.arelove.app"
+                host = "auth"
             }
             install(Postgrest) // consultas a las tablas
             install(Storage) // fotos de perfil en el bucket "avatars"

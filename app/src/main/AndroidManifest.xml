@@ -33,12 +33,35 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Enlace de recuperación de contraseña enviado por correo
+                 (Supabase Auth): com.arelove.app://auth/reset -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="com.arelove.app"
+                    android:host="auth"
+                    android:pathPrefix="/reset" />
+            </intent-filter>
         </activity>
 
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+
+        <!-- Recuperación de contraseña: envío del enlace al correo -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Recuperación de contraseña: nueva contraseña tras abrir el enlace -->
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".RegisterActivity"

@@ -78,6 +78,20 @@
     <string name="validation_min_password_length">Mínimo 8 caracteres</string>
     <string name="validation_accept_terms">Debes aceptar los términos</string>
 
+    <!-- Recuperación de contraseña -->
+    <string name="forgot_password_title">Recuperar contraseña</string>
+    <string name="forgot_password_subtitle">Escribe tu correo y te enviaremos un enlace para crear una contraseña nueva</string>
+    <string name="btn_send_reset_link">Enviar enlace</string>
+    <string name="btn_back_from_reset">Volver</string>
+    <string name="reset_link_sent_msg">Si el correo existe recibirás un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada</string>
+    <string name="new_password_title">Nueva contraseña</string>
+    <string name="new_password_subtitle">Crea una contraseña nueva para tu cuenta</string>
+    <string name="field_new_password">Nueva contraseña</string>
+    <string name="btn_save_password">Guardar contraseña</string>
+    <string name="reset_password_success_msg">Tu contraseña se actualizó correctamente. Ya puedes iniciar sesión</string>
+    <string name="error_reset_link">El enlace de recuperación no es válido o ha caducado</string>
+    <string name="error_reset_session">Tu sesión de recuperación ya no es válida. Solicita el enlace de nuevo</string>
+
     <!-- ==================== PERFIL OBLIGATORIO ==================== -->
     <string name="profile_setup_title">Crea tu perfil</string>
     <string name="profile_setup_subtitle">Los campos obligatorios están marcados con *</string>
