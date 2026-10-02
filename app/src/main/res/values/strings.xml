@@ -529,4 +529,39 @@
     <string name="verification_rejected_title">Verificación rechazada</string>
     <string name="verification_rejected_msg">Tu selfie no pudo validarse. Puedes volver a tomarla cuando quieras.</string>
 
+    <!-- ==================== PANEL DE ADMINISTRACIÓN ==================== -->
+    <!-- Cabecera y tarjetas de acceso -->
+    <string name="admin_panel_title">Panel de administración</string>
+    <string name="admin_card_verifications">Verificaciones pendientes</string>
+    <string name="admin_card_users">Usuarios</string>
+    <string name="admin_card_reports">Reportes</string>
+    <string name="admin_card_stats">Estadísticas</string>
+    <!-- Contadores dinámicos de las tarjetas (los pinta AdminActivity) -->
+    <string name="admin_card_verifications_count">%1$d pendientes</string>
+    <string name="admin_card_users_count">%1$d usuarios</string>
+    <string name="admin_card_reports_count">%1$d pendientes</string>
+    <string name="admin_card_stats_hint">Ver métricas</string>
+    <!-- Verificaciones pendientes -->
+    <string name="admin_verify_title">Verificaciones pendientes</string>
+    <string name="admin_verify_empty">No hay verificaciones pendientes</string>
+    <string name="admin_selfie_desc">Selfie de verificación</string>
+    <string name="admin_approve">Aprobar</string>
+    <string name="admin_reject">Rechazar</string>
+    <string name="admin_approved_msg">Usuario verificado</string>
+    <string name="admin_rejected_msg">Verificación rechazada</string>
+    <!-- Usuarios y reportes (placeholders) -->
+    <string name="admin_users_title">Usuarios</string>
+    <string name="admin_users_empty">Próximamente</string>
+    <string name="admin_reports_title">Reportes</string>
+    <string name="admin_reports_empty">No hay reportes pendientes</string>
+    <string name="admin_reports_coming_soon">Próximamente: gestión de reportes</string>
+    <string name="admin_coming_soon">Próximamente</string>
+    <string name="admin_load_error">No se pudieron cargar los datos</string>
+    <!-- Métricas del panel (valores los pinta AdminActivity) -->
+    <string name="admin_stat_total_users">Usuarios totales</string>
+    <string name="admin_stat_completed_profiles">Perfiles completados</string>
+    <string name="admin_stat_matches">Matches</string>
+    <string name="admin_stat_messages">Mensajes</string>
+    <string name="admin_stat_verified">Verificados</string>
+
 </resources>

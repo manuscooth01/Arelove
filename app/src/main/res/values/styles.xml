@@ -110,6 +110,13 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <!-- Foto cuadrada con esquinas de 8dp (selfie y foto de perfil
+         del panel de administración) -->
+    <style name="ShapeAppearance.Arelove.Photo" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
     <!-- Wordmark "Arelove" con tracking aireado -->
     <style name="Widget.Arelove.Wordmark" parent="TextAppearance.Material3.DisplaySmall">
         <item name="android:textSize">20sp</item>

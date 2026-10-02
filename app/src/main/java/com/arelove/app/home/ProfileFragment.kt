@@ -13,6 +13,7 @@ import com.arelove.app.MainActivity
 import com.arelove.app.R
 import com.arelove.app.SettingsActivity
 import com.arelove.app.SupabaseClient
+import com.arelove.app.admin.AdminActivity
 import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.FragmentProfileBinding
 import com.arelove.app.profile.EditProfileActivity
@@ -289,12 +290,7 @@ class ProfileFragment : Fragment() {
         // Solo admins (visibilidad decidida en cargarEsAdmin)
         binding.cardAdmin.setOnClickListener {
             if (AntiSpam.esDobleTap("cardAdmin")) return@setOnClickListener
-            AreloveDialog.show(
-                requireContext(),
-                AreloveDialog.Tipo.INFO,
-                getString(R.string.profile_admin_panel),
-                getString(R.string.profile_admin_msg)
-            )
+            startActivity(Intent(requireContext(), AdminActivity::class.java))
         }
     }
 

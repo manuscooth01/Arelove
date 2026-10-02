@@ -96,6 +96,26 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Panel de administración (solo profiles.is_admin = true) -->
+        <activity
+            android:name=".admin.AdminActivity"
+            android:exported="false" />
+
+        <!-- Panel admin: verificaciones pendientes -->
+        <activity
+            android:name=".admin.AdminVerifyActivity"
+            android:exported="false" />
+
+        <!-- Panel admin: usuarios (placeholder) -->
+        <activity
+            android:name=".admin.AdminUsersActivity"
+            android:exported="false" />
+
+        <!-- Panel admin: reportes (placeholder) -->
+        <activity
+            android:name=".admin.AdminReportsActivity"
+            android:exported="false" />
+
         <!-- Asistente de perfil (5 pasos) -->
         <activity
             android:name=".ProfileSetupActivity"
