@@ -26,3 +26,4 @@ secrets.properties
 *.log
 .env
 app/google-services.json
+Arelove-secrets/

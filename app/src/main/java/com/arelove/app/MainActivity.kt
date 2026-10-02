@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import com.arelove.app.databinding.ActivityMainBinding
-import com.arelove.app.notifications.FcmTokenManager
+import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                 // Registra el token FCM en un coroutine aparte para no
                 // retrasar la navegacion
                 lifecycleScope.launch {
-                    FcmTokenManager.registrarToken()
+                    OneSignalManager.registrarPlayerId()
                 }
                 try {
                     val destino = if (ProfileChecker.perfilCompleto()) {

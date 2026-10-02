@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.arelove.app.databinding.ActivityProfileSetupBinding
-import com.arelove.app.notifications.FcmTokenManager
+import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.profile.Step1BasicFragment
 import com.arelove.app.profile.Step2InterestsFragment
 import com.arelove.app.profile.Step3PhotosFragment
@@ -239,7 +239,7 @@ class ProfileSetupActivity : AppCompatActivity() {
         prefs.edit().remove(claveUltimoPaso).apply()
         // Registra el token FCM del dispositivo con el perfil ya completo
         lifecycleScope.launch {
-            FcmTokenManager.registrarToken()
+            OneSignalManager.registrarPlayerId()
         }
         startActivity(Intent(this, HomeActivity::class.java))
         finish()

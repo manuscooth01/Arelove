@@ -16,7 +16,7 @@ import com.arelove.app.SupabaseClient
 import com.arelove.app.admin.AdminActivity
 import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.FragmentProfileBinding
-import com.arelove.app.notifications.FcmTokenManager
+import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.profile.EditProfileActivity
 import com.arelove.app.profile.MyPhotosActivity
 import com.arelove.app.profile.MyVerificationActivity
@@ -406,7 +406,7 @@ class ProfileFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 // Borra el token FCM mientras la sesion aun esta activa
-                FcmTokenManager.desregistrarToken()
+                OneSignalManager.desregistrar()
                 SupabaseClient.client.auth.signOut()
                 // El rol admin no sobrevive al cambio de usuario
                 AdminChecker.invalidarCache()
