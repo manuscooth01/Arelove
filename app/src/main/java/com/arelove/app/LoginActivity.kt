@@ -123,6 +123,10 @@ class LoginActivity : AppCompatActivity() {
                     getString(R.string.dialog_login_success_msg),
                     onPositive = { navegarAMain() }
                 )
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 AreloveDialog.show(
                     this@LoginActivity,
@@ -170,6 +174,10 @@ class LoginActivity : AppCompatActivity() {
                     getString(R.string.dialog_login_success_msg),
                     onPositive = { navegarAMain() }
                 )
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 AreloveDialog.show(
                     this@LoginActivity,

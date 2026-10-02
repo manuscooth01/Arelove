@@ -187,6 +187,10 @@ class RegisterActivity : AppCompatActivity() {
                     getString(R.string.dialog_register_success_msg),
                     onPositive = { abrirProfileSetup() }
                 )
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 AreloveDialog.show(
                     this@RegisterActivity,

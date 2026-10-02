@@ -105,6 +105,10 @@ class Step4OptionalFragment : Fragment() {
                 b.etZodiac.setText(textoDe(fila, "zodiac"), false)
                 b.etOccupation.setText(textoDe(fila, "occupation"))
                 b.etFavoriteMusic.setText(textoDe(fila, "favorite_music"))
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 // Sin conexión o sin permiso: el paso es opcional, se sigue con el formulario vacío
                 Log.e(TAG_LOG, "Error cargando el perfil opcional", e)
@@ -191,6 +195,10 @@ class Step4OptionalFragment : Fragment() {
                     filter { eq("id", userId) }
                 }
                 onSuccess()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 // Stacktrace completo en logcat para diagnosticar la causa real
                 Log.e(TAG_LOG, "Error guardando el perfil opcional", e)

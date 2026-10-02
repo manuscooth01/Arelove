@@ -135,6 +135,10 @@ class LikesReceivedFragment : Fragment() {
                     showEmptyState(likesList.isEmpty())
                 }
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 b.progressBar.visibility = View.GONE
                 Log.e("LikesReceivedFragment", "Error cargando likes recibidos", e)
@@ -202,6 +206,10 @@ class LikesReceivedFragment : Fragment() {
                 adapter.notifyDataSetChanged()
                 showEmptyState(likesList.isEmpty())
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("LikesReceivedFragment", "Error cargando perfiles individuales", e)
                 val b = _binding ?: return@launch
@@ -340,6 +348,10 @@ class LikesReceivedFragment : Fragment() {
                     )
                     exito = true
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("LikesReceived", "Error darLikeDeVuelta", e)
                 AreloveDialog.show(
@@ -370,6 +382,10 @@ class LikesReceivedFragment : Fragment() {
                     filter { eq("from_user", toUserId) }
                     filter { eq("to_user", fromUserId) }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("LikesReceived", "Error pasarLike", e)
             } finally {
@@ -392,6 +408,10 @@ class LikesReceivedFragment : Fragment() {
             }.decodeList<JsonObject>()
 
             return filas.isNotEmpty()
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Cancelacion normal (navegacion del usuario): se relanza
+            // y nunca se traga (regla de corrutinas de Kotlin).
+            throw e
         } catch (e: Exception) {
             Log.e("LikesReceivedFragment", "Error verificando match", e)
             return false

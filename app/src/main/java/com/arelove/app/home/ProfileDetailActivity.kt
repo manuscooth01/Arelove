@@ -115,6 +115,10 @@ class ProfileDetailActivity : AppCompatActivity() {
                         cargarNombresIntereses(interestIds)
                     }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ProfileDetailActivity", "Error cargando perfil", e)
                 runOnUiThread {
@@ -267,6 +271,10 @@ class ProfileDetailActivity : AppCompatActivity() {
                 if (nombres.isNotEmpty()) {
                     runOnUiThread { mostrarIntereses(nombres) }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ProfileDetailActivity", "Error cargando intereses", e)
             }

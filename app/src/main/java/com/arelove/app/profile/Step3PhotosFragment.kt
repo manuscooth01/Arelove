@@ -51,11 +51,19 @@ import java.io.File
  * y una celda "+" hasta llegar a 6. Al elegir una foto se sube al bucket
  * "avatars" y se guarda su fila al terminar, de modo que si el usuario abandona
  * el paso la foto sigue siendo suya. No se puede avanzar sin 2 fotos subidas.
+ *
+ * También se usa fuera del asistente, alojado por [MyPhotosActivity] con el
+ * modo edición ([modoEdicion]): en ese caso oculta su título interno (lo pone
+ * la Activity) y no hay botón "Siguiente" (lo maneja la Activity), pero cada
+ * foto se sigue subiendo y guardando igual que en el paso.
  */
 class Step3PhotosFragment : Fragment() {
 
     private var _binding: FragmentStep3PhotosBinding? = null
     private val binding get() = _binding!!
+
+    /** true cuando se aloja en [MyPhotosActivity] (sin cabecera ni "Siguiente"). */
+    private var enModoEdicion = false
 
     /**
      * Una casilla de la rejilla: [FotoItem.url] si ya está en Supabase,
@@ -144,6 +152,13 @@ class Step3PhotosFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        enModoEdicion = arguments?.getBoolean(ARG_MODO_EDICION, false) == true
+        if (enModoEdicion) {
+            // La cabecera la pinta la Activity y no hay "Siguiente" que pulsar
+            binding.tvPhotosTitle.visibility = View.GONE
+            binding.tvPhotosSubtitle.visibility = View.GONE
+        }
+
         configurarRejilla()
         actualizarContador()
         cargarFotos()
@@ -244,6 +259,10 @@ class Step3PhotosFragment : Fragment() {
                 )
                 sinVista.rvPhotos.adapter?.notifyDataSetChanged()
                 actualizarContador()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error cargando las fotos", e)
                 mostrarErrorLoad(
@@ -528,6 +547,10 @@ class Step3PhotosFragment : Fragment() {
                 put("content_hash", hash)
             })
             url
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Cancelacion normal (navegacion del usuario): se relanza
+            // y nunca se traga (regla de corrutinas de Kotlin).
+            throw e
         } catch (e: Exception) {
             Log.e(TAG_LOG, "Error guardando la fila de la foto", e)
             // Si la fila no entra, el archivo no debe quedarse huérfano
@@ -561,6 +584,10 @@ class Step3PhotosFragment : Fragment() {
                 if (!PhotoUploadHelper.borrarFoto(url)) {
                     mensajeError = getString(R.string.error_delete_photo)
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error borrando la foto", e)
                 mensajeError = getString(
@@ -729,9 +756,20 @@ class Step3PhotosFragment : Fragment() {
         }
     }
 
-    private companion object {
+    companion object {
+        /** Argumento que activa el modo edición ([modoEdicion]). */
+        private const val ARG_MODO_EDICION = "modo_edicion"
+
+        /**
+         * Instancia para [MyPhotosActivity]: el mismo paso, pero sin cabecera
+         * interna ni botón "Siguiente" (los gestiona la Activity).
+         */
+        fun modoEdicion(): Step3PhotosFragment = Step3PhotosFragment().apply {
+            arguments = Bundle().apply { putBoolean(ARG_MODO_EDICION, true) }
+        }
+
         /** Etiqueta para el log de errores de este paso. */
-        const val TAG_LOG = "Step3Photos"
+        private const val TAG_LOG = "Step3Photos"
 
         /** Fotos mínimas para avanzar y máximo que se pueden subir. */
         const val MIN_FOTOS = 2

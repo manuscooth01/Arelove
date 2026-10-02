@@ -164,6 +164,10 @@ class Step5VerificationFragment : Fragment() {
                 // Sin vista (paso destruido) no se pinta nada: en el próximo
                 // onViewCreated urlSelfie ya no será null y se restaura solo
                 mostrarSelfieSubida(url)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 // Sin conexión o sin permiso: el paso sigue funcionando sin preview
                 Log.e(TAG_LOG, "Error cargando la selfie guardada", e)
@@ -282,6 +286,10 @@ class Step5VerificationFragment : Fragment() {
                         urlSelfie = url
                     }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error guardando la selfie de verificación", e)
                 mensajeError = getString(
@@ -378,6 +386,10 @@ class Step5VerificationFragment : Fragment() {
                                     .decodeByteArray(bytes, 0, bytes.size)
                                 _binding?.ivSelfiePreview?.setImageBitmap(bitmap)
                                 _binding?.ivSelfiePreview?.visibility = View.VISIBLE
+                            } catch (e: kotlinx.coroutines.CancellationException) {
+                                // Cancelacion normal (navegacion del usuario): se relanza
+                                // y nunca se traga (regla de corrutinas de Kotlin).
+                                throw e
                             } catch (e: Exception) {
                                 Log.e(TAG_LOG, "Descarga manual también falló", e)
                                 _binding?.ivSelfiePreview?.visibility = View.GONE
@@ -471,6 +483,10 @@ class Step5VerificationFragment : Fragment() {
                                     filter { eq("id", userId) }
                                 }
                             }
+                        } catch (e: kotlinx.coroutines.CancellationException) {
+                            // Cancelacion normal (navegacion del usuario): se relanza
+                            // y nunca se traga (regla de corrutinas de Kotlin).
+                            throw e
                         } catch (e: Exception) {
                             Log.e(TAG_LOG, "Error marcando profile_completed", e)
                         } finally {
@@ -504,6 +520,10 @@ class Step5VerificationFragment : Fragment() {
                 }
 
                 onSuccess()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error guardando la selfie de verificación", e)
                 onError(

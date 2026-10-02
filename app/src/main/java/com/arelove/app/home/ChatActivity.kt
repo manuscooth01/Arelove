@@ -183,6 +183,10 @@ class ChatActivity : AppCompatActivity() {
                 // Suscribirse a realtime
                 suscribirRealtime()
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error cargando chat", e)
                 runOnUiThread {
@@ -222,6 +226,10 @@ class ChatActivity : AppCompatActivity() {
                 // Forzar recarga de mensajes para mostrar el mensaje real del servidor
                 cargarDatos()
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error enviando mensaje", e)
                 runOnUiThread {
@@ -247,6 +255,10 @@ class ChatActivity : AppCompatActivity() {
                     filter { eq("sender", otroUserId) }
                     filter { eq("seen", false) }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error marcando como vistos", e)
             }
@@ -299,6 +311,10 @@ class ChatActivity : AppCompatActivity() {
                         binding.rvMessages.scrollToPosition(messages.size - 1)
                     }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error polling mensajes", e)
             }

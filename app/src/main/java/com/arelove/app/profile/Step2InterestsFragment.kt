@@ -111,6 +111,10 @@ class Step2InterestsFragment : Fragment() {
                 despuesDeCargar.progressBarInterests.visibility = View.GONE
                 rellenarChips(despuesDeCargar, intereses, mias)
                 actualizarContador(despuesDeCargar.chipGroupInterests.checkedChipIds.size)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error cargando intereses", e)
 
@@ -233,6 +237,10 @@ class Step2InterestsFragment : Fragment() {
                 }
 
                 onSuccess()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error guardando intereses", e)
                 onError(

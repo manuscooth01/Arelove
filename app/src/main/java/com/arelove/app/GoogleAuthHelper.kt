@@ -74,6 +74,10 @@ object GoogleAuthHelper {
         ) {
             return try {
                 GoogleIdTokenCredential.createFrom(credencial.data).idToken
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 null // credencial mal formada → sin token
             }

@@ -77,6 +77,10 @@ class MainActivity : AppCompatActivity() {
             try {
                 // Espera a que GoTrue termine de cargar la sesión guardada en disco
                 SupabaseClient.client.auth.awaitInitialization()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("MainActivity", "awaitInitialization falló", e)
                 // Si falla la inicialización, mostramos los botones
@@ -96,6 +100,10 @@ class MainActivity : AppCompatActivity() {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                     })
                     finish()
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    // Cancelacion normal (navegacion del usuario): se relanza
+                    // y nunca se traga (regla de corrutinas de Kotlin).
+                    throw e
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Error comprobando perfil", e)
                     // Si falla la comprobación, vamos a Home

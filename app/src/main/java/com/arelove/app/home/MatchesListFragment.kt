@@ -136,6 +136,10 @@ class MatchesListFragment : Fragment() {
                     showEmptyState(matchesList.isEmpty())
                 }
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 b.progressBar.visibility = View.GONE
                 Log.e("MatchesListFragment", "Error cargando matches", e)
@@ -196,6 +200,10 @@ class MatchesListFragment : Fragment() {
                 adapter.notifyDataSetChanged()
                 showEmptyState(matchesList.isEmpty())
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("MatchesListFragment", "Error cargando perfiles", e)
                 val b = _binding ?: return@launch
@@ -302,6 +310,10 @@ class MatchesListFragment : Fragment() {
                 }
                 startActivity(intent)
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("MatchesListFragment", "Error abriendo chat", e)
                 mostrarError(

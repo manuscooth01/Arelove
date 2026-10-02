@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.arelove.app.EditProfileActivity
 import com.arelove.app.LegalActivity
 import com.arelove.app.MainActivity
 import com.arelove.app.ProfileSetupActivity
@@ -17,6 +16,8 @@ import com.arelove.app.SettingsActivity
 import com.arelove.app.SupabaseClient
 import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.FragmentProfileBinding
+import com.arelove.app.profile.EditProfileActivity
+import com.arelove.app.profile.MyPhotosActivity
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
@@ -222,6 +223,10 @@ class ProfileFragment : Fragment() {
                 if (filas.isNotEmpty()) {
                     pintarCompletitud(filas[0], intereses, filasMedia.size)
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 _binding?.tvEmail?.text = email
             }
@@ -236,15 +241,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun configurarCards() {
-        // Tu cuenta: "Editar perfil" abre la pantalla de edición (en
-        // construcción) y "Mis fotos" el asistente directo en el paso 3
+        // Tu cuenta: "Editar perfil" abre la edición directa y "Mis fotos"
+        // la pantalla de fotos (ambas fuera del asistente)
         binding.cardEditProfile.setOnClickListener {
             if (AntiSpam.esDobleTap("cardEditProfile")) return@setOnClickListener
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
         binding.cardMyPhotos.setOnClickListener {
             if (AntiSpam.esDobleTap("cardMyPhotos")) return@setOnClickListener
-            abrirAsistente(2)
+            startActivity(Intent(requireContext(), MyPhotosActivity::class.java))
         }
         binding.cardVerification.setOnClickListener {
             if (AntiSpam.esDobleTap("cardVerification")) return@setOnClickListener
@@ -412,6 +417,10 @@ class ProfileFragment : Fragment() {
                 // El rol admin no sobrevive al cambio de usuario
                 AdminChecker.invalidarCache()
                 irAInicio()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 AdminChecker.invalidarCache()
                 AreloveDialog.show(

@@ -177,6 +177,10 @@ class ChatsFragment : Fragment() {
                             withContext(Dispatchers.Main) {
                                 perfiles[otroId] = nickname to fotoUrl
                             }
+                        } catch (e: kotlinx.coroutines.CancellationException) {
+                            // Cancelacion normal (navegacion del usuario): se relanza
+                            // y nunca se traga (regla de corrutinas de Kotlin).
+                            throw e
                         } catch (e: Exception) {
                             Log.e("ChatsFragment", "Error cargando perfil $otroId", e)
                         }
@@ -260,6 +264,10 @@ class ChatsFragment : Fragment() {
                     actualizarVistaVacia()
                 }
 
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("ChatsFragment", "Error cargando chats", e)
                 val sinVista = _binding ?: return@launch

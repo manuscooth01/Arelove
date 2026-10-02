@@ -10,13 +10,16 @@ App de citas Android (Kotlin + XML + Material 3) contra Supabase. Un único mód
 - Firmado: `app/build.gradle` lee `KEYSTORE_FILE`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` del entorno (defaults: alias `arelove`, contraseñas vacías, fichero `arelove.keystore`). El keystore **no está en el repo** (gitignored) y su contraseña no está vacía → sin esas variables el build falla. CI lo decodifica de `secrets.KEYSTORE_BASE64`.
 - **No** reemplaces `debug { signingConfig signingConfigs.release }` por la keystore de debug por defecto: el login con Google (Credential Manager) valida el SHA-1 de esa keystore contra el `WEB_CLIENT_ID` hardcodeado en `GoogleAuthHelper`.
 - Release usa `minifyEnabled true`; keep rules en `app/proguard-rules.pro`.
+- **VUL-11 pendiente**: mientras duren los fixes de seguridad (pentest de octubre 2026) la entrega es el APK de debug. El release (`assembleRelease` firmado, con `debuggable=false` y R8) se hará **cuando terminemos los fixes**; no distribuir el debug como definitivo.
 - `settings.gradle` fija `RepositoriesMode.FAIL_ON_PROJECT_REPOS`: no añadas repositorios en `app/build.gradle`.
+- `buildFeatures { viewBinding true; buildConfig true }`: `buildConfig` está activado a propósito para usar `BuildConfig.DEBUG` en los logs condicionales (VUL-13); sin esa línea `BuildConfig` no existe con AGP 8 y el build falla. El paquete es `com.arelove.app`, así que en clases de ese paquete no hace falta import.
 
 ## Supabase (BOM 2.1.0) — trampas reales
 
 - El *group* de Maven es `io.github.jan-tennert.supabase`, pero **los paquetes Kotlin son `io.github.jan.supabase.*`**: `io.github.jan.supabase.gotrue.auth`, `io.github.jan.supabase.postgrest.postgrest`. El módulo de Auth se llama `gotrue-kt`.
 - Cliente único: `SupabaseClient.client` (URL y anon key hardcodeados; instala Auth, Postgrest y Storage; **no** Realtime). `SUPABASE_URL` es `internal` para usarla al construir URLs absolutas.
 - Select con filtro: `client.postgrest["profiles"].select { filter { eq("id", userId) } }` — el lambda es de `PostgrestRequestBuilder` (ahí viven `filter`, `limit`, `single`), y `eq` está dentro de `filter`.
+- **Perfil propio → `postgrest["profiles"]`; perfil de OTROS → `postgrest["profiles_publicos"]`** (vista que expone sólo columnas públicas: sin `latitude`/`longitude`/`birthdate`/`verification_photo_url`). Tras `SQL-FIX-PENTEST.txt` la RLS de `profiles` es "sólo mi fila", así que una query a `profiles` de otra persona devuelve **0 filas sin error**. Las 5 lecturas ajenas ya usan la vista: SwipeFragment, ProfileDetailActivity, ChatsFragment, LikesReceivedFragment, MatchesListFragment.
 - **`decodeSingleOrNull<Map<String, Any>>()` no funciona**: `KotlinXSerializer` hace `serializer(typeOf<T>())` y kotlinx no serializa `Any`. Usa `decodeSingleOrNull<JsonObject>()`.
 - **`upsert(mapOf(...))` tampoco** (explota en runtime con `SerializationException`). Usa `upsert(buildJsonObject { put("col", valor) })`.
 - `age` se envía como número (`put("age", edad)`), no como texto.

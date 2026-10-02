@@ -67,6 +67,10 @@ class HomeActivity : AppCompatActivity() {
                         badge.isVisible = false
                     }
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 // Silenciar error, solo no mostrar badge
             }

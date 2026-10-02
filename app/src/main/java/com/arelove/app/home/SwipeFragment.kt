@@ -285,6 +285,10 @@ class SwipeFragment : Fragment() {
                     mostrarPerfilActual()
                     precargarSiguiente()
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error cargando perfiles", e)
                 mostrarError(
@@ -322,6 +326,10 @@ class SwipeFragment : Fragment() {
                     map.getOrPut(uid) { mutableListOf() }.add(name)
                 }
                 map.mapValues { (_, v) -> v.toList() }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.w("SwipeFragment", "Error cargando intereses batch", e)
                 emptyMap()
@@ -549,6 +557,10 @@ class SwipeFragment : Fragment() {
                     profiles[currentIndex] = perfilActualizado
                     setupPhotoPager(urls)
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error cargando fotos de $userId", e)
                 val sinVista = _binding ?: return@launch
@@ -627,6 +639,10 @@ class SwipeFragment : Fragment() {
                 if (siguiente < profiles.size) {
                     profiles[siguiente] = profiles[siguiente].copy(fotos = urls)
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error precargando fotos", e)
             } finally {
@@ -673,6 +689,14 @@ class SwipeFragment : Fragment() {
                 }
 
                 pasarPerfil()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                // Antes se reactivan los botones: si la cancelacion llega
+                // con la vista viva, no quedarian bloqueados.
+                _binding?.btnLike?.isEnabled = true
+                _binding?.btnDislike?.isEnabled = true
+                throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error dando like", e)
                 val sinVista = _binding ?: return@launch
@@ -709,6 +733,10 @@ class SwipeFragment : Fragment() {
                 actualizarLikeMutuo(fromUserId, toUserId)
                 return true
             }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Cancelacion normal (navegacion del usuario): se relanza
+            // y nunca se traga (regla de corrutinas de Kotlin).
+            throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error verificando match", e)
         }
@@ -747,6 +775,10 @@ class SwipeFragment : Fragment() {
                     put("user2", u2)
                 })
             }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Cancelacion normal (navegacion del usuario): se relanza
+            // y nunca se traga (regla de corrutinas de Kotlin).
+            throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error creando match o chat", e)
         }
@@ -761,6 +793,10 @@ class SwipeFragment : Fragment() {
                 filter { eq("from_user", toUserId) }
                 filter { eq("to_user", fromUserId) }
             }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Cancelacion normal (navegacion del usuario): se relanza
+            // y nunca se traga (regla de corrutinas de Kotlin).
+            throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error actualizando like mutuo", e)
         }

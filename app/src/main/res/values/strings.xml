@@ -482,7 +482,13 @@
     <string name="profile_completion">Tu perfil está al %1$d%%</string>
     <string name="profile_badge_verified">Verificado</string>
     <string name="my_photos">Mis fotos</string>
-    <string name="edit_profile_placeholder">En construcción. Próximamente podrás editar todos tus datos.</string>
+    <string name="my_photos_hint">La primera foto es la que se muestra en tu perfil.</string>
+    <string name="my_photos_done">Listo</string>
+
+    <!-- Edición directa del perfil (fuera del asistente) -->
+    <string name="edit_profile_save">Guardar cambios</string>
+    <string name="edit_profile_saved_msg">Tus cambios se guardaron correctamente.</string>
+    <string name="edit_profile_load_error">No se pudo cargar tu perfil. Inténtalo de nuevo.</string>
 
     <!-- Subtítulos de las tarjetas del perfil (12sp bajo cada título) -->
     <string name="profile_sub_edit_profile">Bio, datos físicos, intereses</string>

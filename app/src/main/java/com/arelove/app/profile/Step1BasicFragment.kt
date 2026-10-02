@@ -331,6 +331,10 @@ class Step1BasicFragment : Fragment() {
                     AreloveDialog.Tipo.ERROR,
                     contexto.getString(R.string.location_permission_denied)
                 )
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 if (_binding == null) return@launch
                 mostrarDialogo(
@@ -429,6 +433,10 @@ class Step1BasicFragment : Fragment() {
                     try {
                         // Escribe el campo, fija fechaNacimiento y valida la edad
                         aplicarFechaNacimiento(LocalDate.parse(iso))
+                    } catch (e: kotlinx.coroutines.CancellationException) {
+                        // Cancelacion normal (navegacion del usuario): se relanza
+                        // y nunca se traga (regla de corrutinas de Kotlin).
+                        throw e
                     } catch (e: Exception) {
                         Log.e(TAG_LOG, "Error parseando birthdate: $iso", e)
                     }
@@ -465,6 +473,10 @@ class Step1BasicFragment : Fragment() {
                     "otro" -> b.chipOtro.isChecked = true
                     "prefiero_no_decir" -> b.chipPrefieroNoDecir.isChecked = true
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG_LOG, "Error cargando el Paso 1", e)
             }
@@ -607,6 +619,10 @@ class Step1BasicFragment : Fragment() {
                 // UPSERT: crea la fila si no existe y la actualiza si ya existe
                 SupabaseClient.client.postgrest["profiles"].upsert(fila)
                 onSuccess()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancelacion normal (navegacion del usuario): se relanza
+                // y nunca se traga (regla de corrutinas de Kotlin).
+                throw e
             } catch (e: Exception) {
                 // Stacktrace completo en logcat para diagnosticar la causa real
                 Log.e(TAG_LOG, "Error guardando perfil", e)
