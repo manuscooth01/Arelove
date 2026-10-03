@@ -289,7 +289,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
-        buttonRegister.setOnClickListener {
+        binding.buttonRegister.setOnClickListener {
             if (AntiSpam.esDobleTap("buttonRegister")) return@setOnClickListener
             startActivity(Intent(this, RegisterActivity::class.java))
         }
