@@ -14,7 +14,8 @@ import com.onesignal.notifications.INotificationServiceExtension
  *
  * Aplica el icono y el color de marca a cada notificación entrante: al no
  * llamar a preventDefault(), OneSignal la muestra igual pero con el
- * extender aplicado (small icon ic_logo_heart y color primario #E53935).
+ * extender aplicado. Fallback: ic_notif_message (genérico).
+ * La Edge Function envía small_icon + android_accent_color por tipo (like/match/mensaje).
  */
 class AreloveNotificationService : INotificationServiceExtension {
 
@@ -23,7 +24,7 @@ class AreloveNotificationService : INotificationServiceExtension {
         event.notification.setExtender(object : NotificationCompat.Extender {
             override fun extend(builder: NotificationCompat.Builder): NotificationCompat.Builder {
                 return builder
-                    .setSmallIcon(R.drawable.ic_logo_heart)
+                    .setSmallIcon(R.drawable.ic_notif_message)
                     .setColor(ContextCompat.getColor(contexto, R.color.primary))
             }
         })
