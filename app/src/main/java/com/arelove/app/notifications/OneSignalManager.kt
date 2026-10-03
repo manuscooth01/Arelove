@@ -8,25 +8,16 @@ import android.media.RingtoneManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.arelove.app.R
-import com.arelove.app.SupabaseClient
 import com.onesignal.OneSignal
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Order
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
 /**
- * Gestiona OneSignal: inicialización, permiso de notificaciones, canales
- * y registro del player id en profiles.onesignal_player_id.
- * El manejo de clicks en notificaciones se hace vía Intent extras en MainActivity/onNewIntent
- * (OneSignal pone los datos automáticamente en los extras del Intent).
+ * Gestiona OneSignal: inicialización, permiso de notificaciones, canales.
+ * El registro de player id se hace en SupabaseClientExt (extensión).
+ * El manejo de clicks en notificaciones se hace vía Intent extras en MainActivity/onNewIntent.
  */
 object OneSignalManager {
     private const val TAG = "OneSignal"
@@ -62,7 +53,6 @@ object OneSignalManager {
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
 
-        // Mensajes del chat: máximo destello y vibración
         manager.createNotificationChannel(
             NotificationChannel(
                 "mensajes",
@@ -74,7 +64,6 @@ object OneSignalManager {
             }
         )
 
-        // Matches: mismo destello que los mensajes
         manager.createNotificationChannel(
             NotificationChannel(
                 "matches",
@@ -86,7 +75,6 @@ object OneSignalManager {
             }
         )
 
-        // Likes: importancia normal y sin vibración
         manager.createNotificationChannel(
             NotificationChannel(
                 "likes",
@@ -97,56 +85,5 @@ object OneSignalManager {
                 enableVibration(false)
             }
         )
-    }
-
-    /**
-     * Guarda el player id de este dispositivo en profiles para el usuario
-     * con sesión activa.
-     */
-    suspend fun registrarPlayerId() {
-        try {
-            val playerId = OneSignal.User.pushSubscription.id
-            if (playerId.isNullOrEmpty()) {
-                Log.w(TAG, "Player ID vacío")
-                return
-            }
-
-            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-                ?: return
-
-            SupabaseClient.client.postgrest["profiles"].update(
-                kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", playerId) }
-            ) {
-                filter { eq("id", userId) }
-            }
-
-            Log.d(TAG, "Player ID registrado: $playerId")
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.e(TAG, "Error registrando Player ID", e)
-        }
-    }
-
-    /**
-     * Borra el player id de profiles del usuario que cierra sesión.
-     */
-    suspend fun desregistrar() {
-        try {
-            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
-                ?: return
-
-            SupabaseClient.client.postgrest["profiles"].update(
-                kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", kotlinx.serialization.json.JsonNull) }
-            ) {
-                filter { eq("id", userId) }
-            }
-
-            Log.d(TAG, "Player ID borrado de la BD")
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.e(TAG, "Error borrando Player ID", e)
-        }
     }
 }
