@@ -11,10 +11,8 @@ import androidx.core.content.ContextCompat
 import com.arelove.app.R
 import com.arelove.app.MainActivity
 import com.onesignal.OneSignal
-import com.onesignal.INotificationClickListener
-import com.onesignal.INotificationClickEvent
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
+import com.onesignal.OSNotificationOpenedListener
+import com.onesignal.OSNotificationOpenedResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -59,14 +57,14 @@ object OneSignalManager {
 
     /**
      * Registra el listener de "usuario tocó la notificación".
-     * OneSignal 5.x usa INotificationClickListener.
+     * OneSignal 5.x usa OSNotificationOpenedListener.
      * Al tocar: construye Intent hacia MainActivity con extras de navegación
-     * y lo emite al PushRouter (que lo entrega a HomeActivity/ChatActivity).
+     * y lo emite al PushRouter.
      */
     private fun registrarListenerClick(context: Context) {
-        OneSignal.Notifications.addClickListener(object : INotificationClickListener {
-            override fun onNotificationClicked(event: INotificationClickEvent) {
-                val notification = event.notification
+        OneSignal.Notifications.addClickListener(object : OSNotificationOpenedListener {
+            override fun onNotificationOpened(result: OSNotificationOpenedResult) {
+                val notification = result.notification
                 val additionalData = notification.additionalData
 
                 if (additionalData == null) {
@@ -89,13 +87,13 @@ object OneSignalManager {
                         Intent.FLAG_ACTIVITY_SINGLE_TOP
                     )
                     putExtra("push_tipo", tipo)
-                    // IDs comunes
-                    additionalData.optString("chat_id")?.let { putExtra("chat_id", it) }
-                    additionalData.optString("sender")?.let { putExtra("sender", it) }
-                    additionalData.optString("sender_nickname")?.let { putExtra("sender_nickname", it) }
-                    additionalData.optString("match_id")?.let { putExtra("match_id", it) }
-                    additionalData.optString("other_user_id")?.let { putExtra("other_user_id", it) }
-                    additionalData.optString("from_user")?.let { putExtra("from_user", it) }
+                    // IDs comunes - cast explícito para evitar ambigüedad de overload
+                    additionalData.optString("chat_id")?.let { putExtra("chat_id", it as String) }
+                    additionalData.optString("sender")?.let { putExtra("sender", it as String) }
+                    additionalData.optString("sender_nickname")?.let { putExtra("sender_nickname", it as String) }
+                    additionalData.optString("match_id")?.let { putExtra("match_id", it as String) }
+                    additionalData.optString("other_user_id")?.let { putExtra("other_user_id", it as String) }
+                    additionalData.optString("from_user")?.let { putExtra("from_user", it as String) }
                 }
 
                 Log.d(TAG, "Push click -> tipo=$tipo, launching MainActivity con extras")

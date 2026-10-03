@@ -3,17 +3,12 @@ package com.arelove.app.notifications
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.send
-import kotlinx.coroutines.channels.receive
+import kotlinx.coroutines.channels.consumeEach
 
 /**
  * Router singleton para navegación desde notificaciones push.
  * Usa Channel (hot, sin buffer) para pasar el payload de navegación
  * desde MainActivity/OneSignalManager a HomeActivity/ChatActivity.
- *
- * Ventajas sobre SharedFlow:
- * - Garantiza entrega exactly-once (no se pierde si no hay collector)
- * - Backpressure natural
- * - Simple y sin dependencias extra
  */
 object PushRouter {
 
@@ -25,7 +20,7 @@ object PushRouter {
         canal.send(payload)
     }
 
-    /** Canal para que HomeActivity/ChatActivity colecten (cold start: primer collector recibe) */
+    /** Canal para que HomeActivity/ChatActivity colecten */
     fun watch(): ReceiveChannel<PushPayload> = canal
 
     /** Payload de navegación según tipo de notificación */
