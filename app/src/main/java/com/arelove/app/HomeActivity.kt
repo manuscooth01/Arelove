@@ -71,7 +71,7 @@ class HomeActivity : AppCompatActivity() {
                             NavOptions.Builder()
                                 .setLaunchSingleTop(true)
                                 .setRestoreState(true)
-                                .setPopUpTo(navController.graph.findStartDestination().id, false, true)
+                                .setPopUpTo(navController.graph.startDestination, false, true)
                                 .build()
                         )
                     }
@@ -84,7 +84,7 @@ class HomeActivity : AppCompatActivity() {
                             NavOptions.Builder()
                                 .setLaunchSingleTop(true)
                                 .setRestoreState(true)
-                                .setPopUpTo(navController.graph.findStartDestination().id, false, true)
+                                .setPopUpTo(navController.graph.startDestination, false, true)
                                 .build()
                         )
                     }
