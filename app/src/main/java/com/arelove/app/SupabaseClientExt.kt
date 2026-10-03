@@ -28,10 +28,10 @@ object SupabaseClientExt {
                 return@withContext
             }
 
-            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+            val userId = com.arelove.app.SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
                 ?: return@withContext
 
-            SupabaseClient.client.postgrest["profiles"].update(
+            com.arelove.app.SupabaseClient.client.postgrest["profiles"].update(
                 buildJsonObject { put("onesignal_player_id", playerId) }
             ) {
                 filter { eq("id", userId) }
@@ -50,10 +50,10 @@ object SupabaseClientExt {
      */
     suspend fun desregistrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
         try {
-            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+            val userId = com.arelove.app.SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
                 ?: return@withContext
 
-            SupabaseClient.client.postgrest["profiles"].update(
+            com.arelove.app.SupabaseClient.client.postgrest["profiles"].update(
                 buildJsonObject { put("onesignal_player_id", JsonNull) }
             ) {
                 filter { eq("id", userId) }
