@@ -13,7 +13,6 @@ import com.arelove.app.MainActivity
 import com.arelove.app.SupabaseClient
 import com.onesignal.OneSignal
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.eq
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.json.JSONObject
 
 /**
  * Gestiona OneSignal: inicialización, permiso de notificaciones, canales,
@@ -62,7 +62,7 @@ object OneSignalManager {
      * OneSignal 5.x: OneSignal.Notifications.addClickListener { result -> ... }
      */
     private fun registrarListenerClick(context: Context) {
-        OneSignal.Notifications.addClickListener { result ->
+        OneSignal.Notifications.addClickListener { result: com.onesignal.OSNotificationOpenedResult ->
             val notification = result.notification
             val additionalData = notification.additionalData
 
@@ -99,7 +99,10 @@ object OneSignalManager {
 
             // Emitir al PushRouter (fire-and-forget desde Main thread)
             kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                PushRouter.enrutar(PushRouter.fromExtras(intent.extras!!))
+                val payload = PushRouter.fromExtras(intent.extras!!)
+                if (payload != null) {
+                    PushRouter.enrutar(payload)
+                }
             }
 
             // Lanzar MainActivity (ella decidirá a dónde navegar)
