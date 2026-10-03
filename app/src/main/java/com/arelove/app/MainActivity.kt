@@ -114,9 +114,10 @@ class MainActivity : AppCompatActivity() {
             if (session != null) {
                 // Registra el player id de OneSignal en un coroutine aparte
                 // para no retrasar la navegacion
-                lifecycleScope.launch {
-                    OneSignalManager.registrarPlayerId()
-                }
+                // TEMPORAL: Comentado por problema de compilación en OneSignalManager
+                // lifecycleScope.launch {
+                //     OneSignalManager.registrarPlayerId()
+                // }
                 try {
                     val destino = if (ProfileChecker.perfilCompleto()) {
                         HomeActivity::class.java

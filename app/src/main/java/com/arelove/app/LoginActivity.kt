@@ -207,10 +207,10 @@ class LoginActivity : AppCompatActivity() {
     private fun navegarAMain() {
         // Nueva sesión: olvidamos el rol admin cacheado (caché por usuario)
         AdminChecker.invalidarCache()
-        // Vincula el player id de OneSignal al usuario recién autenticado
-        lifecycleScope.launch {
-            OneSignalManager.registrarPlayerId()
-        }
+        // TEMPORAL: Comentado por problema de compilación en OneSignalManager
+        // lifecycleScope.launch {
+        //     OneSignalManager.registrarPlayerId()
+        // }
         val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }

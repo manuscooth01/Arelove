@@ -129,6 +129,10 @@ class RegisterActivity : AppCompatActivity() {
         }
         startActivity(intent)
         finish()
+        // TEMPORAL: Comentado por problema de compilación en OneSignalManager
+        // lifecycleScope.launch {
+        //     OneSignalManager.registrarPlayerId()
+        // }
     }
 
     private fun crearCuenta() {
