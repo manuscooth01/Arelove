@@ -29,8 +29,7 @@ object PushRouter {
         ) : PushPayload
 
         data class Match(
-            val matchId: String,
-            val otherUserId: String
+            val matchId: String
         ) : PushPayload
 
         data class Mensaje(
@@ -42,7 +41,7 @@ object PushRouter {
 
     /** Factory desde extras de Intent/OneSignal */
     fun fromExtras(extras: android.os.Bundle): PushPayload? {
-        val tipo = extras.getString("push_tipo") ?: return null
+        val tipo = extras.getString("tipo") ?: return null
         return when (tipo) {
             "like" -> {
                 val fromUser = extras.getString("from_user") ?: return null
@@ -50,8 +49,8 @@ object PushRouter {
             }
             "match" -> {
                 val matchId = extras.getString("match_id") ?: return null
-                val otherUserId = extras.getString("other_user_id") ?: return null
-                PushPayload.Match(matchId, otherUserId)
+                // other_user_id opcional, no requerido para navegación a ChatsFragment
+                PushPayload.Match(matchId)
             }
             "mensaje" -> {
                 val chatId = extras.getString("chat_id") ?: return null

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     // true cuando un enlace de recuperación ya resolvió (sesión importada o
-    // error mostrado): evita avisos y navegaciones duplicadas
+    // error mostrado): evita avisos y navegaciones duplicados
     private var enlaceResuelto = false
 
     // Track si ya procesamos push payload para no duplicar
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
+            ) != PackageManager.PERMISSION_GRANTED
             ) {
                 registerForActivityResult(
                     ActivityResultContracts.RequestPermission()
@@ -150,16 +150,17 @@ class MainActivity : AppCompatActivity() {
     /**
      * Procesa posible navegación desde push (cold start: app cerrada).
      * Si el intent trae extras de push, los emite al PushRouter para que
-     * HomeActivity/ChatActivity los recoja cuando se cree.
+     * HomeActivity/ChatActivity los recoja cuando se crea.
      */
     private fun procesarPushSiExiste(intent: Intent) {
         val extras = intent.extras ?: return
-        val tipo = extras.getString("push_tipo") ?: return
+        val tipo = extras.getString("tipo") ?: return
 
         if (pushProcesado) return
         pushProcesado = true
 
         Log.d("MainActivity", "Cold start con push: tipo=$tipo")
+        Log.d("MainActivity", "Intent extras: $extras")
         lifecycleScope.launch {
             PushRouter.enrutar(PushRouter.fromExtras(extras)!!)
         }
@@ -174,9 +175,10 @@ class MainActivity : AppCompatActivity() {
         setIntent(intent) // importante: actualizar intent para getIntent() posterior
 
         val extras = intent.extras ?: return
-        val tipo = extras.getString("push_tipo") ?: return
+        val tipo = extras.getString("tipo") ?: return
 
         Log.d("MainActivity", "onNewIntent push: tipo=$tipo")
+        Log.d("MainActivity", "Intent extras: $extras")
         lifecycleScope.launch {
             PushRouter.enrutar(PushRouter.fromExtras(extras)!!)
         }
@@ -287,7 +289,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
-        binding.buttonRegister.setOnClickListener {
+        buttonRegister.setOnClickListener {
             if (AntiSpam.esDobleTap("buttonRegister")) return@setOnClickListener
             startActivity(Intent(this, RegisterActivity::class.java))
         }
