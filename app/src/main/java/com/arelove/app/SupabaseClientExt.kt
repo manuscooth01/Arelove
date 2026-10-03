@@ -10,27 +10,26 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /**
- * Extensiones de SupabaseClient para operaciones relacionadas con OneSignal.
- * Separado en archivo propio para evitar problemas de compilación en OneSignalManager.
+ * Funciones de utilidad para operaciones de OneSignal sobre SupabaseClient.
+ * Usan los mismos patrones que el resto del proyecto (AdminVerifyActivity, etc.).
  */
-@Suppress("UNUSED_PARAMETER")
 object SupabaseClientExt {
 
     /**
      * Guarda el player id de OneSignal en profiles para el usuario con sesión activa.
      */
-    suspend fun SupabaseClient.registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
+    suspend fun registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
         try {
-            val playerId = com.onesignal.OneSignal.User.pushSubscription.id
+            val playerId = OneSignal.User.pushSubscription.id
             if (playerId.isNullOrEmpty()) {
                 android.util.Log.w("OneSignal", "Player ID vacío")
                 return@withContext
             }
 
-            val userId = this.auth.currentSessionOrNull()?.user?.id
-                ?: return
+            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                ?: return@withContext
 
-            this.postgrest["profiles"].update(
+            SupabaseClient.client.postgrest["profiles"].update(
                 kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", playerId) }
             ) {
                 filter { eq("id", userId) }
@@ -47,12 +46,12 @@ object SupabaseClientExt {
     /**
      * Borra el player id de profiles del usuario que cierra sesión.
      */
-    suspend fun SupabaseClient.desregistrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
+    suspend fun desregistrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
         try {
-            val userId = this.auth.currentSessionOrNull()?.user?.id
-                ?: return
+            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+                ?: return@withContext
 
-            this.postgrest["profiles"].update(
+            SupabaseClient.client.postgrest["profiles"].update(
                 kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", kotlinx.serialization.json.JsonNull) }
             ) {
                 filter { eq("id", userId) }
