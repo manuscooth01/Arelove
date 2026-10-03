@@ -99,8 +99,10 @@ class HomeActivity : AppCompatActivity() {
         val tipo = extras.getString("push_tipo") ?: return
 
         Log.d("HomeActivity", "Push inicial detectado: tipo=$tipo")
-        PushRouter.fromExtras(extras)?.let {
-            PushRouter.enrutar(it)
+        lifecycleScope.launch {
+            PushRouter.fromExtras(extras)?.let {
+                PushRouter.enrutar(it)
+            }
         }
     }
 
@@ -116,8 +118,10 @@ class HomeActivity : AppCompatActivity() {
         val tipo = extras.getString("push_tipo") ?: return
 
         Log.d("HomeActivity", "onNewIntent push: tipo=$tipo")
-        PushRouter.fromExtras(extras)?.let {
-            PushRouter.enrutar(it)
+        lifecycleScope.launch {
+            PushRouter.fromExtras(extras)?.let {
+                PushRouter.enrutar(it)
+            }
         }
     }
 

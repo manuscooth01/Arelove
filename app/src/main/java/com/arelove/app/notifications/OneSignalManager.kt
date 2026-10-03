@@ -11,8 +11,6 @@ import androidx.core.content.ContextCompat
 import com.arelove.app.R
 import com.arelove.app.MainActivity
 import com.onesignal.OneSignal
-import com.onesignal.OSNotificationOpenedListener
-import com.onesignal.OSNotificationOpenedResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,7 +46,7 @@ object OneSignalManager {
             }
         }
 
-        // Registrar listener de click (una sola vez)
+        // Registrar listener de click (una sola vez) - OneSignal 5.x usa lambda
         if (!listenerRegistrado) {
             registrarListenerClick(context)
             listenerRegistrado = true
@@ -57,56 +55,52 @@ object OneSignalManager {
 
     /**
      * Registra el listener de "usuario tocó la notificación".
-     * OneSignal 5.x usa OSNotificationOpenedListener.
-     * Al tocar: construye Intent hacia MainActivity con extras de navegación
-     * y lo emite al PushRouter.
+     * OneSignal 5.x: OneSignal.Notifications.addClickListener { result -> ... }
      */
     private fun registrarListenerClick(context: Context) {
-        OneSignal.Notifications.addClickListener(object : OSNotificationOpenedListener {
-            override fun onNotificationOpened(result: OSNotificationOpenedResult) {
-                val notification = result.notification
-                val additionalData = notification.additionalData
+        OneSignal.Notifications.addClickListener { result ->
+            val notification = result.notification
+            val additionalData = notification.additionalData
 
-                if (additionalData == null) {
-                    Log.w(TAG, "Click en notificación sin additionalData")
-                    return
-                }
-
-                // Leer payload custom que enviamos desde Edge Function
-                val tipo = additionalData.optString("tipo", "")
-                if (tipo.isBlank()) {
-                    Log.w(TAG, "Click en notificación sin campo 'tipo'")
-                    return
-                }
-
-                // Construir extras para MainActivity
-                val intent = Intent(context, MainActivity::class.java).apply {
-                    addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    )
-                    putExtra("push_tipo", tipo)
-                    // IDs comunes - cast explícito para evitar ambigüedad de overload
-                    additionalData.optString("chat_id")?.let { putExtra("chat_id", it as String) }
-                    additionalData.optString("sender")?.let { putExtra("sender", it as String) }
-                    additionalData.optString("sender_nickname")?.let { putExtra("sender_nickname", it as String) }
-                    additionalData.optString("match_id")?.let { putExtra("match_id", it as String) }
-                    additionalData.optString("other_user_id")?.let { putExtra("other_user_id", it as String) }
-                    additionalData.optString("from_user")?.let { putExtra("from_user", it as String) }
-                }
-
-                Log.d(TAG, "Push click -> tipo=$tipo, launching MainActivity con extras")
-
-                // Emitir al PushRouter (fire-and-forget desde Main thread)
-                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                    PushRouter.enrutar(PushRouter.fromExtras(intent.extras!!))
-                }
-
-                // Lanzar MainActivity (ella decidirá a dónde navegar)
-                context.startActivity(intent)
+            if (additionalData == null) {
+                Log.w(TAG, "Click en notificación sin additionalData")
+                return@addClickListener
             }
-        })
+
+            // Leer payload custom que enviamos desde Edge Function
+            val tipo = additionalData.optString("tipo", "")
+            if (tipo.isBlank()) {
+                Log.w(TAG, "Click en notificación sin campo 'tipo'")
+                return@addClickListener
+            }
+
+            // Construir extras para MainActivity
+            val intent = Intent(context, MainActivity::class.java).apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
+                putExtra("push_tipo", tipo)
+                // IDs comunes - cast explícito para evitar ambigüedad de overload
+                additionalData.optString("chat_id")?.let { putExtra("chat_id", it as String) }
+                additionalData.optString("sender")?.let { putExtra("sender", it as String) }
+                additionalData.optString("sender_nickname")?.let { putExtra("sender_nickname", it as String) }
+                additionalData.optString("match_id")?.let { putExtra("match_id", it as String) }
+                additionalData.optString("other_user_id")?.let { putExtra("other_user_id", it as String) }
+                additionalData.optString("from_user")?.let { putExtra("from_user", it as String) }
+            }
+
+            Log.d(TAG, "Push click -> tipo=$tipo, launching MainActivity con extras")
+
+            // Emitir al PushRouter (fire-and-forget desde Main thread)
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                PushRouter.enrutar(PushRouter.fromExtras(intent.extras!!))
+            }
+
+            // Lanzar MainActivity (ella decidirá a dónde navegar)
+            context.startActivity(intent)
+        }
     }
 
     /**
