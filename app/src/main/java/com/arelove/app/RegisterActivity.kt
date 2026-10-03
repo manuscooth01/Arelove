@@ -120,19 +120,15 @@ class RegisterActivity : AppCompatActivity() {
     private fun abrirProfileSetup() {
         // Cuenta nueva: nunca hereda el rol admin cacheado
         AdminChecker.invalidarCache()
-        // Vincula el player id de OneSignal a la cuenta recién creada
-        lifecycleScope.launch {
-            OneSignalManager.registrarPlayerId()
-        }
+        // TEMPORAL: Comentado por problema de compilación en OneSignalManager
+        // lifecycleScope.launch {
+        //     OneSignalManager.registrarPlayerId()
+        // }
         val intent = Intent(this, ProfileSetupActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         startActivity(intent)
         finish()
-        // TEMPORAL: Comentado por problema de compilación en OneSignalManager
-        // lifecycleScope.launch {
-        //     OneSignalManager.registrarPlayerId()
-        // }
     }
 
     private fun crearCuenta() {
