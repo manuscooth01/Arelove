@@ -2,7 +2,9 @@ package com.arelove.app
 
 import com.onesignal.OneSignal
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.eq
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonNull
@@ -11,7 +13,7 @@ import kotlinx.serialization.json.put
 
 /**
  * Funciones de utilidad para operaciones de OneSignal sobre SupabaseClient.
- * Usan los mismos patrones que el resto del proyecto (AdminVerifyActivity, etc.).
+ * Copia exacta de los patrones que funcionan en AdminVerifyActivity.
  */
 object SupabaseClientExt {
 
@@ -30,7 +32,7 @@ object SupabaseClientExt {
                 ?: return@withContext
 
             SupabaseClient.client.postgrest["profiles"].update(
-                kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", playerId) }
+                buildJsonObject { put("onesignal_player_id", playerId) }
             ) {
                 filter { eq("id", userId) }
             }
@@ -52,7 +54,7 @@ object SupabaseClientExt {
                 ?: return@withContext
 
             SupabaseClient.client.postgrest["profiles"].update(
-                kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", kotlinx.serialization.json.JsonNull) }
+                buildJsonObject { put("onesignal_player_id", JsonNull) }
             ) {
                 filter { eq("id", userId) }
             }
