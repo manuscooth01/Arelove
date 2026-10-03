@@ -3,13 +3,11 @@ package com.arelove.app.notifications
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.arelove.app.R
-import com.arelove.app.MainActivity
 import com.arelove.app.SupabaseClient
 import com.onesignal.OneSignal
 import io.github.jan.supabase.postgrest.postgrest
@@ -21,11 +19,12 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import org.json.JSONObject
 
 /**
- * Gestiona OneSignal: inicialización, permiso de notificaciones, canales,
- * registro del player id en profiles.onesignal_player_id y listener de clicks.
+ * Gestiona OneSignal: inicialización, permiso de notificaciones, canales
+ * y registro del player id en profiles.onesignal_player_id.
+ * El manejo de clicks en notificaciones se hace vía Intent extras en MainActivity/onNewIntent
+ * (OneSignal pone los datos automáticamente en los extras del Intent).
  */
 object OneSignalManager {
     private const val TAG = "OneSignal"
@@ -33,9 +32,6 @@ object OneSignalManager {
 
     // Scope para corrutinas de init/permiso
     private val alcance = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
-    // Flag para evitar registrar listener dos veces
-    private var listenerRegistrado = false
 
     fun init(context: Context) {
         OneSignal.initWithContext(context, APP_ID)
@@ -48,65 +44,6 @@ object OneSignalManager {
             } catch (e: Exception) {
                 Log.e(TAG, "Error pidiendo permiso de notificaciones", e)
             }
-        }
-
-        // Registrar listener de click (una sola vez) - OneSignal 5.x usa lambda
-        if (!listenerRegistrado) {
-            registrarListenerClick(context)
-            listenerRegistrado = true
-        }
-    }
-
-    /**
-     * Registra el listener de "usuario tocó la notificación".
-     * OneSignal 5.x: OneSignal.Notifications.addClickListener { result -> ... }
-     */
-    private fun registrarListenerClick(context: Context) {
-        OneSignal.Notifications.addClickListener { result: com.onesignal.OSNotificationOpenedResult ->
-            val notification = result.notification
-            val additionalData = notification.additionalData
-
-            if (additionalData == null) {
-                Log.w(TAG, "Click en notificación sin additionalData")
-                return@addClickListener
-            }
-
-            // Leer payload custom que enviamos desde Edge Function
-            val tipo = additionalData.optString("tipo", "")
-            if (tipo.isBlank()) {
-                Log.w(TAG, "Click en notificación sin campo 'tipo'")
-                return@addClickListener
-            }
-
-            // Construir extras para MainActivity
-            val intent = Intent(context, MainActivity::class.java).apply {
-                addFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-                )
-                putExtra("push_tipo", tipo)
-                // IDs comunes - cast explícito para evitar ambigüedad de overload
-                additionalData.optString("chat_id")?.let { putExtra("chat_id", it as String) }
-                additionalData.optString("sender")?.let { putExtra("sender", it as String) }
-                additionalData.optString("sender_nickname")?.let { putExtra("sender_nickname", it as String) }
-                additionalData.optString("match_id")?.let { putExtra("match_id", it as String) }
-                additionalData.optString("other_user_id")?.let { putExtra("other_user_id", it as String) }
-                additionalData.optString("from_user")?.let { putExtra("from_user", it as String) }
-            }
-
-            Log.d(TAG, "Push click -> tipo=$tipo, launching MainActivity con extras")
-
-            // Emitir al PushRouter (fire-and-forget desde Main thread)
-            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                val payload = PushRouter.fromExtras(intent.extras!!)
-                if (payload != null) {
-                    PushRouter.enrutar(payload)
-                }
-            }
-
-            // Lanzar MainActivity (ella decidirá a dónde navegar)
-            context.startActivity(intent)
         }
     }
 
