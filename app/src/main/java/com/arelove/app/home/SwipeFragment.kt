@@ -65,7 +65,10 @@ class SwipeFragment : Fragment() {
     private var offset = 0
     private var cargandoMas = false
     private var hayMasPerfiles = true
-    private const val TAMANO_PAGINA = 15
+
+    companion object {
+        private const val TAMANO_PAGINA = 15
+    }
 
     private val photoLoadJobs = mutableMapOf<String, Job>()
 
@@ -446,9 +449,9 @@ class SwipeFragment : Fragment() {
 
                 val sinVista = _binding ?: return@launch
 
-if (filas.isEmpty()) {
+                if (filas.isEmpty()) {
                     hayMasPerfiles = false
-                    sinVista.runOnUiThread { sinVista.progressCargandoMas.visibility = View.GONE }
+                    requireActivity().runOnUiThread { sinVista.progressCargandoMas.visibility = View.GONE }
                     return@launch
                 }
 
@@ -474,7 +477,7 @@ if (filas.isEmpty()) {
 
                 // Si no hay más perfiles, ocultar indicador
                 if (!hayMasPerfiles) {
-                    sinVista.runOnUiThread { progressCargandoMas.visibility = View.GONE }
+                    requireActivity().runOnUiThread { sinVista.progressCargandoMas.visibility = View.GONE }
                 }
 
             } catch (e: kotlinx.coroutines.CancellationException) {
