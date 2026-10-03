@@ -339,6 +339,17 @@
             app:strokeWidth="0dp" />
     </LinearLayout>
 
+    <!-- ProgressBar para "cargando más" (paginación infinita) -->
+    <ProgressBar
+        android:id="@+id/progressCargandoMas"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/llActions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="8dp" />
+
     <!-- ProgressBar de carga -->
     <ProgressBar
         android:id="@+id/progressBar"

@@ -48,6 +48,7 @@ import java.time.Instant
 /**
  * Fragment de descubrimiento (swipe).
  * Carga perfiles de Supabase y permite dar like/nope.
+ * Implementa paginación infinita (load more) al llegar al final.
  */
 class SwipeFragment : Fragment() {
 
@@ -59,6 +60,12 @@ class SwipeFragment : Fragment() {
     private var loading = false
     private var loadingNext = false
     private var currentUserId: String? = null
+
+    // Paginación infinita
+    private var offset = 0
+    private var cargandoMas = false
+    private var hayMasPerfiles = true
+    private const val TAMANO_PAGINA = 15
 
     private val photoLoadJobs = mutableMapOf<String, Job>()
 
@@ -153,6 +160,8 @@ class SwipeFragment : Fragment() {
                 binding.swipeRefresh.isRefreshing = false
             } else {
                 currentIndex = 0
+                offset = 0
+                hayMasPerfiles = true
                 profiles.clear()
                 cargarPerfiles()
             }
@@ -196,7 +205,7 @@ class SwipeFragment : Fragment() {
         }
     }
 
-    /** Carga la lista inicial de perfiles desde Supabase. */
+    /** Carga la lista inicial de perfiles desde Supabase (página 0). */
     private fun cargarPerfiles() {
         val b = _binding ?: return
         if (loading) return
@@ -205,6 +214,7 @@ class SwipeFragment : Fragment() {
         b.llEmpty.visibility = View.GONE
         b.cardProfile.visibility = View.GONE
         b.llActions.visibility = View.GONE
+        b.progressCargandoMas.visibility = View.GONE
 
         lifecycleScope.launch {
             try {
@@ -268,7 +278,7 @@ class SwipeFragment : Fragment() {
                 // Combinar todos los IDs a excluir + el propio usuario
                 val idsExcluidos = likedUserIds + likesRecibidosUserIds + matchesUserIds + swipedUserIds + userId
 
-                // SELECT perfiles: profile_completed = true, excluyendo IDs
+                // SELECT perfiles: profile_completed = true, excluyendo IDs, con paginación
                 val filas = SupabaseClient.client.postgrest["profiles_publicos"].select(
                     columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "gender", "created_at")
                 ) {
@@ -276,16 +286,30 @@ class SwipeFragment : Fragment() {
                     filter { eq("profile_completed", true) }
                     order("verified", Order.DESCENDING)
                     order("created_at", Order.DESCENDING)
-                    limit(30)
+                    range(offset, offset + TAMANO_PAGINA - 1)
                 }.decodeList<JsonObject>()
 
                 val sinVista = _binding ?: return@launch
                 sinVista.progressBar.visibility = View.GONE
+                sinVista.progressCargandoMas.visibility = View.GONE
 
                 if (filas.isEmpty()) {
-                    sinVista.llEmpty.visibility = View.VISIBLE
-                    sinVista.llActions.visibility = View.GONE
+                    hayMasPerfiles = false
+                    if (profiles.isEmpty()) {
+                        sinVista.llEmpty.visibility = View.VISIBLE
+                        sinVista.llActions.visibility = View.GONE
+                        b.btnRewind.visibility = View.GONE
+                    } else {
+                        hayMasPerfiles = false
+                    }
                     return@launch
+                }
+
+                // Si la página viene con menos elementos que TAMANO_PAGINA, no hay más
+                if (filas.size < TAMANO_PAGINA) {
+                    hayMasPerfiles = false
+                } else {
+                    hayMasPerfiles = true
                 }
 
                 // Batch load interests for all profiles at once (evita N+1)
@@ -296,7 +320,11 @@ class SwipeFragment : Fragment() {
                     emptyMap<String, List<String>>()
                 }
 
-                profiles.clear()
+                // Si es la primera página (offset = 0), limpiar lista
+                if (offset == 0) {
+                    profiles.clear()
+                }
+
                 profiles.addAll(
                     filas.mapNotNull { parseProfile(it, interestsMap[textoDe(it, "id") ?: ""] ?: emptyList()) }
                         .filter { perfil -> perfil.userId !in idsExcluidos }
@@ -305,14 +333,24 @@ class SwipeFragment : Fragment() {
                 if (profiles.isEmpty()) {
                     sinVista.llEmpty.visibility = View.VISIBLE
                     sinVista.llActions.visibility = View.GONE
+                    b.btnRewind.visibility = View.GONE
                 } else {
-                    currentIndex = 0
+                    // Solo resetear currentIndex si es la primera página
+                    if (offset == 0) {
+                        currentIndex = 0
+                    }
                     sinVista.cardProfile.visibility = View.VISIBLE
                     sinVista.llActions.visibility = View.VISIBLE
                     sinVista.btnRewind.visibility = if (currentIndex > 0) View.VISIBLE else View.GONE
                     mostrarPerfilActual()
                     precargarSiguiente()
                 }
+
+                // Incrementar offset para la siguiente página
+                if (hayMasPerfiles) {
+                    offset += profiles.size
+                }
+
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -327,6 +365,125 @@ class SwipeFragment : Fragment() {
             } finally {
                 loading = false
                 _binding?.swipeRefresh?.isRefreshing = false
+                _binding?.progressCargandoMas?.visibility = View.GONE
+            }
+        }
+    }
+
+    /** Carga más perfiles (página siguiente) para scroll infinito. */
+    private fun cargarMasPerfiles() {
+        val b = _binding ?: return
+        if (cargandoMas || !hayMasPerfiles) return
+        if (loading) return // Evitar conflicto con carga inicial
+
+        cargandoMas = true
+        b.progressCargandoMas.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                val session = SupabaseClient.client.auth.currentSessionOrNull()
+                val userId = session?.user?.id ?: return@launch
+                currentUserId = userId
+
+                // Obtener IDs a excluir (mismo proceso que en cargarPerfiles)
+                val likesFilas = SupabaseClient.client.postgrest["likes"].select(
+                    columns = Columns.list("to_user")
+                ) {
+                    filter { eq("from_user", userId) }
+                }.decodeList<JsonObject>()
+
+                val likedUserIds = likesFilas.mapNotNull { (it["to_user"] as? JsonPrimitive)?.content }.toSet()
+
+                val likesRecibidosFilas = SupabaseClient.client.postgrest["likes"].select(
+                    columns = Columns.list("from_user")
+                ) {
+                    filter { eq("to_user", userId) }
+                }.decodeList<JsonObject>()
+
+                val likesRecibidosUserIds = likesRecibidosFilas.mapNotNull { (it["from_user"] as? JsonPrimitive)?.content }.toSet()
+
+                val matchesFilas1 = SupabaseClient.client.postgrest["matches"].select(
+                    columns = Columns.list("user1", "user2")
+                ) {
+                    filter { eq("user1", userId) }
+                }.decodeList<JsonObject>()
+
+                val matchesFilas2 = SupabaseClient.client.postgrest["matches"].select(
+                    columns = Columns.list("user1", "user2")
+                ) {
+                    filter { eq("user2", userId) }
+                }.decodeList<JsonObject>()
+
+                val matchesUserIds = (matchesFilas1 + matchesFilas2)
+                    .mapNotNull { fila ->
+                        val u1 = (fila["user1"] as? JsonPrimitive)?.content.orEmpty()
+                        val u2 = (fila["user2"] as? JsonPrimitive)?.content.orEmpty()
+                        if (u1 == userId) u2 else if (u2 == userId) u1 else null
+                    }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+
+                val swipesFilas = SupabaseClient.client.postgrest["swipes"].select(
+                    columns = Columns.list("target_id")
+                ) {
+                    filter { eq("user_id", userId) }
+                }.decodeList<JsonObject>()
+
+                val swipedUserIds = swipesFilas.mapNotNull { (it["target_id"] as? JsonPrimitive)?.content }.toSet()
+
+                val idsExcluidos = likedUserIds + likesRecibidosUserIds + matchesUserIds + swipedUserIds + (currentUserId ?: "")
+
+                // SELECT siguiente página con range
+                val filas = SupabaseClient.client.postgrest["profiles_publicos"].select(
+                    columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "gender", "created_at")
+                ) {
+                    filter { neq("id", currentUserId!!) }
+                    filter { eq("profile_completed", true) }
+                    order("verified", Order.DESCENDING)
+                    order("created_at", Order.DESCENDING)
+                    range(offset, offset + TAMANO_PAGINA - 1)
+                }.decodeList<JsonObject>()
+
+                val sinVista = _binding ?: return@launch
+
+                if (filas.isEmpty()) {
+                    hayMasPerfiles = false
+                    sinVista.runOnUiThread { progressCargandoMas.visibility = View.GONE }
+                    return@launch
+                }
+
+                if (filas.size < TAMANO_PAGINA) {
+                    hayMasPerfiles = false
+                }
+
+                // Batch load interests
+                val profileUserIds = filas.mapNotNull { textoDe(it, "id") }.filter { it !in idsExcluidos }
+                val interestsMap = if (profileUserIds.isNotEmpty()) {
+                    cargarInteresesBatch(profileUserIds)
+                } else {
+                    emptyMap<String, List<String>>()
+                }
+
+                val nuevosPerfiles = filas.mapNotNull { parseProfile(it, interestsMap[textoDe(it, "id") ?: ""] ?: emptyList()) }
+                    .filter { perfil -> perfil.userId !in idsExcluidos }
+
+                if (nuevosPerfiles.isNotEmpty()) {
+                    profiles.addAll(nuevosPerfiles)
+                    offset += nuevosPerfiles.size
+                }
+
+                // Si no hay más perfiles, ocultar indicador
+                if (!hayMasPerfiles) {
+                    sinVista.runOnUiThread { progressCargandoMas.visibility = View.GONE }
+                }
+
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("SwipeFragment", "Error cargando más perfiles", e)
+            } finally {
+                cargandoMas = false
+                _binding?.progressCargandoMas?.visibility = View.GONE
             }
         }
     }
@@ -501,6 +658,11 @@ class SwipeFragment : Fragment() {
             b.cardNext.scaleX = 0.95f
             b.cardNext.scaleY = 0.95f
             b.cardNext.translationY = 8f
+        }
+
+        // Disparar carga de más perfiles cuando quedan 3 perfiles
+        if (currentIndex >= profiles.size - 3 && hayMasPerfiles && !cargandoMas) {
+            cargarMasPerfiles()
         }
 
         // Configurar ViewPager2 con las fotos
