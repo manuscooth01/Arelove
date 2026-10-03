@@ -10,11 +10,18 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.arelove.app.R
 import com.arelove.app.MainActivity
+import com.arelove.app.SupabaseClient
 import com.onesignal.OneSignal
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.eq
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
  * Gestiona OneSignal: inicialización, permiso de notificaciones, canales,
