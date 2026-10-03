@@ -11,7 +11,6 @@ import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.onesignal.OneSignal
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.eq
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
