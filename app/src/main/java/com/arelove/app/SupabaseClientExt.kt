@@ -2,7 +2,9 @@ package com.arelove.app
 
 import com.onesignal.OneSignal
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.eq
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonNull

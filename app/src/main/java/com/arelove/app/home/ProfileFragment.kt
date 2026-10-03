@@ -13,6 +13,7 @@ import com.arelove.app.MainActivity
 import com.arelove.app.R
 import com.arelove.app.SettingsActivity
 import com.arelove.app.SupabaseClient
+import com.arelove.app.SupabaseClientExt
 import com.arelove.app.admin.AdminActivity
 import com.arelove.app.admin.AdminChecker
 import com.arelove.app.databinding.FragmentProfileBinding
