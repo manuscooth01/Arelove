@@ -16,7 +16,7 @@ import kotlinx.serialization.json.put
  * Extensiones de SupabaseClient para operaciones de OneSignal.
  * Copia exacta de los patrones que funcionan en AdminVerifyActivity.
  */
-fun SupabaseClient.registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
+suspend fun SupabaseClient.registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
     try {
         val playerId = OneSignal.User.pushSubscription.id
         if (playerId.isNullOrEmpty()) {
@@ -34,27 +34,31 @@ fun SupabaseClient.registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
         }
 
         android.util.Log.d("OneSignal", "Player ID registrado: $playerId")
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        android.util.Log.e("OneSignal", "Error registrando Player ID", e)
     }
+}
 
-    /**
-     * Borra el player id de profiles del usuario que cierra sesión.
-     */
-    suspend fun desregistrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
-        try {
-            val userId = this.auth.currentSessionOrNull()?.user?.id
-                ?: return@withContext
+/**
+ * Borra el player id de profiles del usuario que cierra sesión.
+ */
+suspend fun SupabaseClient.desregistrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
+    try {
+        val userId = this.auth.currentSessionOrNull()?.user?.id
+            ?: return@withContext
 
-            this.postgrest["profiles"].update(
-                buildJsonObject { put("onesignal_player_id", JsonNull) }
-            ) {
-                filter { eq("id", userId) }
-            }
-
-            android.util.Log.d("OneSignal", "Player ID borrado de la BD")
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            android.util.Log.e("OneSignal", "Error borrando Player ID", e)
+        this.postgrest["profiles"].update(
+            buildJsonObject { put("onesignal_player_id", JsonNull) }
+        ) {
+            filter { eq("id", userId) }
         }
+
+        android.util.Log.d("OneSignal", "Player ID borrado de la BD")
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        android.util.Log.e("OneSignal", "Error borrando Player ID", e)
     }
 }
