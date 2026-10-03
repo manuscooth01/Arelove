@@ -67,7 +67,7 @@ class SwipeFragment : Fragment() {
     private var hayMasPerfiles = true
 
     companion object {
-        private const val TAMANO_PAGINA = 15
+        private const val TAMANO_PAGINA = 2
     }
 
     private val photoLoadJobs = mutableMapOf<String, Job>()
