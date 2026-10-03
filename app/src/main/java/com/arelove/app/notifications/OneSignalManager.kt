@@ -8,6 +8,7 @@ import android.media.RingtoneManager
 import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.arelove.app.R
 import com.onesignal.OneSignal
 import com.onesignal.notifications.INotificationClickEvent
 import com.onesignal.notifications.INotificationClickListener
@@ -53,7 +54,9 @@ object OneSignalManager {
                         }
                     }
                     Log.d("OneSignal", "Click listener extras: $bundle")
-                    PushRouter.fromExtras(bundle)?.let { PushRouter.enrutar(it) }
+                    alcance.launch {
+                        PushRouter.fromExtras(bundle)?.let { PushRouter.enrutar(it) }
+                    }
                 }
             }
         })
