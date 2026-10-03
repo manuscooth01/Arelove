@@ -3,12 +3,16 @@ package com.arelove.app.notifications
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.arelove.app.R
-import com.arelove.app.SupabaseClient
+import com.arelove.app.MainActivity
 import com.onesignal.OneSignal
+import com.onesignal.INotificationClickListener
+import com.onesignal.INotificationClickEvent
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.CoroutineScope
@@ -20,19 +24,18 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /**
- * Gestiona OneSignal: inicialización, permiso de notificaciones, canales
- * y registro del player id en profiles.onesignal_player_id para que la
- * API de OneSignal pueda enviar push a cada usuario.
+ * Gestiona OneSignal: inicialización, permiso de notificaciones, canales,
+ * registro del player id en profiles.onesignal_player_id y listener de clicks.
  */
 object OneSignalManager {
     private const val TAG = "OneSignal"
-    // El APP_ID es público: va dentro del APK, no es un secreto.
-    // (La REST_API_KEY sólo vive en ~/Arelove-secrets/onesignal.txt)
     private const val APP_ID = "b8289f2b-6e4b-4cba-9ae7-8f745057c824"
 
-    // requestPermission() es suspend: se lanza en scope propio porque
-    // onCreate() de Application no es una corrutina.
+    // Scope para corrutinas de init/permiso
     private val alcance = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    // Flag para evitar registrar listener dos veces
+    private var listenerRegistrado = false
 
     fun init(context: Context) {
         OneSignal.initWithContext(context, APP_ID)
@@ -46,14 +49,71 @@ object OneSignalManager {
                 Log.e(TAG, "Error pidiendo permiso de notificaciones", e)
             }
         }
+
+        // Registrar listener de click (una sola vez)
+        if (!listenerRegistrado) {
+            registrarListenerClick(context)
+            listenerRegistrado = true
+        }
+    }
+
+    /**
+     * Registra el listener de "usuario tocó la notificación".
+     * OneSignal 5.x usa INotificationClickListener.
+     * Al tocar: construye Intent hacia MainActivity con extras de navegación
+     * y lo emite al PushRouter (que lo entrega a HomeActivity/ChatActivity).
+     */
+    private fun registrarListenerClick(context: Context) {
+        OneSignal.Notifications.addClickListener(object : INotificationClickListener {
+            override fun onNotificationClicked(event: INotificationClickEvent) {
+                val notification = event.notification
+                val additionalData = notification.additionalData
+
+                if (additionalData == null) {
+                    Log.w(TAG, "Click en notificación sin additionalData")
+                    return
+                }
+
+                // Leer payload custom que enviamos desde Edge Function
+                val tipo = additionalData.optString("tipo", "")
+                if (tipo.isBlank()) {
+                    Log.w(TAG, "Click en notificación sin campo 'tipo'")
+                    return
+                }
+
+                // Construir extras para MainActivity
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    addFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    )
+                    putExtra("push_tipo", tipo)
+                    // IDs comunes
+                    additionalData.optString("chat_id")?.let { putExtra("chat_id", it) }
+                    additionalData.optString("sender")?.let { putExtra("sender", it) }
+                    additionalData.optString("sender_nickname")?.let { putExtra("sender_nickname", it) }
+                    additionalData.optString("match_id")?.let { putExtra("match_id", it) }
+                    additionalData.optString("other_user_id")?.let { putExtra("other_user_id", it) }
+                    additionalData.optString("from_user")?.let { putExtra("from_user", it) }
+                }
+
+                Log.d(TAG, "Push click -> tipo=$tipo, launching MainActivity con extras")
+
+                // Emitir al PushRouter (fire-and-forget desde Main thread)
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    PushRouter.enrutar(PushRouter.fromExtras(intent.extras!!))
+                }
+
+                // Lanzar MainActivity (ella decidirá a dónde navegar)
+                context.startActivity(intent)
+            }
+        })
     }
 
     /**
      * Crea los 3 canales de notificación con importancia y sonido distintos.
-     * Android conserva los canales entre sesiones: si cambia la importancia
-     * de un canal hay que borrarlo y crearlo de nuevo (o reinstalar la app).
-     * OneSignal sólo usa estos canales si el payload lleva android_channel_id
-     * con el id del canal ("mensajes", "matches" o "likes").
+     * Android conserva los canales entre sesiones.
      */
     private fun crearCanales(context: Context) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE)
@@ -88,7 +148,7 @@ object OneSignalManager {
             }
         )
 
-        // Likes: importancia normal y sin vibración (sonido más discreto)
+        // Likes: importancia normal y sin vibración
         manager.createNotificationChannel(
             NotificationChannel(
                 "likes",
@@ -103,9 +163,7 @@ object OneSignalManager {
 
     /**
      * Guarda el player id de este dispositivo en profiles para el usuario
-     * con sesión activa. Se llama al abrir la app con sesión, tras login y
-     * al terminar el asistente: así el valor pertenece siempre al usuario
-     * actual y no se queda con el del anterior.
+     * con sesión activa.
      */
     suspend fun registrarPlayerId() {
         try {
@@ -133,9 +191,7 @@ object OneSignalManager {
     }
 
     /**
-     * Borra el player id de profiles del usuario que cierra sesión
-     * (ANTES del signOut, mientras su sesión sigue viva). Así el player id
-     * del dispositivo no se queda vinculado a dos cuentas a la vez.
+     * Borra el player id de profiles del usuario que cierra sesión.
      */
     suspend fun desregistrar() {
         try {

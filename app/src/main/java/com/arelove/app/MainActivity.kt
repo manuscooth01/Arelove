@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import com.arelove.app.databinding.ActivityMainBinding
 import com.arelove.app.notifications.OneSignalManager
+import com.arelove.app.notifications.PushRouter
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import io.github.jan.supabase.gotrue.auth
@@ -30,6 +31,7 @@ import androidx.activity.result.ActivityResultLauncher
  * Pantalla de bienvenida de Arelove.
  * Muestra splash mientras verifica sesión; si hay sesión navega a Home/ProfileSetup,
  * si no hay sesión muestra botones Login/Register.
+ * También maneja deep links de notificaciones push (via PushRouter).
  */
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +40,9 @@ class MainActivity : AppCompatActivity() {
     // true cuando un enlace de recuperación ya resolvió (sesión importada o
     // error mostrado): evita avisos y navegaciones duplicadas
     private var enlaceResuelto = false
+
+    // Track si ya procesamos push payload para no duplicar
+    private var pushProcesado = false
 
     private val launcherPermisoNotificaciones =
         registerForActivityResult(
@@ -58,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Pre-calentar CredentialManager para que la primera llamada a 
+        // Pre-calentar CredentialManager para que la primera llamada a
         // Google Sign-In no falle
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -80,13 +85,16 @@ class MainActivity : AppCompatActivity() {
                 ) { concedido ->
                     // No bloquear si rechaza, solo loguear
                 }.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
-    }
 
         // Precarga el cliente Supabase fuera del hilo principal
         lifecycleScope.launch(Dispatchers.IO) {
             SupabaseClient.client // fuerza la inicialización lazy
         }
+
+        // Procesar posible push navigation al arrancar (cold start)
+        procesarPushSiExiste(intent)
 
         // Verifica sesión inmediatamente (antes de mostrar botones)
         lifecycleScope.launch {
@@ -94,8 +102,6 @@ class MainActivity : AppCompatActivity() {
                 // Espera a que GoTrue termine de cargar la sesión guardada en disco
                 SupabaseClient.client.auth.awaitInitialization()
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("MainActivity", "awaitInitialization falló", e)
@@ -119,17 +125,18 @@ class MainActivity : AppCompatActivity() {
                     }
                     startActivity(Intent(this@MainActivity, destino).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        // Reenviar extras de push si los había
+                        intent.extras?.let { putExtras(it) }
                     })
                     finish()
                 } catch (e: kotlinx.coroutines.CancellationException) {
-                    // Cancelacion normal (navegacion del usuario): se relanza
-                    // y nunca se traga (regla de corrutinas de Kotlin).
                     throw e
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Error comprobando perfil", e)
                     // Si falla la comprobación, vamos a Home
                     startActivity(Intent(this@MainActivity, HomeActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        intent.extras?.let { putExtras(it) }
                     })
                     finish()
                 }
@@ -141,9 +148,56 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Procesa posible navegación desde push (cold start: app cerrada).
+     * Si el intent trae extras de push, los emite al PushRouter para que
+     * HomeActivity/ChatActivity los recoja cuando se cree.
+     */
+    private fun procesarPushSiExiste(intent: Intent) {
+        val extras = intent.extras ?: return
+        val tipo = extras.getString("push_tipo") ?: return
+
+        if (pushProcesado) return
+        pushProcesado = true
+
+        Log.d("MainActivity", "Cold start con push: tipo=$tipo")
+        lifecycleScope.launch {
+            PushRouter.enrutar(PushRouter.fromExtras(extras)!!)
+        }
+    }
+
+    /**
+     * Maneja nuevos intents cuando la actividad ya está viva (singleTop).
+     * Recibe clicks de notificación push.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent) // importante: actualizar intent para getIntent() posterior
+
+        val extras = intent.extras ?: return
+        val tipo = extras.getString("push_tipo") ?: return
+
+        Log.d("MainActivity", "onNewIntent push: tipo=$tipo")
+        lifecycleScope.launch {
+            PushRouter.enrutar(PushRouter.fromExtras(extras)!!)
+        }
+
+        // Si ya hay sesión, reenviar a HomeActivity existente
+        val session = SupabaseClient.client.auth.currentSessionOrNull()
+        if (session != null) {
+            val homeIntent = Intent(this, HomeActivity::class.java).apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
+                putExtras(extras)
+            }
+            startActivity(homeIntent)
+        }
+    }
+
+    /**
      * true si el Intent viene del deep link de recuperación de contraseña.
-     * El scheme y el host se comprueban contra REDIRECT_RECUPERACION, que es
-     * justo lo que el SDK compara con la configuración de Auth.
      */
     private fun esEnlaceRecuperacion(): Boolean {
         val datos = intent.data ?: return false
@@ -167,17 +221,13 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // Espera a que GoTrue termine de cargar la sesión guardada en disco
                 SupabaseClient.client.auth.awaitInitialization()
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("MainActivity", "awaitInitialization falló", e)
             }
 
-            // El SDK lee el fragmento, importa la sesión y llama a esto
             SupabaseClient.client.handleDeeplinks(intent) { _ ->
                 runOnUiThread {
                     if (enlaceResuelto) return@runOnUiThread
@@ -187,8 +237,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Si el SDK no devuelve sesión (enlace mal formado o red caída) no
-        // dejamos la splash colgada
         lifecycleScope.launch {
             delay(10_000)
             avisoEnlaceInvalido()

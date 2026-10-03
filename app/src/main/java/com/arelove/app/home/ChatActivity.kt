@@ -27,7 +27,6 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -44,6 +43,7 @@ import kotlinx.serialization.json.put
 /**
  * Activity de conversación individual.
  * Muestra mensajes en tiempo real y permite enviar nuevos.
+ * Si faltan extras de nickname/foto, hace fallback query a profiles + media.
  */
 class ChatActivity : AppCompatActivity() {
 
@@ -58,6 +58,9 @@ class ChatActivity : AppCompatActivity() {
     private val messages = mutableListOf<MessageItem>()
     private lateinit var adapter: MessagesAdapter
     private var listeningJob: Job? = null
+
+    // Flag para saber si hicimos fallback y ya cargamos datos
+    private var fallbackHecho = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +79,11 @@ class ChatActivity : AppCompatActivity() {
 
         configurarVista()
         cargarDatos()
+
+        // Fallback si no venían nickname/foto en el intent
+        if (currentNickname == "Usuario" || currentFotoUrl.isBlank()) {
+            hacerFallbackPerfil()
+        }
     }
 
     override fun onResume() {
@@ -180,12 +188,10 @@ class ChatActivity : AppCompatActivity() {
                 // Marcar como vistos los mensajes del otro
                 marcarComoVistos()
 
-                // Suscribirse a realtime
+                // Suscribirse a realtime (polling)
                 suscribirRealtime()
 
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error cargando chat", e)
@@ -198,6 +204,66 @@ class ChatActivity : AppCompatActivity() {
                         onPositive = { finish() }
                     )
                 }
+            }
+        }
+    }
+
+    /**
+     * Fallback: consulta profiles + media para obtener nickname y primera foto
+     * si no venían en el Intent (caso notificación push).
+     */
+    private fun hacerFallbackPerfil() {
+        if (fallbackHecho) return
+        fallbackHecho = true
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // 1) Consultar nickname en profiles
+                val perfilFilas = SupabaseClient.client.postgrest["profiles"].select(
+                    columns = Columns.list("nickname")
+                ) {
+                    filter { eq("id", otroUserId) }
+                    limit(1)
+                    single()
+                }.decodeSingleOrNull<JsonObject>()
+
+                val nickname = perfilFilas?.let {
+                    (it["nickname"] as? JsonPrimitive)?.content
+                }
+
+                // 2) Consultar primera foto en media (bucket avatars)
+                var fotoUrl: String? = null
+                val mediaFilas = SupabaseClient.client.postgrest["media"].select(
+                    columns = Columns.list("url")
+                ) {
+                    filter { eq("profile_id", otroUserId) }
+                    order("order", Order.ASCENDING)
+                    limit(1)
+                }.decodeList<JsonObject>()
+
+                if (mediaFilas.isNotEmpty()) {
+                    val ruta = (mediaFilas[0]["url"] as? JsonPrimitive)?.content
+                    if (ruta?.isNotBlank() == true) {
+                        fotoUrl = SupabaseClient.SUPABASE_URL + "/storage/v1/object/public/avatars/$ruta"
+                    }
+                }
+
+                // 3) Actualizar UI en main thread
+                runOnUiThread {
+                    nickname?.let {
+                        currentNickname = it
+                        binding.tvNickname.text = it
+                    }
+                    fotoUrl?.let {
+                        currentFotoUrl = it
+                        binding.ivAvatar.load(it) { crossfade(true) }
+                    }
+                }
+
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("ChatActivity", "Fallback perfil falló, se usan defaults", e)
             }
         }
     }
@@ -227,8 +293,6 @@ class ChatActivity : AppCompatActivity() {
                 cargarDatos()
 
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error enviando mensaje", e)
@@ -256,8 +320,6 @@ class ChatActivity : AppCompatActivity() {
                     filter { eq("seen", false) }
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error marcando como vistos", e)
@@ -312,8 +374,6 @@ class ChatActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("ChatActivity", "Error polling mensajes", e)
