@@ -1,6 +1,7 @@
 package com.arelove.app
 
 import com.onesignal.OneSignal
+import com.arelove.app.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
@@ -28,10 +29,10 @@ object SupabaseClientExt {
                 return@withContext
             }
 
-            val userId = com.arelove.app.SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
                 ?: return@withContext
 
-            com.arelove.app.SupabaseClient.client.postgrest["profiles"].update(
+            SupabaseClient.client.postgrest["profiles"].update(
                 buildJsonObject { put("onesignal_player_id", playerId) }
             ) {
                 filter { eq("id", userId) }
@@ -50,10 +51,10 @@ object SupabaseClientExt {
      */
     suspend fun desregistrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
         try {
-            val userId = com.arelove.app.SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
+            val userId = SupabaseClient.client.auth.currentSessionOrNull()?.user?.id
                 ?: return@withContext
 
-            com.arelove.app.SupabaseClient.client.postgrest["profiles"].update(
+            SupabaseClient.client.postgrest["profiles"].update(
                 buildJsonObject { put("onesignal_player_id", JsonNull) }
             ) {
                 filter { eq("id", userId) }
