@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.google.android.material.chip.Chip
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -65,6 +66,9 @@ class SwipeFragment : Fragment() {
     private var tapXInicial = 0f
     private var tapYInicial = 0f
 
+    /** Control anti-spam para rewind (1 uso cada 3s). */
+    private var lastRewindTime = 0L
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,6 +83,7 @@ class SwipeFragment : Fragment() {
         configurarBotones()
         configurarSwipeRefresh()
         aplicarBordeCardPerfil()
+        configurarRewindButton()
         cargarPerfiles()
 
         // Touch listener en photoPager para detectar tap y abrir perfil (sin romper swipe)
@@ -176,6 +181,21 @@ class SwipeFragment : Fragment() {
         }
     }
 
+    /** Configura el botón REWIND (deshacer último swipe). */
+    private fun configurarRewindButton() {
+        binding.btnRewind.setOnClickListener {
+            if (AntiSpam.esDobleTap("btnRewind")) return@setOnClickListener
+            // Anti-spam adicional: 1 uso cada 3 segundos
+            val ahora = System.currentTimeMillis()
+            if (ahora - lastRewindTime < 3000) {
+                Toast.makeText(requireContext(), "Espera un momento para deshacer", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            lastRewindTime = ahora
+            deshacerUltimoSwipe()
+        }
+    }
+
     /** Carga la lista inicial de perfiles desde Supabase. */
     private fun cargarPerfiles() {
         val b = _binding ?: return
@@ -196,7 +216,7 @@ class SwipeFragment : Fragment() {
                 }
                 currentUserId = userId
 
-                // SELECT to_user FROM likes WHERE from_user = currentUserId
+                // 1. Obtener IDs de likes dados por el usuario
                 val likesFilas = SupabaseClient.client.postgrest["likes"].select(
                     columns = Columns.list("to_user")
                 ) {
@@ -205,7 +225,7 @@ class SwipeFragment : Fragment() {
 
                 val likedUserIds = likesFilas.mapNotNull { (it["to_user"] as? JsonPrimitive)?.content }.toSet()
 
-                // SELECT from_user FROM likes WHERE to_user = currentUserId
+                // 2. Obtener IDs de likes recibidos por el usuario
                 val likesRecibidosFilas = SupabaseClient.client.postgrest["likes"].select(
                     columns = Columns.list("from_user")
                 ) {
@@ -214,7 +234,7 @@ class SwipeFragment : Fragment() {
 
                 val likesRecibidosUserIds = likesRecibidosFilas.mapNotNull { (it["from_user"] as? JsonPrimitive)?.content }.toSet()
 
-                // SELECT user1, user2 FROM matches WHERE user1 = currentUserId OR user2 = currentUserId
+                // 3. Obtener IDs de matches
                 val matchesFilas1 = SupabaseClient.client.postgrest["matches"].select(
                     columns = Columns.list("user1", "user2")
                 ) {
@@ -236,13 +256,19 @@ class SwipeFragment : Fragment() {
                     .filter { it.isNotBlank() }
                     .toSet()
 
-                // Combinar todos los IDs a excluir + el propio usuario
-                val idsExcluidos = likedUserIds + likesRecibidosUserIds + matchesUserIds + userId
+                // 4. Obtener IDs de swipes (likes + passes) ya realizados
+                val swipesFilas = SupabaseClient.client.postgrest["swipes"].select(
+                    columns = Columns.list("target_id")
+                ) {
+                    filter { eq("user_id", userId) }
+                }.decodeList<JsonObject>()
 
-                // SELECT id, nickname, age, location, looking_for, bio, verified, height, zodiac, occupation
-                // FROM profiles WHERE id != currentUserId AND profile_completed = true
-                // ORDER BY verified DESC, created_at DESC LIMIT 30
-                // Otros usuarios: vista segura sin lat/lng/birthdate (VUL-01)
+                val swipedUserIds = swipesFilas.mapNotNull { (it["target_id"] as? JsonPrimitive)?.content }.toSet()
+
+                // Combinar todos los IDs a excluir + el propio usuario
+                val idsExcluidos = likedUserIds + likesRecibidosUserIds + matchesUserIds + swipedUserIds + userId
+
+                // SELECT perfiles: profile_completed = true, excluyendo IDs
                 val filas = SupabaseClient.client.postgrest["profiles_publicos"].select(
                     columns = Columns.list("id", "nickname", "age", "location", "looking_for", "bio", "verified", "height", "zodiac", "occupation", "gender", "created_at")
                 ) {
@@ -283,12 +309,11 @@ class SwipeFragment : Fragment() {
                     currentIndex = 0
                     sinVista.cardProfile.visibility = View.VISIBLE
                     sinVista.llActions.visibility = View.VISIBLE
+                    sinVista.btnRewind.visibility = if (currentIndex > 0) View.VISIBLE else View.GONE
                     mostrarPerfilActual()
                     precargarSiguiente()
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error cargando perfiles", e)
@@ -310,9 +335,6 @@ class SwipeFragment : Fragment() {
     private suspend fun cargarInteresesBatch(userIds: List<String>): Map<String, List<String>> {
         return withContext(Dispatchers.IO) {
             try {
-                // SELECT user_id, interests.name FROM user_interests
-                // JOIN interests ON user_interests.interest_id = interests.id
-                // WHERE user_id IN (...)
                 val filas = SupabaseClient.client.postgrest["user_interests"].select(
                     columns = Columns.list("user_id", "interests(name)")
                 ) {
@@ -328,8 +350,6 @@ class SwipeFragment : Fragment() {
                 }
                 map.mapValues { (_, v) -> v.toList() }
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.w("SwipeFragment", "Error cargando intereses batch", e)
@@ -377,6 +397,7 @@ class SwipeFragment : Fragment() {
             b.cardProfile.visibility = View.GONE
             b.llActions.visibility = View.GONE
             b.cardNext.visibility = View.GONE
+            b.btnRewind.visibility = View.GONE
             return
         }
 
@@ -469,6 +490,8 @@ class SwipeFragment : Fragment() {
             .start()
 
         b.llActions.visibility = View.VISIBLE
+        // Botón rewind visible si hay historial (currentIndex > 0)
+        b.btnRewind.visibility = if (currentIndex > 0) View.VISIBLE else View.GONE
 
         // CardNext: mostrar si hay siguiente perfil
         val haySiguiente = currentIndex + 1 < profiles.size
@@ -559,11 +582,8 @@ class SwipeFragment : Fragment() {
                     setupPhotoPager(urls)
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
-                // El id no se vuelca en release (VUL-13)
                 if (BuildConfig.DEBUG) {
                     Log.e("SwipeFragment", "Error cargando fotos de $userId", e)
                 }
@@ -644,8 +664,6 @@ class SwipeFragment : Fragment() {
                     profiles[siguiente] = profiles[siguiente].copy(fotos = urls)
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
                 throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error precargando fotos", e)
@@ -655,7 +673,7 @@ class SwipeFragment : Fragment() {
         }
     }
 
-    /** Da like al perfil actual. */
+    /** Da like al perfil actual y registra swipe. */
     private fun darLike() {
         val b = _binding ?: return
         if (currentIndex >= profiles.size) return
@@ -668,13 +686,16 @@ class SwipeFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                // INSERT en likes {from_user, to_user}
+                // 1. INSERT en likes {from_user, to_user}
                 SupabaseClient.client.postgrest["likes"].insert<JsonObject>(buildJsonObject {
                     put("from_user", fromUserId)
                     put("to_user", perfil.userId)
                 })
 
-                // Verificar si hay match (la otra persona ya dio like)
+                // 2. Registrar swipe en tabla swipes (fire-and-forget)
+                registrarSwipe(fromUserId, perfil.userId, "like")
+
+                // 3. Verificar si hay match (la otra persona ya dio like)
                 val match = verificarMatch(fromUserId, perfil.userId)
 
                 val sinVista = _binding ?: return@launch
@@ -694,10 +715,6 @@ class SwipeFragment : Fragment() {
 
                 pasarPerfil()
             } catch (e: kotlinx.coroutines.CancellationException) {
-                // Cancelacion normal (navegacion del usuario): se relanza
-                // y nunca se traga (regla de corrutinas de Kotlin).
-                // Antes se reactivan los botones: si la cancelacion llega
-                // con la vista viva, no quedarian bloqueados.
                 _binding?.btnLike?.isEnabled = true
                 _binding?.btnDislike?.isEnabled = true
                 throw e
@@ -721,6 +738,139 @@ class SwipeFragment : Fragment() {
         }
     }
 
+    /** Registra un swipe (like o pass) en la tabla swipes. Fire-and-forget. */
+    private suspend fun registrarSwipe(userId: String, targetId: String, action: String) {
+        try {
+            SupabaseClient.client.postgrest["swipes"].insert<JsonObject>(buildJsonObject {
+                put("user_id", userId)
+                put("target_id", targetId)
+                put("action", action)
+            })
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w("SwipeFragment", "Error registrando swipe $action", e)
+        }
+    }
+
+    /** Pasa al siguiente perfil (registra swipe 'pass'). */
+    private fun pasarPerfil() {
+        val b = _binding ?: return
+        if (currentIndex >= profiles.size) return
+
+        val perfil = profiles[currentIndex]
+        val fromUserId = currentUserId ?: return
+
+        // Registrar swipe 'pass' (fire-and-forget)
+        lifecycleScope.launch {
+            registrarSwipe(fromUserId, perfil.userId, "pass")
+        }
+
+        currentIndex++
+
+        if (currentIndex >= profiles.size) {
+            b.llEmpty.visibility = View.VISIBLE
+            b.cardProfile.visibility = View.GONE
+            b.llActions.visibility = View.GONE
+            b.cardNext.visibility = View.GONE
+            b.btnRewind.visibility = View.GONE
+        } else {
+            // Animar cardNext subiendo a posición de cardProfile
+            b.cardNext.animate()
+                .translationY(0f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(300)
+                .withEndAction {
+                    mostrarPerfilActual()
+                    precargarSiguiente()
+                }
+                .start()
+        }
+    }
+
+    /** Deshace el último swipe (REWIND). */
+    private fun deshacerUltimoSwipe() {
+        val b = _binding ?: return
+        val userId = currentUserId ?: return
+
+        lifecycleScope.launch {
+            try {
+                // 1. Obtener el último swipe del usuario
+                val filas = SupabaseClient.client.postgrest["swipes"].select(
+                    columns = Columns.list("id", "target_id", "action")
+                ) {
+                    filter { eq("user_id", userId) }
+                    order("created_at", Order.DESCENDING)
+                    limit(1)
+                }.decodeList<JsonObject>()
+
+                val sinVista = _binding ?: return@launch
+
+                if (filas.isEmpty()) {
+                    Toast.makeText(requireContext(), "No hay swipes para deshacer", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                val fila = filas[0]
+                val swipeId = textoDe(fila, "id") ?: return@launch
+                val targetId = textoDe(fila, "target_id") ?: return@launch
+                val action = textoDe(fila, "action") ?: return@launch
+
+                // 2. Eliminar el swipe
+                SupabaseClient.client.postgrest["swipes"].delete {
+                    filter { eq("id", swipeId) }
+                }
+
+                // 3. Si era like, eliminar también de likes (y match si existe)
+                if (action == "like") {
+                    // Eliminar like mutuo si existe
+                    SupabaseClient.client.postgrest["likes"].delete {
+                        filter { eq("from_user", currentUserId!!) }
+                        filter { eq("to_user", targetId) }
+                    }
+                    // Eliminar like recibido si existe (like mutuo)
+                    SupabaseClient.client.postgrest["likes"].delete {
+                        filter { eq("from_user", targetId) }
+                        filter { eq("to_user", currentUserId!!) }
+                    }
+                    // Eliminar match si existe
+                    val u1 = if (currentUserId!!.compareTo(targetId) < 0) currentUserId!! else targetId
+                    val u2 = if (currentUserId!!.compareTo(targetId) < 0) targetId else currentUserId!!
+                    SupabaseClient.client.postgrest["matches"].delete {
+                        filter { eq("user1", u1); eq("user2", u2) }
+                    }
+                    // Eliminar chat si existe (sin mensajes)
+                    SupabaseClient.client.postgrest["chats"].delete {
+                        filter { eq("user1", u1); eq("user2", u2) }
+                    }
+                }
+
+                // 4. Decrementar índice y volver a mostrar perfil anterior
+                if (currentIndex > 0) {
+                    currentIndex--
+                    sinVista.runOnUiThread {
+                        Toast.makeText(requireContext(), "Swipe deshecho", Toast.LENGTH_SHORT).show()
+                    }
+                    mostrarPerfilActual()
+                } else {
+                    // Si estábamos en el primero, recargar
+                    cargarPerfiles()
+                }
+
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("SwipeFragment", "Error en rewind", e)
+                val sinVista = _binding ?: return@launch
+                sinVista.runOnUiThread {
+                    Toast.makeText(requireContext(), "Error al deshacer: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     /** Verifica si la otra persona ya dio like (match). */
     private suspend fun verificarMatch(fromUserId: String, toUserId: String): Boolean {
         try {
@@ -738,8 +888,6 @@ class SwipeFragment : Fragment() {
                 return true
             }
         } catch (e: kotlinx.coroutines.CancellationException) {
-            // Cancelacion normal (navegacion del usuario): se relanza
-            // y nunca se traga (regla de corrutinas de Kotlin).
             throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error verificando match", e)
@@ -780,8 +928,6 @@ class SwipeFragment : Fragment() {
                 })
             }
         } catch (e: kotlinx.coroutines.CancellationException) {
-            // Cancelacion normal (navegacion del usuario): se relanza
-            // y nunca se traga (regla de corrutinas de Kotlin).
             throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error creando match o chat", e)
@@ -798,8 +944,6 @@ class SwipeFragment : Fragment() {
                 filter { eq("to_user", fromUserId) }
             }
         } catch (e: kotlinx.coroutines.CancellationException) {
-            // Cancelacion normal (navegacion del usuario): se relanza
-            // y nunca se traga (regla de corrutinas de Kotlin).
             throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error actualizando like mutuo", e)
@@ -816,6 +960,7 @@ class SwipeFragment : Fragment() {
             b.cardProfile.visibility = View.GONE
             b.llActions.visibility = View.GONE
             b.cardNext.visibility = View.GONE
+            b.btnRewind.visibility = View.GONE
         } else {
             // Animar cardNext subiendo a posición de cardProfile
             b.cardNext.animate()
