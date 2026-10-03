@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Gestiona OneSignal: inicialización, permiso de notificaciones, canales.
- * El registro de player id se hace en SupabaseClientExt (extensión).
+ * El registro de player id se delega a SupabaseClientExt (pendiente fix compilación).
  * El manejo de clicks en notificaciones se hace vía Intent extras en MainActivity/onNewIntent.
  */
 object OneSignalManager {
