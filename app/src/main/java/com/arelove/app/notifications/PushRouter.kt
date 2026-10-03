@@ -2,7 +2,7 @@ package com.arelove.app.notifications
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.send
+import kotlinx.coroutines.channels.ChannelsKt
 import kotlinx.coroutines.channels.consumeEach
 
 /**
@@ -17,7 +17,7 @@ object PushRouter {
 
     /** Envía payload de navegación (se suspende hasta que HomeActivity lo recoja) */
     suspend fun enrutar(payload: PushPayload) {
-        canal.send(payload)
+        ChannelsKt.send(canal, payload)
     }
 
     /** Canal para que HomeActivity/ChatActivity colecten */

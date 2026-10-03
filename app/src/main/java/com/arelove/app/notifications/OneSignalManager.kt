@@ -15,9 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
 /**
  * Gestiona OneSignal: inicialización, permiso de notificaciones, canales,
@@ -169,7 +166,7 @@ object OneSignalManager {
                 ?: return
 
             SupabaseClient.client.postgrest["profiles"].update(
-                buildJsonObject { put("onesignal_player_id", playerId) }
+                kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", playerId) }
             ) {
                 filter { eq("id", userId) }
             }
@@ -191,7 +188,7 @@ object OneSignalManager {
                 ?: return
 
             SupabaseClient.client.postgrest["profiles"].update(
-                buildJsonObject { put("onesignal_player_id", JsonNull) }
+                kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", kotlinx.serialization.json.JsonNull) }
             ) {
                 filter { eq("id", userId) }
             }
