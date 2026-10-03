@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.google.android.material.chip.Chip
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -809,7 +809,9 @@ class SwipeFragment : Fragment() {
                 val sinVista = _binding ?: return@launch
 
                 if (filas.isEmpty()) {
-                    Toast.makeText(requireContext(), "No hay swipes para deshacer", Toast.LENGTH_SHORT).show()
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(requireContext(), "No hay swipes para deshacer", Toast.LENGTH_SHORT).show()
+                    }
                     return@launch
                 }
 
@@ -850,7 +852,7 @@ class SwipeFragment : Fragment() {
                 // 4. Decrementar índice y volver a mostrar perfil anterior
                 if (currentIndex > 0) {
                     currentIndex--
-                    sinVista.runOnUiThread {
+                    requireActivity().runOnUiThread {
                         Toast.makeText(requireContext(), "Swipe deshecho", Toast.LENGTH_SHORT).show()
                     }
                     mostrarPerfilActual()
@@ -863,8 +865,7 @@ class SwipeFragment : Fragment() {
                 throw e
             } catch (e: Exception) {
                 Log.e("SwipeFragment", "Error en rewind", e)
-                val sinVista = _binding ?: return@launch
-                sinVista.runOnUiThread {
+                requireActivity().runOnUiThread {
                     Toast.makeText(requireContext(), "Error al deshacer: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -947,33 +948,6 @@ class SwipeFragment : Fragment() {
             throw e
         } catch (e: Exception) {
             Log.e("SwipeFragment", "Error actualizando like mutuo", e)
-        }
-    }
-
-    /** Pasa al siguiente perfil con animación de cardNext. */
-    private fun pasarPerfil() {
-        val b = _binding ?: return
-        currentIndex++
-
-        if (currentIndex >= profiles.size) {
-            b.llEmpty.visibility = View.VISIBLE
-            b.cardProfile.visibility = View.GONE
-            b.llActions.visibility = View.GONE
-            b.cardNext.visibility = View.GONE
-            b.btnRewind.visibility = View.GONE
-        } else {
-            // Animar cardNext subiendo a posición de cardProfile
-            b.cardNext.animate()
-                .translationY(0f)
-                .scaleX(1f)
-                .scaleY(1f)
-                .alpha(1f)
-                .setDuration(300)
-                .withEndAction {
-                    mostrarPerfilActual()
-                    precargarSiguiente()
-                }
-                .start()
         }
     }
 

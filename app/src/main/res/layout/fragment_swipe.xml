@@ -281,6 +281,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Botón rewind (deshacer) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRewind"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="20dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:backgroundTint="@color/surface_variant"
+            app:cornerRadius="40dp"
+            app:elevation="2dp"
+            app:icon="@drawable/ic_rewind"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="32dp"
+            app:iconTint="@color/on_surface_variant"
+            app:strokeWidth="0dp"
+            android:visibility="gone" />
+
         <!-- Botón dislike -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDislike"
