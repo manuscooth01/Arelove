@@ -11,7 +11,7 @@ import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.onesignal.OneSignal
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Filter
+import io.github.jan.supabase.postgrest.query.eq
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -115,7 +115,7 @@ object OneSignalManager {
             SupabaseClient.client.postgrest["profiles"].update(
                 kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", playerId) }
             ) {
-                filter { Filter.eq("id", userId) }
+                filter { eq("id", userId) }
             }
 
             Log.d(TAG, "Player ID registrado: $playerId")
@@ -137,7 +137,7 @@ object OneSignalManager {
             SupabaseClient.client.postgrest["profiles"].update(
                 kotlinx.serialization.json.buildJsonObject { put("onesignal_player_id", kotlinx.serialization.json.JsonNull) }
             ) {
-                filter { Filter.eq("id", userId) }
+                filter { eq("id", userId) }
             }
 
             Log.d(TAG, "Player ID borrado de la BD")
