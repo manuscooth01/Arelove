@@ -105,3 +105,22 @@ ANTES de `git add + commit`, resumir para revisión:
 6. Cómo se probará (pasos concretos)
 
 Esperar "OK, adelante" antes de commit + push.
+
+## Reglas de errores de compilación
+
+### 1. Workflow de GitHub Actions
+- Antes del push: revisión estática (imports, tipos, R.*, variables)
+- Después del push: monitoreo cada 60s con `gh run view <id> --json status,conclusion`
+- Si falla: **NO arreglar**, solo reportar error completo
+- Si pasa: `gh run download` + reportar run ID, hash, ruta APK, tiempo
+
+### 2. Errores de compilación
+- Nunca auto-arreglar
+- Extraer error exacto con `gh run view <id> --log-failed | grep -B5 -A15 'error:\|FAILED\|e: \|✗'`
+- Reportar al usuario con archivo + línea + mensaje exacto
+- Esperar instrucción antes de tocar código
+- Aplicar fix solo si el usuario lo aprueba
+
+### 3. Cambios grandes
+- Antes de commit: pasar resumen al usuario para revisión
+- Esperar OK explícito antes de commit + push
