@@ -83,3 +83,25 @@ Para no reintroducir regresiones de rendimiento, estas optimizaciones ya están 
     cp apk/app-debug.apk /storage/emulated/0/Download/Arelove-v1-debug.apk && \
     termux-open /storage/emulated/0/Download/Arelove-v1-debug.apk
 - NO usar sufijos v2, v3, etc. El nombre es fijo para evitar confusión.
+
+## Workflow de compilación permanente
+
+- Antes del push: revisión estática (imports, tipos, recursos R.*, variables)
+- Push + monitoreo cada 60s con `gh run view <id> --json status,conclusion`
+- Si falla: `gh run view <id> --log-failed | grep 'error:'` y corregir causa real
+- Si pasa: `gh run download` + reportar run ID, commit hash, ruta APK, tiempo
+- NO compilar localmente (no hay SDK)
+- NO hacer push sin revisar imports
+- Agrupar cambios relacionados en 1 commit
+
+## Paso obligatorio antes del commit
+
+ANTES de `git add + commit`, resumir para revisión:
+1. Archivos a modificar/crear/borrar
+2. Qué cambia exactamente en cada uno (diff o descripción de funciones nuevas/modificadas)
+3. Si hay cambios SQL (migraciones, triggers, RPC): el SQL completo
+4. Si hay cambios en Edge Functions: el código completo actualizado
+5. Riesgos potenciales (¿qué podría romperse? ¿qué features existentes toca?)
+6. Cómo se probará (pasos concretos)
+
+Esperar "OK, adelante" antes de commit + push.
