@@ -6,15 +6,15 @@ import kotlinx.coroutines.channels.consumeEach
 
 /**
  * Router singleton para navegación desde notificaciones push.
- * Usa Channel (hot, sin buffer) para pasar el payload de navegación
+ * Usa Channel (hot, con buffer) para pasar el payload de navegación
  * desde MainActivity/OneSignalManager a HomeActivity/ChatActivity.
  */
 object PushRouter {
 
-    // Canal sin buffer: el send suspende hasta que hay receiver
-    private val canal = Channel<PushPayload>()
+    // Canal con buffer: permite enviar incluso si aún no hay receiver
+    private val canal = Channel<PushPayload>(10)
 
-    /** Envía payload de navegación (se suspende hasta que HomeActivity lo recoja) */
+    /** Envía payload de navegación (no se suspende mientras haya espacio en el buffer) */
     suspend fun enrutar(payload: PushPayload) {
         canal.send(payload)
     }
