@@ -1,6 +1,7 @@
 package com.arelove.app
 
 import com.onesignal.OneSignal
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
@@ -12,10 +13,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /**
- * Extensiones de SupabaseClient para operaciones de OneSignal.
+ * Extensiones de SupabaseClient (librería) para operaciones de OneSignal.
  * Copia exacta de los patrones que funcionan en AdminVerifyActivity.
  */
-suspend fun SupabaseClient.registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
+suspend fun io.github.jan.supabase.SupabaseClient.registrarOneSignalPlayerId() = withContext(Dispatchers.IO) {
     try {
         val playerId = OneSignal.User.pushSubscription.id
         if (playerId.isNullOrEmpty()) {
