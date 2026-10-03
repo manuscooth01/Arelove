@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.NavOptions
 import com.arelove.app.databinding.ActivityHomeBinding
 import com.arelove.app.notifications.PushRouter
 import com.arelove.app.util.AntiSpam
@@ -64,12 +65,28 @@ class HomeActivity : AppCompatActivity() {
                 when (payload) {
                     is PushRouter.PushPayload.Like -> {
                         Log.d("HomeActivity", "PushRouter: navegar a Likes")
-                        navController.navigate(R.id.likesFragment)
+                        navController.navigate(
+                            R.id.likesFragment,
+                            null,
+                            NavOptions.Builder()
+                                .setLaunchSingleTop(true)
+                                .setRestoreState(true)
+                                .setPopUpTo(navController.graph.findStartDestination().id, false, true)
+                                .build()
+                        )
                     }
                     is PushRouter.PushPayload.Match -> {
                         Log.d("HomeActivity", "PushRouter: navegar a Chats (matches)")
                         // Abrir tab Chats donde están los matches
-                        navController.navigate(R.id.chatsFragment)
+                        navController.navigate(
+                            R.id.chatsFragment,
+                            null,
+                            NavOptions.Builder()
+                                .setLaunchSingleTop(true)
+                                .setRestoreState(true)
+                                .setPopUpTo(navController.graph.findStartDestination().id, false, true)
+                                .build()
+                        )
                     }
                     is PushRouter.PushPayload.Mensaje -> {
                         Log.d("HomeActivity", "PushRouter: abrir ChatActivity")
