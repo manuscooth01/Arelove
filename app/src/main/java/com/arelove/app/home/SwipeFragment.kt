@@ -286,7 +286,7 @@ class SwipeFragment : Fragment() {
                     filter { eq("profile_completed", true) }
                     order("verified", Order.DESCENDING)
                     order("created_at", Order.DESCENDING)
-                    range(offset, offset + TAMANO_PAGINA - 1)
+                    range(offset.toLong() .. (offset + TAMANO_PAGINA - 1).toLong())
                 }.decodeList<JsonObject>()
 
                 val sinVista = _binding ?: return@launch
@@ -441,14 +441,14 @@ class SwipeFragment : Fragment() {
                     filter { eq("profile_completed", true) }
                     order("verified", Order.DESCENDING)
                     order("created_at", Order.DESCENDING)
-                    range(offset, offset + TAMANO_PAGINA - 1)
+                    range(offset.toLong() .. (offset + TAMANO_PAGINA - 1).toLong())
                 }.decodeList<JsonObject>()
 
                 val sinVista = _binding ?: return@launch
 
-                if (filas.isEmpty()) {
+if (filas.isEmpty()) {
                     hayMasPerfiles = false
-                    sinVista.runOnUiThread { progressCargandoMas.visibility = View.GONE }
+                    sinVista.runOnUiThread { sinVista.progressCargandoMas.visibility = View.GONE }
                     return@launch
                 }
 
