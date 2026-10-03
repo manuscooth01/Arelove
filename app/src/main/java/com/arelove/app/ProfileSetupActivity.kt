@@ -237,10 +237,10 @@ class ProfileSetupActivity : AppCompatActivity() {
         }
         // Perfil terminado: el asistente ya no tiene nada que retomar
         prefs.edit().remove(claveUltimoPaso).apply()
-        // TEMPORAL: Comentado por problema de compilación en OneSignalManager
-        // lifecycleScope.launch {
-        //     OneSignalManager.registrarPlayerId()
-        // }
+        // Registra el token FCM del dispositivo con el perfil ya completo
+        lifecycleScope.launch {
+            SupabaseClientExt.registrarOneSignalPlayerId()
+        }
         startActivity(Intent(this, HomeActivity::class.java))
         finish()
     }

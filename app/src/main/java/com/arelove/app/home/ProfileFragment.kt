@@ -406,10 +406,9 @@ class ProfileFragment : Fragment() {
     private fun cerrarSesion() {
         lifecycleScope.launch {
             try {
-                // TEMPORAL: Comentado por problema de compilación en OneSignalManager
                 // 1. Borra el player id en la BD mientras la sesion del
                 //    usuario que se va sigue activa
-                // OneSignalManager.desregistrar()
+                SupabaseClientExt.desregistrarOneSignalPlayerId()
                 // 2. Logout de OneSignal: el proximo usuario del mismo
                 //    dispositivo registrara su propio player id
                 OneSignal.logout()

@@ -114,10 +114,9 @@ class MainActivity : AppCompatActivity() {
             if (session != null) {
                 // Registra el player id de OneSignal en un coroutine aparte
                 // para no retrasar la navegacion
-                // TEMPORAL: Comentado por problema de compilación en OneSignalManager
-                // lifecycleScope.launch {
-                //     OneSignalManager.registrarPlayerId()
-                // }
+                lifecycleScope.launch {
+                    SupabaseClientExt.registrarOneSignalPlayerId()
+                }
                 try {
                     val destino = if (ProfileChecker.perfilCompleto()) {
                         HomeActivity::class.java
@@ -185,6 +184,10 @@ class MainActivity : AppCompatActivity() {
         // Si ya hay sesión, reenviar a HomeActivity existente
         val session = SupabaseClient.client.auth.currentSessionOrNull()
         if (session != null) {
+            // Re-registrar player id por si cambió
+            lifecycleScope.launch {
+                SupabaseClientExt.registrarOneSignalPlayerId()
+            }
             val homeIntent = Intent(this, HomeActivity::class.java).apply {
                 addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK or
