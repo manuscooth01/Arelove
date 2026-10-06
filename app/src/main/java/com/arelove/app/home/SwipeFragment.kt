@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.google.android.material.chip.Chip
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -43,6 +44,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.boolean
 import java.time.Instant
 
 /**
@@ -79,6 +82,9 @@ class SwipeFragment : Fragment() {
     /** Control anti-spam para rewind (1 uso cada 3s). */
     private var lastRewindTime = 0L
 
+    /** Balance actual de diamantes del usuario (cache local). */
+    private var diamantesActuales = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -95,6 +101,7 @@ class SwipeFragment : Fragment() {
         aplicarBordeCardPerfil()
         configurarRewindButton()
         cargarPerfiles()
+        cargarBalanceDiamantes()
 
         // Touch listener en photoPager para detectar tap y abrir perfil (sin romper swipe)
         binding.photoPager.setOnTouchListener { _, event ->
@@ -191,20 +198,153 @@ class SwipeFragment : Fragment() {
             it.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
             pasarPerfil()
         }
-    }
+}
 
-    /** Configura el botón REWIND (deshacer último swipe). */
+/** Configura el botón REWIND (deshacer último swipe) — 5 diamantes. */
     private fun configurarRewindButton() {
-        binding.btnRewind.setOnClickListener {
+        binding.btnRewind.setOnClickListener { view ->
             if (AntiSpam.esDobleTap("btnRewind")) return@setOnClickListener
-            // Anti-spam adicional: 1 uso cada 3 segundos
+
+            // Animación scale + haptic
+            view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(80).withEndAction {
+                view.animate().scaleX(1f).scaleY(1f).setDuration(80).start()
+            }.start()
+            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+
+            // Anti-spam: 1 uso cada 3 segundos — Snackbar no bloqueante
             val ahora = System.currentTimeMillis()
             if (ahora - lastRewindTime < 3000) {
-                Toast.makeText(requireContext(), "Espera un momento para deshacer", Toast.LENGTH_SHORT).show()
+                val b = _binding ?: return@setOnClickListener
+                Snackbar.make(
+                    b.root,
+                    getString(R.string.rewind_wait_msg),
+                    Snackbar.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
-            lastRewindTime = ahora
-            deshacerUltimoSwipe()
+
+            // Validar que haya algo que deshacer
+            if (currentIndex <= 0) {
+                AreloveDialog.show(
+                    requireContext(),
+                    AreloveDialog.Tipo.INFO,
+                    getString(R.string.rewind_nothing_title),
+                    getString(R.string.rewind_nothing_msg),
+                    getString(R.string.btn_ok)
+                )
+                return@setOnClickListener
+            }
+
+            // Verificar balance de diamantes
+            if (diamantesActuales < 5) {
+                AreloveDialog.show(
+                    requireContext(),
+                    AreloveDialog.Tipo.INFO,
+                    getString(R.string.rewind_no_diamonds_title),
+                    getString(R.string.rewind_no_diamonds_msg, diamantesActuales),
+                    getString(R.string.btn_ok)
+                )
+                return@setOnClickListener
+            }
+
+            // Confirmar gasto (diálogo INFO con botón "Gastar 5 diamantes")
+            AreloveDialog.show(
+                requireContext(),
+                AreloveDialog.Tipo.INFO,
+                getString(R.string.rewind_confirm_title),
+                getString(R.string.rewind_confirm_msg, diamantesActuales),
+                getString(R.string.rewind_btn_spend),
+                { gastarDiamantesYRewind() }
+            )
+        }
+    }
+
+    /** Carga el balance de diamantes del usuario actual vía RPC. */
+    private fun cargarBalanceDiamantes() {
+        val userId = currentUserId ?: return
+        lifecycleScope.launch {
+            val b = _binding ?: return@launch
+            try {
+                val result = SupabaseClient.client.postgrest.rpc("get_diamonds_balance") {
+                    param("p_user_id", userId)
+                }.decodeSingleOrNull<JsonObject>()
+
+                diamantesActuales = result?.get("balance")?.let { (it as JsonPrimitive).int } ?: 0
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                    actualizarUIBalanceDiamantes()
+                }
+            } catch (e: Exception) {
+                Log.w("SwipeFragment", "Error cargando balance diamantes", e)
+            }
+        }
+    }
+
+    /** Actualiza el TextView del balance y el estado visual del botón rewind. */
+    private fun actualizarUIBalanceDiamantes() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            val b = _binding ?: return@launch
+            b.tvDiamondBalance.text = diamantesActuales.toString()
+            val puedeRewind = diamantesActuales >= 5 && currentIndex > 0
+            b.btnRewind.isEnabled = puedeRewind
+            b.btnRewind.alpha = if (puedeRewind) 1f else 0.5f
+        }
+    }
+
+    /** Ejecuta el gasto de 5 diamantes y si tiene éxito hace el rewind. */
+    private fun gastarDiamantesYRewind() {
+        val userId = currentUserId ?: return
+        lifecycleScope.launch {
+            val b = _binding ?: return@launch
+            try {
+                val result = SupabaseClient.client.postgrest.rpc("spend_diamonds") {
+                    param("p_user_id", userId)
+                    param("p_amount", 5)
+                    param("p_reason", "rewind")
+                    param("p_type", "spend")
+                }.decodeSingleOrNull<JsonObject>()
+
+                val ok = result?.get("success")?.let { (it as JsonPrimitive).boolean } ?: false
+
+                if (ok) {
+                    diamantesActuales -= 5
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                        actualizarUIBalanceDiamantes()
+                    }
+                    deshacerUltimoSwipe()
+
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                        val b2 = _binding ?: return@launch
+                        Snackbar.make(
+                            b2.root,
+                            getString(R.string.rewind_spent_snackbar, 5),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                        val b2 = _binding ?: return@launch
+                        AreloveDialog.show(
+                            requireContext(),
+                            AreloveDialog.Tipo.ERROR,
+                            getString(R.string.rewind_error_title),
+                            getString(R.string.rewind_error_msg),
+                            getString(R.string.btn_ok)
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("SwipeFragment", "Error gastando diamantes rewind", e)
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                    val b2 = _binding ?: return@launch
+                    AreloveDialog.show(
+                        requireContext(),
+                        AreloveDialog.Tipo.ERROR,
+                        getString(R.string.rewind_error_title),
+                        getString(R.string.rewind_error_msg),
+                        getString(R.string.btn_ok)
+                    )
+                }
+            }
         }
     }
 
@@ -650,8 +790,13 @@ class SwipeFragment : Fragment() {
             .start()
 
         b.llActions.visibility = View.VISIBLE
-        // Botón rewind visible si hay historial (currentIndex > 0)
+        // Botón rewind visible si hay historial (currentIndex > 0) Y tiene diamantes
         b.btnRewind.visibility = if (currentIndex > 0) View.VISIBLE else View.GONE
+        if (currentIndex > 0) {
+            val puedeRewind = diamantesActuales >= 5
+            b.btnRewind.isEnabled = puedeRewind
+            b.btnRewind.alpha = if (puedeRewind) 1f else 0.5f
+        }
 
         // CardNext: mostrar si hay siguiente perfil
         val haySiguiente = currentIndex + 1 < profiles.size

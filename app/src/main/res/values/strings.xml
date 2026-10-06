@@ -400,6 +400,20 @@
     <string name="diamonds_insufficient">No tienes suficientes diamantes</string>
     <string name="diamonds_go_recharge">Ir a recargar</string>
 
+    <!-- ==================== REWIND ==================== -->
+    <string name="diamonds_balance_label">Balance de diamantes</string>
+    <string name="rewind_wait_msg">Debes esperar 3 segundos entre cada rewind.</string>
+    <string name="rewind_nothing_title">Nada que deshacer</string>
+    <string name="rewind_nothing_msg">No hay swipes previos para deshacer.</string>
+    <string name="rewind_no_diamonds_title">Diamantes insuficientes</string>
+    <string name="rewind_no_diamonds_msg">Necesitas 5 diamantes para deshacer. Tienes %1$d.</string>
+    <string name="rewind_confirm_title">¿Deshacer último swipe?</string>
+    <string name="rewind_confirm_msg">Se gastarán 5 diamantes. Te quedarán %1$d.</string>
+    <string name="rewind_btn_spend">Gastar 5 diamantes</string>
+    <string name="rewind_error_title">Error</string>
+    <string name="rewind_error_msg">No se pudo procesar el gasto. Inténtalo de nuevo.</string>
+    <string name="rewind_spent_snackbar">%1$d diamantes gastados. Swipe deshecho.</string>
+
     <!-- ==================== LIKES Y VISITAS ==================== -->
     <string name="likes_visits_title">Quien te gustó</string>
     <string name="likes_visits_subtitle">Personas que te dieron like o visitaron tu perfil</string>

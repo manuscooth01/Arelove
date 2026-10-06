@@ -47,6 +47,36 @@
             android:letterSpacing="0.05"
             android:textColor="@color/primary"
             android:fontFamily="@font/poppins_bold" />
+
+        <!-- Balance de diamantes -->
+        <LinearLayout
+            android:id="@+id/llDiamondBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="end"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/bg_chip_looking">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_diamond"
+                android:contentDescription="@string/diamonds_balance" />
+
+            <TextView
+                android:id="@+id/tvDiamondBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="0"
+                android:textColor="@color/on_primary_container"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins_semibold" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Card siguiente (apilada detrás) -->
@@ -298,6 +328,8 @@
             app:iconPadding="0dp"
             app:iconSize="32dp"
             app:iconTint="@color/on_surface_variant"
+            app:rippleColor="?attr/colorPrimary"
+            android:stateListAnimator="@null"
             app:strokeWidth="0dp"
             android:visibility="gone" />
 
@@ -318,6 +350,8 @@
             app:iconPadding="0dp"
             app:iconSize="36dp"
             app:iconTint="@color/on_surface_variant"
+            app:rippleColor="?attr/colorPrimary"
+            android:stateListAnimator="@null"
             app:strokeWidth="0dp" />
 
         <!-- Botón like -->
@@ -336,6 +370,8 @@
             app:iconPadding="0dp"
             app:iconSize="36dp"
             app:iconTint="@android:color/white"
+            app:rippleColor="@android:color/white"
+            android:stateListAnimator="@null"
             app:strokeWidth="0dp" />
     </LinearLayout>
 
