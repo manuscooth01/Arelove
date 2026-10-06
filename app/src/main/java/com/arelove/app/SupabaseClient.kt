@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.encodeToString
 import java.net.URL
 import java.net.HttpURLConnection
 
@@ -80,7 +79,7 @@ object SupabaseClient {
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Prefer", "return=representation")
 
-            val json = params.encodeToString()
+            val json = params.toString()
             connection.outputStream.use { it.write(json.toByteArray()) }
 
             val responseCode = connection.responseCode
