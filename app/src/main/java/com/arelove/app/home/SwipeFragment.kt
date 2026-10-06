@@ -230,7 +230,7 @@ class SwipeFragment : Fragment() {
                     AreloveDialog.Tipo.INFO,
                     getString(R.string.rewind_nothing_title),
                     getString(R.string.rewind_nothing_msg),
-                    getString(R.string.btn_ok)
+                    getString(R.string.ok)
                 )
                 return@setOnClickListener
             }
@@ -242,7 +242,7 @@ class SwipeFragment : Fragment() {
                     AreloveDialog.Tipo.INFO,
                     getString(R.string.rewind_no_diamonds_title),
                     getString(R.string.rewind_no_diamonds_msg, diamantesActuales),
-                    getString(R.string.btn_ok)
+                    getString(R.string.ok)
                 )
                 return@setOnClickListener
             }
@@ -264,18 +264,19 @@ class SwipeFragment : Fragment() {
         val userId = currentUserId ?: return
         lifecycleScope.launch {
             val b = _binding ?: return@launch
-            try {
-                val result = SupabaseClient.client.postgrest.rpc("get_diamonds_balance") {
-                    param("p_user_id", userId)
-                }.decodeSingleOrNull<JsonObject>()
-
-                diamantesActuales = result?.get("balance")?.let { (it as JsonPrimitive).int } ?: 0
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                    actualizarUIBalanceDiamantes()
+            SupabaseClient.rpc(
+                functionName = "get_diamonds_balance",
+                params = buildJsonObject { put("p_user_id", userId) },
+                onResult = { result ->
+                    diamantesActuales = result?.get("balance")?.let { (it as JsonPrimitive).int } ?: 0
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                        actualizarUIBalanceDiamantes()
+                    }
+                },
+                onError = { e ->
+                    Log.w("SwipeFragment", "Error cargando balance diamantes", e)
                 }
-            } catch (e: Exception) {
-                Log.w("SwipeFragment", "Error cargando balance diamantes", e)
-            }
+            )
         }
     }
 
@@ -295,32 +296,47 @@ class SwipeFragment : Fragment() {
         val userId = currentUserId ?: return
         lifecycleScope.launch {
             val b = _binding ?: return@launch
-            try {
-                val result = SupabaseClient.client.postgrest.rpc("spend_diamonds") {
-                    param("p_user_id", userId)
-                    param("p_amount", 5)
-                    param("p_reason", "rewind")
-                    param("p_type", "spend")
-                }.decodeSingleOrNull<JsonObject>()
+            SupabaseClient.rpc(
+                functionName = "spend_diamonds",
+                params = buildJsonObject {
+                    put("p_user_id", userId)
+                    put("p_amount", 5)
+                    put("p_reason", "rewind")
+                    put("p_type", "spend")
+                },
+                onResult = { result ->
+                    val ok = result?.get("success")?.let { (it as JsonPrimitive).boolean } ?: false
 
-                val ok = result?.get("success")?.let { (it as JsonPrimitive).boolean } ?: false
+                    if (ok) {
+                        diamantesActuales -= 5
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                            actualizarUIBalanceDiamantes()
+                        }
+                        deshacerUltimoSwipe()
 
-                if (ok) {
-                    diamantesActuales -= 5
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                        actualizarUIBalanceDiamantes()
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                            val b2 = _binding ?: return@launch
+                            Snackbar.make(
+                                b2.root,
+                                getString(R.string.rewind_spent_snackbar, 5),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                            val b2 = _binding ?: return@launch
+                            AreloveDialog.show(
+                                requireContext(),
+                                AreloveDialog.Tipo.ERROR,
+                                getString(R.string.rewind_error_title),
+                                getString(R.string.rewind_error_msg),
+                                getString(R.string.ok)
+                            )
+                        }
                     }
-                    deshacerUltimoSwipe()
-
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                        val b2 = _binding ?: return@launch
-                        Snackbar.make(
-                            b2.root,
-                            getString(R.string.rewind_spent_snackbar, 5),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
+                },
+                onError = { e ->
+                    Log.e("SwipeFragment", "Error gastando diamantes rewind", e)
                     viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                         val b2 = _binding ?: return@launch
                         AreloveDialog.show(
@@ -328,23 +344,11 @@ class SwipeFragment : Fragment() {
                             AreloveDialog.Tipo.ERROR,
                             getString(R.string.rewind_error_title),
                             getString(R.string.rewind_error_msg),
-                            getString(R.string.btn_ok)
+                            getString(R.string.ok)
                         )
                     }
                 }
-            } catch (e: Exception) {
-                Log.e("SwipeFragment", "Error gastando diamantes rewind", e)
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                    val b2 = _binding ?: return@launch
-                    AreloveDialog.show(
-                        requireContext(),
-                        AreloveDialog.Tipo.ERROR,
-                        getString(R.string.rewind_error_title),
-                        getString(R.string.rewind_error_msg),
-                        getString(R.string.btn_ok)
-                    )
-                }
-            }
+            )
         }
     }
 
