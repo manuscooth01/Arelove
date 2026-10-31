@@ -28,11 +28,11 @@ import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
 import coil.transform.RoundedCornersTransformation
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.postgrest.postgrest
-import io.github.jan-tennert.supabase.postgrest.query.Columns
-import io.github.jan-tennert.supabase.postgrest.query.Order
-import io.github.jan-tennert.supabase.postgrest.query.filter.FilterOperator
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.arelove.app.databinding.ActivitySettingsBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
-import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.auth
 
 /**
  * Pantalla de Ajustes de Arelove: cuenta (correo) y eliminación de cuenta.

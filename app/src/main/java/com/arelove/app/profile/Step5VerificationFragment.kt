@@ -22,10 +22,10 @@ import com.arelove.app.databinding.FragmentStep5VerificationBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.postgrest.postgrest
-import io.github.jan-tennert.supabase.postgrest.query.Columns
-import io.github.jan-tennert.supabase.storage.storage
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull

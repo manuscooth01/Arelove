@@ -13,9 +13,9 @@ import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentStep2InterestsBinding
 import com.arelove.app.ui.AreloveDialog
 import com.google.android.material.chip.Chip
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.postgrest.postgrest
-import io.github.jan-tennert.supabase.postgrest.query.Order
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

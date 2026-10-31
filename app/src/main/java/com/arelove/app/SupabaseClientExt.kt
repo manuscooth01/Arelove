@@ -2,8 +2,8 @@ package com.arelove.app
 
 import com.arelove.app.LogHelper
 import com.onesignal.OneSignal
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonNull

@@ -20,8 +20,8 @@ import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.notifications.PushRouter
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.gotrue.handleDeeplinks
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.handleDeeplinks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

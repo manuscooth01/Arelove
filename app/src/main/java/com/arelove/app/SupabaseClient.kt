@@ -1,12 +1,12 @@
 package com.arelove.app
 
-import io.github.jan-tennert.supabase.SupabaseClient
-import io.github.jan-tennert.supabase.gotrue.Auth
-import io.github.jan-tennert.supabase.gotrue.SettingsSessionManager
-import io.github.jan-tennert.supabase.createSupabaseClient
-import io.github.jan-tennert.supabase.postgrest.Postgrest
-import io.github.jan-tennert.supabase.realtime.Realtime
-import io.github.jan-tennert.supabase.storage.Storage
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.SettingsSessionManager
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json

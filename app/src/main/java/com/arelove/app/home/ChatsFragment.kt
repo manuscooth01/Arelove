@@ -22,10 +22,10 @@ import com.arelove.app.databinding.ItemChatBinding
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.postgrest.postgrest
-import io.github.jan-tennert.supabase.postgrest.query.Columns
-import io.github.jan-tennert.supabase.postgrest.query.Order
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

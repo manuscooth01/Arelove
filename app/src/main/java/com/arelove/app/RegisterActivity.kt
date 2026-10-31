@@ -17,8 +17,8 @@ import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import com.google.android.material.textfield.TextInputEditText
-import io.github.jan-tennert.supabase.gotrue.auth
-import io.github.jan-tennert.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.launch
 
 /**
