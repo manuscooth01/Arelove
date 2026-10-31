@@ -84,6 +84,5 @@ class AdminReportsActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "AdminReportsActivity"
     }
 }

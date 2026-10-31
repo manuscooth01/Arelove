@@ -213,6 +213,5 @@ class AdminActivity : AppCompatActivity() {
     )
 
     companion object {
-        private const val TAG = "AdminActivity"
     }
 }

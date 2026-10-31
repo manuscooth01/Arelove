@@ -25,7 +25,6 @@ import org.json.JSONObject
  * y mediante un INotificationClickListener para asegurar compatibilidad con OneSignal 5.x.
  */
 object OneSignalManager {
-    private const val TAG = "OneSignal"
     private const val APP_ID = "b8289f2b-6e4b-4cba-9ae7-8f745057c824"
 
     // Scope para corrutinas de init/permiso

@@ -316,6 +316,5 @@ class AdminVerifyActivity : AppCompatActivity() {
     )
 
     companion object {
-        private const val TAG = "AdminVerifyActivity"
     }
 }
