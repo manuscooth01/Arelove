@@ -35,6 +35,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
  * Fragment de Chats - lista de conversaciones del usuario.
@@ -148,56 +150,79 @@ class ChatsFragment : Fragment() {
                     return@launch
                 }
 
-                // Cargar perfiles de los otros usuarios en paralelo
+                // Cargar perfiles de los otros usuarios en batch (una query para perfiles, otra para fotos)
                 val perfiles = mutableMapOf<String, Pair<String?, String?>>()
-                val perfilesJobs = mutableListOf<kotlinx.coroutines.Job>()
 
-                for (otroId in otrosUserIds) {
-                    val job = lifecycleScope.launch(Dispatchers.IO) {
-                        try {
-                            // Perfil ajeno (cabecera del chat): vista segura (VUL-01)
-                            val filasPerfil = SupabaseClient.client.postgrest["profiles_publicos"].select(
-                                columns = Columns.list("nickname")
-                            ) {
-                                filter { eq("id", otroId) }
-                                limit(1)
-                            }.decodeList<JsonObject>()
+                val perfilFilas = SupabaseClient.client.postgrest["profiles_publicos"].select(
+                    columns = Columns.list("id", "nickname")
+                ) {
+                    filter { isIn("id", otrosUserIds.toList()) }
+                    filter { eq("profile_completed", true) }
+                }.decodeList<JsonObject>()
 
-                            val fotoMedia = SupabaseClient.client.postgrest["media"].select(
-                                columns = Columns.list("url")
-                            ) {
-                                filter { eq("user_id", otroId) }
-                                filter { eq("type", "profile") }
-                                order("created_at", Order.ASCENDING)
-                                limit(1)
-                            }.decodeList<JsonObject>()
-
-                            val nickname = filasPerfil.firstOrNull()?.let { (it["nickname"] as? JsonPrimitive)?.content.orEmpty() } ?: "Usuario"
-                            val fotoUrl = fotoMedia.firstOrNull()?.let { (it["url"] as? JsonPrimitive)?.content.orEmpty() }
-
-                            withContext(Dispatchers.Main) {
-                                perfiles[otroId] = nickname to fotoUrl
-                            }
-                        } catch (e: kotlinx.coroutines.CancellationException) {
-                            // Cancelacion normal (navegacion del usuario): se relanza
-                            // y nunca se traga (regla de corrutinas de Kotlin).
-                            throw e
-                        } catch (e: Exception) {
-                            // El id no se vuelca en release (VUL-13)
-                            if (BuildConfig.DEBUG) {
-                                LogHelper.d("ChatsFragment", "Error cargando perfil")
-                            }
-                        }
-                    }
-                    perfilesJobs.add(job)
+                val nicknames = perfilFilas.associateWithNotNull { fila ->
+                    (fila["id"] as? JsonPrimitive)?.content to (fila["nickname"] as? JsonPrimitive)?.content.orEmpty()
                 }
 
-                // Esperar a que terminen todas las cargas de perfiles
-                perfilesJobs.forEach { it.join() }
+                val fotoFilas = SupabaseClient.client.postgrest["media"].select(
+                    columns = Columns.list("user_id", "url")
+                ) {
+                    filter { isIn("user_id", otrosUserIds.toList()) }
+                    filter { eq("type", "profile") }
+                    order("created_at", Order.ASCENDING)
+                }.decodeList<JsonObject>()
+
+                val fotosPorUsuario = mutableMapOf<String, String>()
+                fotoFilas.forEach { fila ->
+                    val uid = (fila["user_id"] as? JsonPrimitive)?.content
+                    val url = (fila["url"] as? JsonPrimitive)?.content
+                    if (uid != null && url != null && fotosPorUsuario[uid] == null) {
+                        fotosPorUsuario[uid] = url
+                    }
+                }
+
+                otrosUserIds.forEach { otroId ->
+                    val nickname = nicknames[otroId] ?: "Usuario"
+                    val fotoUrl = fotosPorUsuario[otroId]
+                    perfiles[otroId] = nickname to fotoUrl
+                }
 
                 val sinVista2 = _binding ?: return@launch
 
-                // Ahora cargar último mensaje y no leídos para cada chat
+                // Ahora cargar último mensaje y no leídos para cada chat en batch
+                val chatIds = filasChats.map { fila ->
+                    (fila["id"] as? JsonPrimitive)?.content.orEmpty()
+                }.filter { it.isNotEmpty() }
+
+                // Último mensaje por chat (orden descendente, limit 1 por chat_id no disponible directo,
+                // así que cargamos todos los mensajes recientes de estos chats y nos quedamos con el último)
+                val todosMensajes = SupabaseClient.client.postgrest["messages"].select(
+                    columns = Columns.list("id", "chat_id", "content", "created_at", "sender", "seen")
+                ) {
+                    filter { isIn("chat_id", chatIds) }
+                    order("created_at", Order.DESCENDING)
+                }.decodeList<JsonObject>()
+
+                // Índice del último mensaje por chat
+                val ultimoMensajePorChat = mutableMapOf<String, JsonObject>()
+                todosMensajes.forEach { fila ->
+                    val cid = (fila["chat_id"] as? JsonPrimitive)?.content
+                    if (cid != null && ultimoMensajePorChat[cid] == null) {
+                        ultimoMensajePorChat[cid] = fila
+                    }
+                }
+
+                // Mensajes no leídos por chat
+                val noLeidosPorChat = mutableMapOf<String, Int>()
+                todosMensajes.forEach { fila ->
+                    val cid = (fila["chat_id"] as? JsonPrimitive)?.content
+                    val seen = (fila["seen"] as? JsonPrimitive)?.content == "true"
+                    val sender = (fila["sender"] as? JsonPrimitive)?.content.orEmpty()
+                    if (cid != null && !seen && sender != currentUserId) {
+                        noLeidosPorChat[cid] = (noLeidosPorChat[cid] ?: 0) + 1
+                    }
+                }
+
                 val chatItemsTemp = mutableListOf<ChatItem>()
 
                 for (fila in filasChats) {
@@ -212,36 +237,17 @@ class ChatsFragment : Fragment() {
                     val fotoUrl = perfil.second
 
                     // Último mensaje
-                    val filasMensajes = SupabaseClient.client.postgrest["messages"].select(
-                        columns = Columns.list("content", "created_at", "sender", "seen")
-                    ) {
-                        filter { eq("chat_id", chatId) }
-                        order("created_at", Order.DESCENDING)
-                        limit(1)
-                    }.decodeList<JsonObject>()
-
                     var ultimoMensaje: String? = null
                     var ultimaFecha: String? = chatCreatedAt
-                    var noLeidos = 0
 
-                    if (filasMensajes.isNotEmpty()) {
-                        val msg = filasMensajes[0]
-                        ultimoMensaje = (msg["content"] as? JsonPrimitive)?.content.orEmpty()
-                        ultimaFecha = (msg["created_at"] as? JsonPrimitive)?.content.orEmpty()
-
-                        // Contar no leídos
-                        val todasMsg = SupabaseClient.client.postgrest["messages"].select(
-                            columns = Columns.list("id", "sender", "seen")
-                        ) {
-                            filter { eq("chat_id", chatId) }
-                            filter { eq("seen", false) }
-                        }.decodeList<JsonObject>()
-
-                        for (msg in todasMsg) {
-                            val sender = (msg["sender"] as? JsonPrimitive)?.content.orEmpty()
-                            if (sender != currentUserId) noLeidos++
-                        }
+                    val ultimoMsg = ultimoMensajePorChat[chatId]
+                    if (ultimoMsg != null) {
+                        ultimoMensaje = (ultimoMsg["content"] as? JsonPrimitive)?.content.orEmpty()
+                        ultimaFecha = (ultimoMsg["created_at"] as? JsonPrimitive)?.content.orEmpty()
                     }
+
+                    // Contar no leídos
+                    val noLeidos = noLeidosPorChat[chatId] ?: 0
 
                     val item = ChatItem(
                         chatId = chatId,
