@@ -302,7 +302,6 @@ class SwipeFragment : Fragment() {
                     put("p_user_id", userId)
                     put("p_amount", 5)
                     put("p_reason", "rewind")
-                    put("p_type", "spend")
                 },
                 onResult = { result ->
                     val ok = result?.get("success")?.let { (it as JsonPrimitive).boolean } ?: false
