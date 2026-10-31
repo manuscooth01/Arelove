@@ -102,7 +102,7 @@ class ProfileDetailActivity : AppCompatActivity() {
                     setupPhotoPager()
                 }
 
-                // Cargar intereses
+                // Cargar intereses (una sola query con IN en lugar de N queries individuales)
                 val filasInterests = SupabaseClient.client.postgrest["user_interests"].select(
                     columns = Columns.list("interest_id")
                 ) {
@@ -251,22 +251,16 @@ class ProfileDetailActivity : AppCompatActivity() {
     private fun cargarNombresIntereses(interestIds: List<String>) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val placeholders = interestIds.map { "?" }.joinToString(",")
-                // Nota: Supabase no soporta IN directamente en el builder, así que hacemos queries individuales
-                val nombres = mutableListOf<String>()
-                for (id in interestIds) {
-                    val filas = SupabaseClient.client.postgrest["interests"].select(
-                        columns = Columns.list("name")
-                    ) {
-                        filter { eq("id", id) }
-                        limit(1)
-                    }.decodeList<JsonObject>()
+                // Una sola query con IN en lugar de N queries individuales
+                val filas = SupabaseClient.client.postgrest["interests"].select(
+                    columns = Columns.list("id", "name")
+                ) {
+                    filter { in_("id", interestIds) }
+                }.decodeList<JsonObject>()
 
-                    if (filas.isNotEmpty()) {
-                        val name = (filas[0]["name"] as? JsonPrimitive)?.content.orEmpty()
-                        if (name.isNotEmpty()) nombres.add(name)
-                    }
-                }
+                val nombres = filas.mapNotNull { fila ->
+                    (fila["name"] as? JsonPrimitive)?.content
+                }.filter { it.isNotEmpty() }
 
                 if (nombres.isNotEmpty()) {
                     runOnUiThread { mostrarIntereses(nombres) }

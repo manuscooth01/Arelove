@@ -154,51 +154,56 @@ class LikesReceivedFragment : Fragment() {
         }
     }
 
-    /** Carga perfiles de múltiples usuarios con queries individuales. */
+    /** Carga perfiles de múltiples usuarios con una sola query usando IN. */
     private fun cargarPerfilesIndividuales(userIds: Set<String>) {
         lifecycleScope.launch {
             try {
                 // Limpiar caché
                 profilesCache.clear()
-                // Cargar cada perfil individualmente
-                userIds.forEach { userId ->
-                    // Perfil ajeno: vista segura sin lat/lng/birthdate (VUL-01)
-                    val fila = SupabaseClient.client.postgrest["profiles_publicos"].select(
-                        columns = Columns.list("id", "nickname", "age", "location", "verified")
-                    ) {
-                        filter { eq("id", userId) }
-                        filter { eq("profile_completed", true) }
-                        limit(1)
-                    }.decodeSingleOrNull<JsonObject>()
 
-                    fila?.let {
-                        val id = textoDe(it, "id") ?: return@forEach
-                        val nickname = textoDe(it, "nickname") ?: return@forEach
-                        val age = it["age"]?.let { (it as? JsonPrimitive)?.content?.toIntOrNull() }
-                        val location = textoDe(it, "location")
-                        val verified = it["verified"]?.let { (it as? JsonPrimitive)?.content == "true" } ?: false
+                // Una sola query con IN en lugar de N queries individuales
+                val perfilFilas = SupabaseClient.client.postgrest["profiles_publicos"].select(
+                    columns = Columns.list("id", "nickname", "age", "location", "verified")
+                ) {
+                    filter { in_("id", userIds.toList()) }
+                    filter { eq("profile_completed", true) }
+                }.decodeList<JsonObject>()
 
-                        // Cargar foto de perfil
-                        val filaFoto = SupabaseClient.client.postgrest["media"].select(
-                            columns = Columns.list("url")
-                        ) {
-                            filter { eq("user_id", userId) }
-                            filter { eq("type", "profile") }
-                            order("created_at", Order.ASCENDING)
-                            limit(1)
-                        }.decodeList<JsonObject>()
+                // Cargar fotos de perfil para todos los usuarios de una sola vez
+                val mediaFilas = SupabaseClient.client.postgrest["media"].select(
+                    columns = Columns.list("user_id", "url")
+                ) {
+                    filter { in_("user_id", userIds.toList()) }
+                    filter { eq("type", "profile") }
+                    order("created_at", Order.ASCENDING)
+                }.decodeList<JsonObject>()
 
-                        val fotoUrl = filaFoto.firstOrNull()?.let { (it["url"] as? JsonPrimitive)?.content }
-
-                        profilesCache[id] = Profile(
-                            userId = id,
-                            nickname = nickname,
-                            age = age,
-                            location = location,
-                            verified = verified,
-                            fotoUrl = fotoUrl
-                        )
+                // Índice de primera foto por usuario
+                val fotosPorUsuario = mutableMapOf<String, String>()
+                mediaFilas.forEach { fila ->
+                    val uid = (fila["user_id"] as? JsonPrimitive)?.content
+                    val url = (fila["url"] as? JsonPrimitive)?.content
+                    if (uid != null && url != null && fotosPorUsuario[uid] == null) {
+                        fotosPorUsuario[uid] = url
                     }
+                }
+
+                perfilFilas.forEach { fila ->
+                    val id = textoDe(fila, "id") ?: return@forEach
+                    val nickname = textoDe(fila, "nickname") ?: return@forEach
+                    val age = fila["age"]?.let { (it as? JsonPrimitive)?.content?.toIntOrNull() }
+                    val location = textoDe(fila, "location")
+                    val verified = fila["verified"]?.let { (it as? JsonPrimitive)?.content == "true" } ?: false
+                    val fotoUrl = fotosPorUsuario[id]
+
+                    profilesCache[id] = Profile(
+                        userId = id,
+                        nickname = nickname,
+                        age = age,
+                        location = location,
+                        verified = verified,
+                        fotoUrl = fotoUrl
+                    )
                 }
 
                 // Notificar al adaptador que los datos han cambiado
