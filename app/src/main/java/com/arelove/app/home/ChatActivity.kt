@@ -320,10 +320,13 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
+    private var pollingActivo = false
+
     private fun iniciarPolling() {
         detenerPolling()
+        pollingActivo = true
         pollingJob = lifecycleScope.launch {
-            while (isActive) {
+            while (pollingActivo) {
                 delay(5000) // polling cada 5 segundos
                 cargarMensajesPolling()
             }
@@ -331,6 +334,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun detenerPolling() {
+        pollingActivo = false
         pollingJob?.cancel()
         pollingJob = null
     }
@@ -359,7 +363,8 @@ class ChatActivity : AppCompatActivity() {
                 }.toMutableList()
 
                 runOnUiThread {
-                    val idsExistentes = messages.map { it.id }.toSet()
+                    val idsExistentes = mutableSetOf<String>()
+                    messages.map { it.id }.forEach { idsExistentes.add(it) }
                     for (msg in nuevos) {
                         if (msg.id !in idsExistentes) {
                             messages.add(msg)
