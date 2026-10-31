@@ -27,17 +27,16 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import io.github.jan.supabase.realtime.Channel
+import io.github.jan.supabase.realtime.RealtimePostgresChangesPayload
 
 /**
  * Activity de conversación individual.
@@ -56,7 +55,7 @@ class ChatActivity : AppCompatActivity() {
 
     private val messages = mutableListOf<MessageItem>()
     private lateinit var adapter: MessagesAdapter
-    private var listeningJob: Job? = null
+    private var channel: Channel? = null
 
     // Flag para saber si hicimos fallback y ya cargamos datos
     private var fallbackHecho = false
@@ -98,7 +97,6 @@ class ChatActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         cancelarRealtime()
-        listeningJob?.cancel()
     }
 
     private fun configurarVista() {
@@ -187,7 +185,7 @@ class ChatActivity : AppCompatActivity() {
                 // Marcar como vistos los mensajes del otro
                 marcarComoVistos()
 
-                // Suscribirse a realtime (polling)
+                // Suscribirse a realtime (canal Supabase Realtime)
                 suscribirRealtime()
 
             } catch (e: kotlinx.coroutines.CancellationException) {
@@ -327,62 +325,45 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun suscribirRealtime() {
-        // TODO: Implementar realtime cuando se verifique la API correcta
-        // Por ahora, usar polling simple cada 5 segundos
-        listeningJob = lifecycleScope.launch {
-            while (isActive) {
-                delay(5000)
-                if (!isActive) break
-                cargarMensajesNuevos()
+        cancelarRealtime() // evita canales duplicados
+
+        channel = SupabaseClient.client.realtime.channel("messages:$chatId")
+
+        channel?.onPostgresChanges(
+            event = "*",
+            schema = "public",
+            table = "messages",
+            filter = "chat_id=eq.$chatId"
+        ) { payload: RealtimePostgresChangesPayload<JsonObject> ->
+            val record = payload.record ?: return@onPostgresChanges
+            val id = (record["id"] as? JsonPrimitive)?.content.orEmpty()
+            if (id.isEmpty() || messages.any { it.id == id }) return@onPostgresChanges
+
+            val nuevo = MessageItem(
+                id = id,
+                chatId = (record["chat_id"] as? JsonPrimitive)?.content.orEmpty(),
+                sender = (record["sender"] as? JsonPrimitive)?.content.orEmpty(),
+                content = (record["content"] as? JsonPrimitive)?.content.orEmpty(),
+                type = (record["type"] as? JsonPrimitive)?.content.orEmpty(),
+                seen = (record["seen"] as? JsonPrimitive)?.content == "true",
+                createdAt = (record["created_at"] as? JsonPrimitive)?.content.orEmpty()
+            )
+
+            runOnUiThread {
+                messages.add(nuevo)
+                adapter.notifyItemInserted(messages.size - 1)
+                binding.rvMessages.scrollToPosition(messages.size - 1)
             }
         }
-    }
 
-    private fun cargarMensajesNuevos() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val ultimaFecha = messages.lastOrNull()?.createdAt ?: ""
-                if (ultimaFecha.isBlank()) return@launch
-
-                val filas = SupabaseClient.client.postgrest["messages"].select(
-                    columns = Columns.list("id", "chat_id", "sender", "content", "type", "seen", "created_at")
-                ) {
-                    filter { eq("chat_id", chatId) }
-                    filter { gte("created_at", ultimaFecha) }
-                    order("created_at", Order.ASCENDING)
-                }.decodeList<JsonObject>()
-
-                val nuevosMensajes = filas.map { fila ->
-                    MessageItem(
-                        id = (fila["id"] as? JsonPrimitive)?.content.orEmpty(),
-                        chatId = (fila["chat_id"] as? JsonPrimitive)?.content.orEmpty(),
-                        sender = (fila["sender"] as? JsonPrimitive)?.content.orEmpty(),
-                        content = (fila["content"] as? JsonPrimitive)?.content.orEmpty(),
-                        type = (fila["type"] as? JsonPrimitive)?.content.orEmpty(),
-                        seen = (fila["seen"] as? JsonPrimitive)?.content == "true",
-                        createdAt = (fila["created_at"] as? JsonPrimitive)?.content.orEmpty()
-                    )
-                }.filterNot { msg -> messages.any { it.id == msg.id } }
-
-                if (nuevosMensajes.isNotEmpty()) {
-                    runOnUiThread {
-                        val startPos = messages.size
-                        messages.addAll(nuevosMensajes)
-                        adapter.notifyItemRangeInserted(startPos, nuevosMensajes.size)
-                        binding.rvMessages.scrollToPosition(messages.size - 1)
-                    }
-                }
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                LogHelper.e("ChatActivity", "Error polling mensajes")
-            }
-        }
+        channel?.subscribe()
     }
 
     private fun cancelarRealtime() {
-        listeningJob?.cancel()
-        listeningJob = null
+        channel?.let {
+            SupabaseClient.client.realtime.removeChannel(it)
+        }
+        channel = null
     }
 
     /** Adaptador para los mensajes. */

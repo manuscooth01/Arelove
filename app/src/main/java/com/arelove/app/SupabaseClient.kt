@@ -5,6 +5,7 @@ import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.SettingsSessionManager
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,9 +47,7 @@ object SupabaseClient {
             }
             install(Postgrest) // consultas a las tablas
             install(Storage) // fotos de perfil en el bucket "avatars"
-            // Realtime se omite a propósito: el chat funciona con polling
-            // cada 5 segundos (ChatActivity.suscribirRealtime). Se instalará
-            // cuando se implemente de verdad el tiempo real (VUL-16).
+            install(Realtime) // chat en tiempo real (canal "messages:{chatId}")
         }
     }
 
