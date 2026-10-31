@@ -149,9 +149,6 @@ class MatchesListFragment : Fragment() {
                         ErrorSanitizer.limpiar(e.message ?: e.toString())
                     )
                 )
-                throw e
-            } catch (e: Exception) {
-                LogHelper.e("MatchesListFragment", "Error cargando perfiles")
             }
         }
     }
@@ -291,6 +288,12 @@ class MatchesListFragment : Fragment() {
                 val u1 = if (user1.compareTo(user2) < 0) user1 else user2
                 val u2 = if (user1.compareTo(user2) < 0) user2 else user1
 
+                // El otro usuario es el que no es el actual
+                val otroUserId = if (currentUserId == u1) u2 else u1
+                val perfil = profilesCache[otroUserId]
+                val otroNickname = perfil?.nickname ?: "Usuario"
+                val otroFotoUrl = perfil?.fotoUrl ?: ""
+
                 val chatFilas = SupabaseClient.client.postgrest["chats"].select(
                     columns = Columns.list("id")
                 ) {
@@ -307,8 +310,9 @@ class MatchesListFragment : Fragment() {
 
                 val intent = Intent(requireContext(), ChatActivity::class.java).apply {
                     putExtra("chat_id", chatId)
-                    putExtra("user1", u1)
-                    putExtra("user2", u2)
+                    putExtra("otro_user_id", otroUserId)
+                    putExtra("otro_nickname", otroNickname)
+                    putExtra("otro_foto_url", otroFotoUrl)
                 }
                 startActivity(intent)
 
