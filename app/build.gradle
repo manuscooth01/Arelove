@@ -13,6 +13,16 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+
+        // Inyectar credenciales de Supabase como BuildConfig
+        // Los valores reales se leen de secrets.properties (no sube a git)
+        def secretsFile = file('secrets.properties')
+        def secrets = new Properties()
+        if (secretsFile.exists()) {
+            secrets.load(new FileInputStream(secretsFile))
+        }
+        buildConfigField "String", "SUPABASE_URL", "\"${secrets.getProperty('SUPABASE_URL', 'https://tu-proyecto.supabase.co')}\""
+        buildConfigField "String", "SUPABASE_ANON_KEY", "\"${secrets.getProperty('SUPABASE_ANON_KEY', 'sb_publishable_tu_anon_key_aqui')}\""
     }
 
     signingConfigs {
@@ -49,17 +59,6 @@ android {
         viewBinding true
         buildConfig true
     }
-
-    // Cargar credenciales de Supabase desde secrets.properties (no subir a git)
-    def secretsFile = file('secrets.properties')
-    def secrets = new Properties()
-    if (secretsFile.exists()) {
-        secrets.load(new FileInputStream(secretsFile))
-    }
-
-    // Inyectar como BuildConfig para uso en Kotlin
-    buildConfigField "String", "SUPABASE_URL", "\"${secrets.getProperty('SUPABASE_URL', 'https://tu-proyecto.supabase.co')}\""
-    buildConfigField "String", "SUPABASE_ANON_KEY", "\"${secrets.getProperty('SUPABASE_ANON_KEY', 'sb_publishable_tu_anon_key_aqui')}\""
 }
 
 dependencies {
