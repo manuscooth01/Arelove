@@ -1,9 +1,9 @@
 package com.arelove.app
 
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Count
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Columns
+import io.github.jan-tennert.supabase.postgrest.query.Count
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject

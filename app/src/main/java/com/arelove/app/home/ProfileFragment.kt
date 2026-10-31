@@ -26,11 +26,11 @@ import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
 import com.onesignal.OneSignal
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Count
-import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Columns
+import io.github.jan-tennert.supabase.postgrest.query.Count
+import io.github.jan-tennert.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject

@@ -22,10 +22,10 @@ import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
 import coil.load
 import coil.transform.RoundedCornersTransformation
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Columns
+import io.github.jan-tennert.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,8 +35,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import io.github.jan.supabase.realtime.RealtimeChannel
-import io.github.jan.supabase.realtime.RealtimePostgresChangesPayload
+import io.github.jan-tennert.supabase.realtime.RealtimeChannel
+import io.github.jan-tennert.supabase.realtime.RealtimePostgresChangesPayload
 
 /**
  * Activity de conversación individual.
@@ -356,7 +356,9 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-        channel?.subscribe()
+        lifecycleScope.launch {
+            channel?.subscribe()
+        }
     }
 
     private fun cancelarRealtime() {

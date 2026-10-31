@@ -8,9 +8,9 @@ import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.ActivityAdminReportsBinding
 import com.arelove.app.util.AntiSpam
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Count
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Count
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

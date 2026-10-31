@@ -12,9 +12,9 @@ import com.arelove.app.LogHelper
 import com.arelove.app.R
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.FragmentStep4OptionalBinding
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject

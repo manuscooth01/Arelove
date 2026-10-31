@@ -14,10 +14,10 @@ import com.arelove.app.LogHelper
 import com.arelove.app.notifications.OneSignalManager
 import com.arelove.app.ui.AreloveDialog
 import com.arelove.app.util.AntiSpam
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.gotrue.providers.Google
-import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.gotrue.providers.builtin.IDToken
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.gotrue.providers.Google
+import io.github.jan-tennert.supabase.gotrue.providers.builtin.Email
+import io.github.jan-tennert.supabase.gotrue.providers.builtin.IDToken
 import kotlinx.coroutines.launch
 
 /**

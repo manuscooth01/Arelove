@@ -31,9 +31,9 @@ import com.arelove.app.util.AntiSpam
 import com.yalantis.ucrop.UCrop
 import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch

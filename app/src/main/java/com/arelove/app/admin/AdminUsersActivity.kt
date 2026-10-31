@@ -7,7 +7,7 @@ import com.arelove.app.LogHelper
 import com.arelove.app.SupabaseClient
 import com.arelove.app.databinding.ActivityAdminUsersBinding
 import com.arelove.app.util.AntiSpam
-import io.github.jan.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.gotrue.auth
 import kotlinx.coroutines.launch
 
 /**

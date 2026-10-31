@@ -11,9 +11,9 @@ import androidx.navigation.NavOptions
 import com.arelove.app.databinding.ActivityHomeBinding
 import com.arelove.app.notifications.PushRouter
 import com.arelove.app.util.AntiSpam
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan-tennert.supabase.gotrue.auth
+import io.github.jan-tennert.supabase.postgrest.postgrest
+import io.github.jan-tennert.supabase.postgrest.query.Columns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.channels.consumeEach
@@ -164,7 +164,7 @@ class HomeActivity : AppCompatActivity() {
                     .select(head = true) {
                         filter { eq("to_user", userId) }
                         filter { gte("expires_at", java.time.Instant.now().toString()) }
-                        count(io.github.jan.supabase.postgrest.query.Count.EXACT)
+                        count(io.github.jan-tennert.supabase.postgrest.query.Count.EXACT)
                     }
                     .countOrNull() ?: 0
 
