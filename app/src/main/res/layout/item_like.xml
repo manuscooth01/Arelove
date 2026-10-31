@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardLike"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Arelove.Avatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/avatar"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/tvNameAge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_semibold"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/ivAvatar"
+            app:layout_constraintTop_toTopOf="@id/ivAvatar"
+            app:layout_constraintEnd_toStartOf="@id/btnVerPerfil"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/ivAvatar"
+            app:layout_constraintTop_toBottomOf="@id/tvNameAge"
+            app:layout_constraintEnd_toStartOf="@id/btnVerPerfil"
+            android:layout_marginStart="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVerPerfil"
+            style="@style/Widget.Arelove.Button.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="@string/likes_received_button_profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ivAvatar"
+            app:layout_constraintBottom_toTopOf="@id/btnLikeBack"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLikeBack"
+            style="@style/Widget.Arelove.Button.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="@string/likes_received_button_like_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnVerPerfil"
+            app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPass"
+            style="@style/Widget.Arelove.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/likes_pass"
+            android:textColor="@color/on_surface_variant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnLikeBack" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

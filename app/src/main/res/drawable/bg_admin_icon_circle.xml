@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Disco tras el icono de cada tarjeta del panel de administracion.
+     Usa surface_variant (se adapta a modo claro y oscuro), a diferencia
+     de bg_icon_circle que es blanco translucido para el fondo oscuro
+     del perfil. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/surface_variant" />
+</shape>

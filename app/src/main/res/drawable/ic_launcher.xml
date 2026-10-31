@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Fondo blanco para que el logo (corazón rojo + A/L blancas) contraste -->
+    <item android:drawable="@android:color/white" />
+
+    <!-- Logo centrado -->
+    <item
+        android:drawable="@drawable/logo_arelove"
+        android:gravity="center"
+        android:width="90dp"
+        android:height="90dp" />
+</layer-list>

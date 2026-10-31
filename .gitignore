@@ -1,0 +1,29 @@
+# Gradle
+.gradle/
+build/
+app/build/
+local.properties
+
+# APKs descargados
+apk/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Claves y secretos
+*.jks
+*.keystore
+*.base64
+keystore.properties
+secrets.properties
+
+# Sistema
+.DS_Store
+*.log
+.env
+app/google-services.json
+Arelove-secrets/

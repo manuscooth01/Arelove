@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Ítem individual del ViewPager2 de fotos en SwipeFragment.
+    Imagen a pantalla completa con esquinas redondeadas.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivPhotoPage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/photo_placeholder"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop" />
+
+</FrameLayout>

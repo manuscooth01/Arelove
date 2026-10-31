@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Pantalla de Ajustes.
+    Header con botón cerrar + sección Cuenta (correo y eliminación) y
+    pie con la versión. Fondo siempre oscuro: colores profile_on_dark*
+    fijos en ambos modos. Las cards usan Widget.Arelove.Card (borde 1dp).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_canvas_gradient"
+    android:orientation="vertical">
+
+    <!-- Header: botón X + título -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <ImageButton
+            android:id="@+id/btnCloseSettings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/legal_close"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_close"
+            android:tint="@color/profile_on_dark" />
+
+        <TextView
+            android:id="@+id/tvSettingsTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="@string/settings_title"
+            android:textColor="@color/profile_on_dark"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/profile_option_stroke" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- SECCIÓN: Cuenta (barrita roja + título) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="14dp"
+                    android:background="@drawable/bg_section_bar" />
+
+                <TextView
+                    android:id="@+id/tvSectionAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/settings_account"
+                    android:textAllCaps="true"
+                    android:textColor="@color/profile_on_dark"
+                    android:textSize="13sp"
+                    android:letterSpacing="0.05" />
+            </LinearLayout>
+
+            <!-- Card correo de la cuenta (solo lectura) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSettingsAccount"
+                style="@style/Widget.Arelove.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="@color/profile_option_bg"
+                app:contentPaddingStart="16dp"
+                app:contentPaddingTop="14dp"
+                app:contentPaddingEnd="16dp"
+                app:contentPaddingBottom="14dp"
+                app:strokeColor="@color/profile_option_stroke"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="@string/field_email"
+                        android:textColor="@color/profile_on_dark_muted"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvSettingsEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:textColor="@color/profile_on_dark"
+                        android:textSize="15sp"
+                        tools:text="maria@ejemplo.com" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card Eliminar cuenta -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDeleteAccount"
+                style="@style/Widget.Arelove.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:minHeight="64dp"
+                app:cardBackgroundColor="@color/profile_option_bg"
+                app:contentPaddingStart="16dp"
+                app:contentPaddingTop="12dp"
+                app:contentPaddingEnd="16dp"
+                app:contentPaddingBottom="12dp"
+                app:strokeColor="@color/profile_option_stroke"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="14dp"
+                        android:background="@drawable/bg_icon_tile"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_delete"
+                        android:tint="@color/arelove_red_light" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="@string/settings_delete_account"
+                        android:textColor="@color/arelove_red_light"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:tint="@color/profile_on_dark_muted" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Versión de la app -->
+            <TextView
+                android:id="@+id/tvSettingsVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:textColor="@color/profile_on_dark_muted"
+                android:textSize="13sp"
+                tools:text="1.0" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

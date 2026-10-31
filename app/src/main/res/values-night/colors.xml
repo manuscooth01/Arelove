@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================== SISTEMA DE DISEÑO - EXTENSIÓN DE PALETA ==================== -->
+    <!-- Solo colores nuevos; los tokens de Material 3 que ya existían se conservan -->
+    <color name="primary_dark">#E53935</color>
+    <color name="primary_light">#FF8A8A</color>
+    <color name="accent_pink">#FF85A1</color>
+    <color name="accent_warm">#FFA07A</color>
+    <color name="text_primary">#F5F5F5</color>
+    <color name="text_secondary">#B0B0B0</color>
+
+    <!-- ==================== MATERIAL 3 - MODO OSCURO ==================== -->
+    <!-- El rojo de marca se mantiene igual en ambos modos -->
+    <color name="primary">#E53935</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#7A1F1C</color>
+    <color name="on_primary_container">#FFDAD5</color>
+
+    <color name="secondary">#E7BDBC</color>
+    <color name="on_secondary">#442929</color>
+    <color name="secondary_container">#5D3F3E</color>
+    <color name="on_secondary_container">#FFDAD6</color>
+
+    <color name="background">#141010</color>
+    <color name="on_background">#F0DEDC</color>
+
+    <color name="surface">#141010</color>
+    <color name="on_surface">#F0DEDC</color>
+    <color name="surface_variant">#534343</color>
+    <color name="on_surface_variant">#D8C2C0</color>
+
+    <color name="error">#FFB4AB</color>
+    <color name="on_error">#690005</color>
+
+    <color name="outline">#A08C8B</color>
+    <color name="outline_variant">#534343</color>
+
+    <!-- ==================== COLORES FUNCIONALES - MODO OSCURO ==================== -->
+    <color name="chat_background">#1A1414</color>
+    <color name="chat_cloud_in">#2C2424</color>
+    <color name="chat_cloud_out">#E53935</color>
+    <color name="chat_text_in">#F0DEDC</color>
+    <color name="chat_text_out">#FFFFFF</color>
+
+    <color name="divider">#2C2C2C</color>
+    <color name="photo_placeholder">#2A2A2A</color>
+    <color name="photo_blur_overlay">#99000000</color>
+
+    <!-- ==================== FASE 1 REDISEÑO SWIPE ==================== -->
+    <color name="like_button_start">#FF544C</color>
+    <color name="like_button_end">#E53935</color>
+    <color name="dislike_button_bg">#2C2C2C</color>
+
+    <!-- ==================== DIÁLOGOS (MODO OSCURO: tonos más suaves) ==================== -->
+    <color name="dialog_error">#EF5350</color>
+    <color name="dialog_warning">#FFA726</color>
+    <color name="dialog_success">#66BB6A</color>
+    <color name="dialog_info">#42A5F5</color>
+
+    <!-- ==================== BLOQUE 1 - NOCTURNAL PASSION (NUEVOS TOKENS MODO OSCURO) ==================== -->
+    <!-- Surface containers (valores del Design System Nocturnal Passion) -->
+    <color name="surface_dim">#151315</color>
+    <color name="surface_bright">#3b383b</color>
+    <color name="surface_container_lowest">#0f0e10</color>
+    <color name="surface_container_low">#1d1b1d</color>
+    <color name="surface_container">#211f21</color>
+    <color name="surface_container_high">#2c292b</color>
+    <color name="surface_container_highest">#373436</color>
+
+    <!-- Colores de acento extendidos -->
+    <color name="secondary_coral">#FF5252</color>
+    <color name="tertiary_blush">#FFA4A2</color>
+
+    <!-- Bordes y outlines cálidos -->
+    <color name="outline_warm">#584146</color>
+
+    <!-- Crimson rim border (15% opacity) - ARGB -->
+    <color name="crimson_rim">#26E53935</color>
+
+    <!-- Like glow (35% opacity) - ARGB -->
+    <color name="like_glow">#59E53935</color>
+
+    <!-- Canvas gradient center -->
+    <color name="canvas_gradient_center">#4A0E17</color>
+
+    <!-- ==================== COLORES GÉNERO Y BÚSQUEDA (MODO OSCURO) ==================== -->
+    <color name="gender_male_color">#60A5FA</color>
+    <color name="gender_female_color">#F472B6</color>
+    <color name="gender_other_color">#A78BFA</color>
+    <color name="looking_pareja_color">#EF5350</color>
+    <color name="looking_amistades_color">#34D399</color>
+    <color name="looking_ambos_color">#FBBF24</color>
+
+    <!-- ==================== PERFIL / AJUSTES - SOBRE FONDO SIEMPRE OSCURO ==================== -->
+    <!-- Mismos valores que en modo claro: el fondo es siempre oscuro y el contraste
+         no debe cambiar con el sistema. -->
+    <color name="profile_on_dark">#F5ECEE</color>
+    <color name="profile_on_dark_muted">#C9B9BB</color>
+    <color name="profile_option_bg">#241F20</color>
+    <color name="profile_option_bg_end">#2F2829</color>
+    <color name="profile_option_stroke">#3F3537</color>
+    <color name="profile_icon_tile_bg">#3A1E20</color>
+    <color name="profile_verified_chip_bg">#1F3A21</color>
+
+</resources>

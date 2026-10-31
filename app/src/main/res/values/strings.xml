@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================== GENERAL ==================== -->
+    <string name="app_name">Arelove</string>
+    <string name="app_slogan">Conecta con personas reales</string>
+    <string name="logo_description">Logotipo de Arelove</string>
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Eliminar</string>
+    <string name="continue_btn">Continuar</string>
+    <string name="back">Atrás</string>
+    <string name="next">Siguiente</string>
+    <string name="skip">Omitir</string>
+    <string name="loading">Cargando…</string>
+    <string name="error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="error_connection">Sin conexión a internet. Revisa tu red.</string>
+
+    <!-- ==================== BIENVENIDA ==================== -->
+    <string name="btn_iniciar_sesion">Iniciar sesión</string>
+    <string name="btn_registrarse">Registrarse</string>
+    <string name="terminos_y_condiciones">Al continuar aceptas los Términos y condiciones y la Política de privacidad.</string>
+    <string name="terminos">Términos y condiciones</string>
+    <string name="politica_privacidad">Política de privacidad</string>
+
+    <!-- ==================== AUTENTICACIÓN ==================== -->
+    <string name="login_title">Bienvenido de nuevo</string>
+    <string name="login_subtitle">Inicia sesión para continuar</string>
+    <string name="login_welcome_back">Bienvenido de vuelta</string>
+    <string name="login_or_continue">o continúa con</string>
+    <string name="login_google">Continuar con Google</string>
+    <string name="login_no_account">¿No tienes cuenta?</string>
+    <string name="login_register">Regístrate</string>
+    <string name="login_coming_soon">Login próximamente</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_welcome">Bienvenido</string>
+    <string name="register_subtitle_connect">Empieza a conectar con personas reales</string>
+    <string name="register_accept_terms">Acepto los Términos y Condiciones</string>
+    <string name="register_have_account">¿Ya tienes cuenta?</string>
+    <string name="register_success">Cuenta creada. Revisa tu correo</string>
+    <string name="error_accept_terms">Debes aceptar los Términos y Condiciones</string>
+    <string name="home_welcome">¡Bienvenido a Arelove!</string>
+    <string name="home_welcome_big">¡Bienvenido!</string>
+    <string name="home_profile_complete">Perfil completo</string>
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_subtitle">Solo necesitas un correo y una contraseña</string>
+    <string name="field_email">Correo electrónico</string>
+    <string name="field_password">Contraseña</string>
+    <string name="field_confirm_password">Confirmar contraseña</string>
+    <string name="hint_email">tucorreo@ejemplo.com</string>
+    <string name="btn_login">Iniciar sesión</string>
+    <string name="btn_register">Crear cuenta</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="reset_password">Restablecer contraseña</string>
+    <string name="no_account">¿No tienes cuenta? Regístrate</string>
+    <string name="have_account">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="verification_email_sent">Te enviamos un correo de verificación. Revisa tu bandeja de entrada.</string>
+    <string name="resend_verification">Reenviar correo de verificación</string>
+    <string name="error_invalid_email">Introduce un correo válido</string>
+    <string name="error_short_password">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <string name="error_email_in_use">Este correo ya está registrado</string>
+    <string name="error_wrong_credentials">Correo o contraseña incorrectos</string>
+    <string name="error_email_not_verified">Debes verificar tu correo antes de continuar</string>
+    <string name="error_unknown">Error desconocido</string>
+    <string name="error_email_unconfirmed">Debes confirmar tu correo antes de iniciar sesión</string>
+    <string name="error_password_too_short">La contraseña es muy corta</string>
+    <string name="error_network">Sin conexión. Revisa tu internet</string>
+    <string name="error_auth_failed">Error de autenticación. Inténtalo de nuevo.</string>
+    <string name="error_rate_limit">Demasiados intentos. Espera unos minutos</string>
+    <string name="error_google_token_missing">No se obtuvo el token</string>
+    <string name="error_login_cancelled">Inicio de sesión cancelado</string>
+    <string name="error_google_picker_failed">No se pudo mostrar el selector de Google</string>
+
+    <!-- Validaciones de los formularios de acceso -->
+    <string name="validation_required_field">Campo obligatorio</string>
+    <string name="validation_invalid_email">Correo electrónico inválido</string>
+    <string name="validation_min_password_length">Mínimo 8 caracteres</string>
+    <string name="validation_accept_terms">Debes aceptar los términos</string>
+
+    <!-- Recuperación de contraseña -->
+    <string name="forgot_password_title">Recuperar contraseña</string>
+    <string name="forgot_password_subtitle">Escribe tu correo y te enviaremos un enlace para crear una contraseña nueva</string>
+    <string name="btn_send_reset_link">Enviar enlace</string>
+    <string name="btn_back_from_reset">Volver</string>
+    <string name="reset_link_sent_msg">Si el correo existe recibirás un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada</string>
+    <string name="new_password_title">Nueva contraseña</string>
+    <string name="new_password_subtitle">Crea una contraseña nueva para tu cuenta</string>
+    <string name="field_new_password">Nueva contraseña</string>
+    <string name="btn_save_password">Guardar contraseña</string>
+    <string name="reset_password_success_msg">Tu contraseña se actualizó correctamente. Ya puedes iniciar sesión</string>
+    <string name="error_reset_link">El enlace de recuperación no es válido o ha caducado</string>
+    <string name="error_reset_session">Tu sesión de recuperación ya no es válida. Solicita el enlace de nuevo</string>
+
+    <!-- ==================== PERFIL OBLIGATORIO ==================== -->
+    <string name="profile_setup_title">Crea tu perfil</string>
+    <string name="profile_setup_subtitle">Los campos obligatorios están marcados con *</string>
+    <string name="field_nickname">Apodo</string>
+    <string name="field_age">Edad</string>
+    <string name="field_birthdate">Fecha de nacimiento</string>
+    <string name="field_place">Lugar</string>
+    <string name="field_interests">Intereses</string>
+    <string name="field_looking_for">Busco</string>
+    <string name="looking_pareja">Pareja</string>
+    <string name="looking_amistades">Amistades</string>
+    <string name="looking_ambos">Ambos</string>
+    <string name="photo_min_2">Sube al menos 2 fotos</string>
+    <string name="interests_min_3">Elige al menos 3 intereses</string>
+    <string name="age_min_18">Debes tener 18 años o más</string>
+    <string name="required_field">Este campo es obligatorio</string>
+
+    <!-- Género -->
+    <string name="field_gender">Género</string>
+    <string name="gender_hombre">Hombre</string>
+    <string name="gender_mujer">Mujer</string>
+    <string name="gender_otro">Otro</string>
+    <string name="gender_prefiero_no_decir">Prefiero no decir</string>
+    <string name="error_gender_required">Elige tu género</string>
+
+    <!-- Validaciones del paso 1 (fecha de nacimiento) -->
+    <string name="validation_min_age">Debes ser mayor de 18 años</string>
+    <string name="validation_invalid_birthdate">Fecha de nacimiento inválida</string>
+
+    <!-- Ubicación (GPS) -->
+    <string name="use_my_location">Usar mi ubicación</string>
+    <string name="location_permission_denied">Permiso de ubicación denegado. Puedes escribir tu ubicación manualmente.</string>
+    <string name="location_error">No pudimos obtener tu ubicación. Intenta de nuevo o escríbela manualmente.</string>
+    <string name="location_permission_settings">Activa el permiso de ubicación en los ajustes del teléfono</string>
+    <string name="verification_selfie_title">Verifica tu identidad</string>
+    <string name="verification_selfie_subtitle">Toma un selfie siguiendo el gesto que aparece en pantalla</string>
+    <string name="btn_take_selfie">Hacer selfie</string>
+    <string name="verification_pending">Verificación en revisión</string>
+    <string name="verification_ok">Perfil verificado</string>
+    <string name="verification_rejected">Verificación rechazada. Inténtalo de nuevo.</string>
+    <string name="profile_verified">Perfil verificado</string>
+
+    <!-- ==================== ASISTENTE DE PERFIL (5 PASOS) ==================== -->
+    <string name="profile_step_indicator">Paso %1$d de 5</string>
+    <string name="profile_step1_title">Cuéntanos de ti</string>
+    <string name="profile_step1_subtitle">Esta información ayuda a encontrar mejores conexiones</string>
+
+    <!-- Paso 2: intereses -->
+    <string name="profile_step2_title">Tus intereses</string>
+    <string name="profile_step2_subtitle">Elige al menos 3 para encontrar personas afines</string>
+    <string name="profile_step2_error_min">Elige al menos 3 intereses</string>
+    <string name="error_load_interests">No pudimos cargar los intereses</string>
+    <string name="error_save_interests">No pudimos guardar tus intereses</string>
+
+    <plurals name="profile_step2_counter_min">
+        <item quantity="one">%1$d de 3 seleccionado</item>
+        <item quantity="other">%1$d de 3 seleccionados</item>
+    </plurals>
+    <plurals name="profile_step2_counter_ok">
+        <item quantity="one">%1$d seleccionado</item>
+        <item quantity="other">%1$d seleccionados</item>
+    </plurals>
+
+    <!-- Paso 3 del asistente: fotos de perfil -->
+    <string name="profile_step3_title">Tus fotos</string>
+    <string name="profile_step3_subtitle">Sube al menos 2 fotos para que te reconozcan fácilmente</string>
+    <string name="profile_step3_counter">%1$d de 2 mínimo</string>
+    <string name="profile_step3_counter_ok">%1$d fotos</string>
+    <string name="profile_step3_error_min">Sube al menos 2 fotos para continuar</string>
+    <string name="photo_take">Hacer foto</string>
+    <string name="photo_pick">Elegir de la galería</string>
+    <string name="photo_tip">Consejo: ajusta tu foto antes de subirla para que se vea mejor</string>
+    <string name="photo_uploading">Subiendo…</string>
+    <string name="photo_add">+</string>
+    <string name="photo_remove">Quitar foto</string>
+    <string name="error_upload_photo">No se pudo subir la foto. Inténtalo de nuevo.</string>
+    <string name="error_delete_photo">No se pudo eliminar la foto. Inténtalo de nuevo.</string>
+    <string name="error_photo_duplicate">Esta foto ya está en tu perfil. Elige otra.</string>
+    <string name="error_photo_rate_limit">Espera unos segundos antes de subir otra foto.</string>
+    <string name="error_camera_permission">No tienes permiso para usar la cámara. Puedes elegir una foto de la galería.</string>
+
+    <!-- Paso 4 del asistente: perfil opcional -->
+    <string name="profile_step4_title">Completa tu perfil</string>
+    <string name="profile_step4_subtitle">Opcional. Puedes saltar este paso.</string>
+    <string name="field_zodiac">Signo zodiacal</string>
+    <string name="suffix_cm">" cm"</string>
+    <string name="suffix_kg">" kg"</string>
+    <string name="validation_height_range">Debe estar entre 100 y 250 cm</string>
+    <string name="validation_weight_range">Debe estar entre 30 y 300 kg</string>
+
+    <!-- Paso 5 del asistente: selfie de verificación -->
+    <string name="profile_step5_title">Verifica tu identidad</string>
+    <string name="profile_step5_subtitle">Sube una selfie para que otros sepan que eres real. Solo la verás tú y el equipo de Arelove.</string>
+    <string name="profile_step5_explanation">Tu selfie se compara con tus fotos de perfil. No se muestra a nadie.</string>
+    <string name="profile_step5_take_selfie">Tomar selfie</string>
+    <string name="profile_step5_pick_gallery">Elegir de la galería</string>
+    <string name="profile_step5_status_pending">Sin verificar</string>
+    <string name="profile_step5_status_unverified">Sin verificar</string>
+    <string name="profile_step5_status_review">Verificación en revisión</string>
+    <string name="profile_step5_skip">Saltar por ahora</string>
+    <string name="profile_step5_skip_warning">Sin verificar, tu perfil aparecerá sin insignia verde. ¿Quieres continuar de todas formas?</string>
+    <string name="error_upload_verification">No pudimos subir tu selfie. Inténtalo de nuevo.</string>
+
+    <string name="profile_error_age_range">Introduce una edad entre 18 y 100</string>
+    <string name="profile_error_looking_for">Elige qué buscas en Arelove</string>
+    <string name="profile_error_save">No se pudo guardar tu perfil. Inténtalo de nuevo.</string>
+    <string name="profile_error_save_detail">%1$s\n\nDetalle técnico: %2$s</string>
+    <string name="profile_error_no_session">Tu sesión ya no es válida. Cierra sesión y vuelve a entrar.</string>
+
+    <!-- Ciudades más comunes de Venezuela (autocompletado del paso 1) -->
+    <string-array name="venezuela_cities">
+        <item>Caracas</item>
+        <item>Maracaibo</item>
+        <item>Valencia</item>
+        <item>Barquisimeto</item>
+        <item>Maracay</item>
+        <item>Ciudad Guayana</item>
+        <item>Ciudad Bolívar</item>
+        <item>Barcelona</item>
+        <item>Puerto La Cruz</item>
+        <item>San Cristóbal</item>
+        <item>Mérida</item>
+        <item>Cabimas</item>
+        <item>Barinas</item>
+        <item>Coro</item>
+        <item>Punto Fijo</item>
+        <item>Los Teques</item>
+        <item>Guarenas</item>
+        <item>Guatire</item>
+        <item>Petare</item>
+        <item>Ocumare del Tuy</item>
+        <item>Maturín</item>
+        <item>Puerto Ordaz</item>
+        <item>Cumaná</item>
+        <item>Porlamar</item>
+        <item>San Fernando de Apure</item>
+        <item>Trujillo</item>
+        <item>Guanare</item>
+        <item>Acarigua</item>
+        <item>Araure</item>
+        <item>El Tigre</item>
+        <item>Tucupita</item>
+        <item>Puerto Cabello</item>
+        <item>La Victoria</item>
+        <item>Valle de la Pascua</item>
+        <item>Zaraza</item>
+    </string-array>
+
+    <!-- ==================== PERFIL OPCIONAL ==================== -->
+    <string name="profile_optional_title">Completa tu perfil</string>
+    <string name="profile_optional_subtitle">Es opcional, pero ayuda a que te conozcan mejor</string>
+    <string name="field_bio">Cuéntanos algo sobre ti</string>
+    <string name="field_height">Altura</string>
+    <string name="field_weight">Peso</string>
+    <string name="field_zodiac_sign">Signo zodiacal</string>
+    <string name="field_occupation">Ocupación</string>
+    <string name="field_favorite_music">Música favorita</string>
+    <string name="btn_skip_for_now">Omitir por ahora</string>
+
+    <!-- ==================== NAVEGACIÓN ==================== -->
+    <string name="nav_swipe">Descubrir</string>
+    <string name="nav_feed">Feed</string>
+    <string name="nav_likes">Likes</string>
+    <string name="nav_chats">Chats</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="tab_para_ti">Para ti</string>
+    <string name="tab_seguidos">Seguidos</string>
+    <string name="tab_compartidos">Compartidos</string>
+
+<!-- ==================== SWIPE Y MATCH ==================== -->
+    <string name="swipe_like">Me gusta</string>
+    <string name="swipe_nope">No me gusta</string>
+    <string name="match_title">¡Es un match!</string>
+    <string name="match_subtitle">También le gustaste. ¡Empiezen a hablar!</string>
+    <string name="match_btn_chat">Enviar mensaje</string>
+    <string name="like_expires_in">Este like expira en %1$s</string>
+    <string name="likes_empty">Nadie te ha dado like todavía</string>
+    <string name="no_more_profiles">No hay más personas cerca por ahora</string>
+    <string name="no_more_profiles_title">¡Ya viste a todos!</string>
+    <string name="no_more_profiles_subtitle">Vuelve más tarde, hay gente nueva cada día</string>
+
+    <!-- ==================== MEJORAS PERFIL (MEJORA 3) ==================== -->
+    <string name="profile_section_account">Tu cuenta</string>
+    <string name="profile_section_more">Descubre más</string>
+    <string name="profile_interests">Mis intereses</string>
+    <string name="profile_activity">Mi actividad</string>
+    <string name="profile_invite">Invitar amigos</string>
+    <string name="profile_invite_message">¡Únete a Arelove! Descarga la app: https://arelove.app</string>
+
+    <!-- ==================== LIKES ==================== -->
+    <string name="likes_tab_received">Likes recibidos</string>
+    <string name="avatar">Avatar</string>
+    <string name="likes_tab_matches">Matches</string>
+    <string name="likes_received_empty_title">Nadie te ha dado like todavía</string>
+    <string name="likes_received_empty_subtitle">Sigue deslizando en Descubrir</string>
+    <string name="likes_received_button_profile">Ver perfil</string>
+    <string name="likes_received_button_like_back">Dar like de vuelta</string>
+    <string name="likes_pass">Pasar</string>
+    <string name="likes_match_empty_title">Aún no tienes matches</string>
+    <string name="likes_match_empty_subtitle">Cuando alguien devuelva tu like, aparecerá aquí</string>
+    <string name="likes_match_button_chat">Abrir chat</string>
+    <string name="likes_match_label">¡Tienen un match!</string>
+    <string name="chat_error_not_found">No se encontró el chat</string>
+
+    <!-- ==================== PERFIL DETALLE ==================== -->
+    <string name="profile_detail_title">Perfil</string>
+    <string name="profile_detail_close">Cerrar</string>
+    <string name="profile_detail_interests">Intereses</string>
+    <string name="profile_detail_optional">Información adicional</string>
+    <string name="profile_detail_height">Altura</string>
+    <string name="profile_detail_zodiac">Signo zodiacal</string>
+    <string name="profile_detail_occupation">Ocupación</string>
+    <string name="profile_detail_favorite_music">Música favorita</string>
+    <string name="profile_detail_looking_pareja">Busca pareja</string>
+    <string name="profile_detail_looking_amistades">Busca amistades</string>
+    <string name="profile_detail_looking_ambos">Busca ambos</string>
+    <string name="looking_pareja_short">Busca pareja</string>
+    <string name="looking_amistades_short">Busca amistades</string>
+    <string name="looking_ambos_short">Busca ambos</string>
+
+    <!-- ==================== CHATS ==================== -->
+    <string name="chats_empty_title">No tienes chats todavía</string>
+    <string name="chats_empty_subtitle">Cuando hagas match con alguien, aparecerá aquí</string>
+    <string name="chat_input_hint">Escribe un mensaje...</string>
+    <string name="chat_send">Enviar</string>
+    <string name="chat_back">Atrás</string>
+    <string name="chat_more_options">Más opciones</string>
+    <string name="chat_attach">Adjuntar</string>
+    <string name="chat_me">Yo</string>
+    <string name="boost_title">Boost activado</string>
+    <string name="boost_subtitle">Tu perfil será visible durante 20 minutos</string>
+    <string name="btn_boost">Boost · 30 diamantes</string>
+    <string name="direct_message_title">Enviar mensaje directo</string>
+    <string name="direct_message_cost">Cuesta 10 diamantes · una vez por persona</string>
+
+    <!-- ==================== FOTOS ==================== -->
+    <string name="photos_locked_title">Fotos bloqueadas</string>
+    <string name="photos_locked_subtitle">Sube fotos para desbloquear más fotos de %1$s</string>
+    <string name="photo_of_total">%1$d de %2$d</string>
+    <string name="add_photo">Añadir foto</string>
+    <string name="delete_photo">Eliminar foto</string>
+    <string name="photos_under_review">Algunas fotos están en revisión</string>
+
+    <!-- Home placeholders -->
+    <string name="likes_title">Tus likes</string>
+    <string name="likes_subtitle">Aquí verás quién te dio like</string>
+    <string name="chats_title">Chats</string>
+    <string name="chats_subtitle">Tus conversaciones aparecerán aquí</string>
+    <string name="profile_title">Perfil</string>
+    <string name="profile_subtitle">Tu información y ajustes</string>
+
+    <!-- ==================== HISTORIAS ==================== -->
+    <string name="stories_title">Historias</string>
+    <string name="stories_my">Tu historia</string>
+    <string name="stories_add">Añadir historia</string>
+    <string name="stories_expiry">Desaparece en 24 horas</string>
+    <string name="stories_only_matches">Solo tus matches pueden verla</string>
+    <string name="no_stories">Ningún match tiene historias activas</string>
+
+    <!-- ==================== FEED ==================== -->
+    <string name="feed_empty">Todavía no hay publicaciones</string>
+    <string name="post_comment_placeholder">Escribe un comentario…</string>
+    <string name="post_share">Compartir</string>
+    <string name="post_shared">Publicación compartida</string>
+    <string name="comments_title">Comentarios</string>
+    <string name="no_comments">Sé el primero en comentar</string>
+
+    <!-- ==================== CHAT ==================== -->
+    <string name="chat_write_message">Escribe un mensaje…</string>
+    <string name="chat_send_photo">Foto</string>
+    <string name="chat_photo_once">Foto de una sola vez</string>
+    <string name="chat_voice_note">Nota de voz</string>
+    <string name="chat_stickers">Stickers</string>
+    <string name="chat_online">En línea</string>
+    <string name="chat_typing">Escribiendo…</string>
+    <string name="chat_last_seen">Última vez hace %1$s</string>
+    <string name="chat_custom_title">Personalizar chat</string>
+    <string name="chat_nickname">Apodo del chat</string>
+    <string name="chat_background">Fondo</string>
+    <string name="chat_bubble_color">Color de las nubes</string>
+    <string name="chat_empty">Aún no hay mensajes. ¡Saluda!</string>
+    <string name="photo_once_warning">Esta foto solo se puede ver una vez</string>
+    <string name="photo_once_opened">Foto vista</string>
+    <string name="voice_recording">Grabando…</string>
+
+    <!-- ==================== LLAMADAS ==================== -->
+    <string name="call_audio">Llamada</string>
+    <string name="call_video">Videollamada</string>
+    <string name="call_cost_audio">Llamada · 12 diamantes</string>
+    <string name="call_cost_video">Videollamada · 15 diamantes</string>
+    <string name="call_free_hint">Gratis si habláis bastante</string>
+    <string name="call_confirm_audio">Llamar por 12 diamantes</string>
+    <string name="call_confirm_video">Videollamar por 15 diamantes</string>
+    <string name="call_insufficient_diamonds">No tienes suficientes diamantes</string>
+    <string name="call_ending">Terminando llamada…</string>
+    <string name="call_missed">Llamada perdida</string>
+
+    <!-- ==================== DIAMANTES ==================== -->
+    <string name="diamonds_balance">Diamantes: %1$d</string>
+    <string name="diamonds_title">Tus diamantes</string>
+    <string name="diamonds_watch_ad">Ver anuncio · +3 diamantes</string>
+    <string name="diamonds_achievements">Logros</string>
+    <string name="diamonds_recharge">Recargar diamantes</string>
+    <string name="diamonds_earned">Has ganado %1$d diamantes</string>
+    <string name="diamonds_ad_cooldown">Ya viste el anuncio. Vuelve más tarde.</string>
+    <string name="diamonds_insufficient">No tienes suficientes diamantes</string>
+    <string name="diamonds_go_recharge">Ir a recargar</string>
+
+    <!-- ==================== REWIND ==================== -->
+    <string name="diamonds_balance_label">Balance de diamantes</string>
+    <string name="rewind_wait_msg">Debes esperar 3 segundos entre cada rewind.</string>
+    <string name="rewind_nothing_title">Nada que deshacer</string>
+    <string name="rewind_nothing_msg">No hay swipes previos para deshacer.</string>
+    <string name="rewind_no_diamonds_title">Diamantes insuficientes</string>
+    <string name="rewind_no_diamonds_msg">Necesitas 5 diamantes para deshacer. Tienes %1$d.</string>
+    <string name="rewind_confirm_title">¿Deshacer último swipe?</string>
+    <string name="rewind_confirm_msg">Se gastarán 5 diamantes. Te quedarán %1$d.</string>
+    <string name="rewind_btn_spend">Gastar 5 diamantes</string>
+    <string name="rewind_error_title">Error</string>
+    <string name="rewind_error_msg">No se pudo procesar el gasto. Inténtalo de nuevo.</string>
+    <string name="rewind_spent_snackbar">%1$d diamantes gastados. Swipe deshecho.</string>
+
+    <!-- ==================== LIKES Y VISITAS ==================== -->
+    <string name="likes_visits_title">Quien te gustó</string>
+    <string name="likes_visits_subtitle">Personas que te dieron like o visitaron tu perfil</string>
+    <string name="visits_empty">Todavía no tienes visitas</string>
+    <string name="new_visit">Nueva visita</string>
+
+    <!-- ==================== SEGURIDAD ==================== -->
+    <string name="safety_title">Seguridad</string>
+    <string name="block_user">Bloquear usuario</string>
+    <string name="block_confirm">¿Bloquear a %1$s? No podréis veros ni contactaros.</string>
+    <string name="blocked_successfully">Usuario bloqueado</string>
+    <string name="report_user">Reportar usuario</string>
+    <string name="report_reason_title">Motivo del reporte</string>
+    <string name="report_reason_fake">Perfil falso</string>
+    <string name="report_reason_inappropriate">Contenido inapropiado</string>
+    <string name="report_reason_harassment">Acoso o insultos</string>
+    <string name="report_reason_spam">Spam</string>
+    <string name="report_reason_minor">Menor de edad</string>
+    <string name="report_reason_other">Otro motivo</string>
+    <string name="report_sent">Reporte enviado. Gracias por cuidar la comunidad.</string>
+    <string name="unblock_user">Desbloquear</string>
+    <string name="blocked_list">Usuarios bloqueados</string>
+
+    <!-- ==================== CUENTA Y AJUSTES ==================== -->
+    <string name="settings">Ajustes</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="logout_confirm">¿Quieres cerrar sesión?</string>
+    <string name="delete_account">Eliminar cuenta</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="change_photos">Cambiar fotos</string>
+    <string name="verification">Verificación</string>
+    <string name="notification_new_match">Tienes un match nuevo</string>
+    <string name="notification_new_message">Nuevo mensaje de %1$s</string>
+    <string name="notification_channel_name">Arelove</string>
+    <string name="notification_channel_description">Notificaciones de likes, matches y mensajes</string>
+    <!-- Canales de OneSignal (uno por tipo de notificación) -->
+    <string name="notif_channel_general">General</string>
+    <string name="notif_channel_messages">Mensajes</string>
+    <string name="notif_channel_matches">Matches</string>
+    <string name="notif_channel_likes">Likes</string>
+
+    <!-- ==================== LISTAS ==================== -->
+    <string-array name="zodiac_signs">
+        <item>Aries</item>
+        <item>Tauro</item>
+        <item>Géminis</item>
+        <item>Cáncer</item>
+        <item>Leo</item>
+        <item>Virgo</item>
+        <item>Libra</item>
+        <item>Escorpio</item>
+        <item>Sagitario</item>
+        <item>Capricornio</item>
+        <item>Acuario</item>
+        <item>Piscis</item>
+    </string-array>
+
+    <string-array name="report_reasons">
+        <item>@string/report_reason_fake</item>
+        <item>@string/report_reason_inappropriate</item>
+        <item>@string/report_reason_harassment</item>
+        <item>@string/report_reason_spam</item>
+        <item>@string/report_reason_minor</item>
+        <item>@string/report_reason_other</item>
+    </string-array>
+
+    <string name="error_google_login">No se pudo iniciar sesión con Google</string>
+    <string name="login_google_loading">Conectando con Google...</string>
+
+    <!-- Diálogos personalizados Arelove -->
+    <string name="dialog_accept">Aceptar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_error_title">Algo salió mal</string>
+    <string name="dialog_warning_title">Atención</string>
+    <string name="dialog_success_title">¡Listo!</string>
+    <string name="dialog_info_title">Información</string>
+    <string name="dialog_login_success_msg">¡Bienvenido a Arelove!</string>
+    <string name="dialog_register_success_msg">Tu cuenta se creó correctamente</string>
+
+    <!-- Asistente de perfil -->
+    <string name="setup_abandon_warning">Si sales ahora, podrás continuar tu perfil cuando vuelvas. ¿Seguro que quieres salir?</string>
+    <string name="setup_continue">Continuar</string>
+    <string name="setup_exit">Salir</string>
+
+    <!-- ==================== LEGAL (TÉRMINOS Y PRIVACIDAD) ==================== -->
+    <string name="legal_terminos_title">Términos y condiciones</string>
+    <string name="legal_privacidad_title">Política de privacidad</string>
+    <string name="legal_comunidad_title">Reglas de la comunidad</string>
+    <string name="legal_faq_title">Preguntas frecuentes</string>
+    <string name="legal_link_terminos">Términos</string>
+    <string name="legal_link_privacidad">Política</string>
+    <string name="legal_accept_prefix">Al continuar aceptas los </string>
+    <string name="legal_accept_and"> y </string>
+    <string name="profile_terms">Términos y condiciones</string>
+    <string name="profile_faq">Preguntas frecuentes</string>
+    <string name="legal_close">Cerrar</string>
+
+    <!-- ==================== PERFIL: SECCIONES Y AJUSTES ==================== -->
+    <string name="profile_section_help">Ayuda y legal</string>
+    <string name="profile_section_security">Seguridad y privacidad</string>
+    <string name="profile_completion">Tu perfil está al %1$d%%</string>
+    <string name="profile_badge_verified">Verificado</string>
+    <string name="my_photos">Mis fotos</string>
+    <string name="my_photos_hint">La primera foto es la que se muestra en tu perfil.</string>
+    <string name="my_photos_done">Listo</string>
+    <string name="my_verification_title">Verificación de identidad</string>
+
+    <!-- Edición directa del perfil (fuera del asistente) -->
+    <string name="edit_profile_save">Guardar cambios</string>
+    <string name="edit_profile_saved_msg">Tus cambios se guardaron correctamente.</string>
+    <string name="edit_profile_load_error">No se pudo cargar tu perfil. Inténtalo de nuevo.</string>
+
+    <!-- Subtítulos de las tarjetas del perfil (12sp bajo cada título) -->
+    <string name="profile_sub_edit_profile">Bio, datos físicos, intereses</string>
+    <string name="profile_sub_my_photos">Sube, ordena o elimina fotos</string>
+    <string name="profile_sub_settings">Notificaciones, privacidad</string>
+    <string name="profile_sub_invite">Comparte Arelove</string>
+    <string name="profile_sub_admin">Solo visible para admins</string>
+
+    <!-- Panel de administración (solo profiles.is_admin = true) -->
+    <string name="profile_admin_panel">Panel de administración</string>
+    <string name="profile_admin_msg">Panel de administración en construcción. Próximamente podrás verificar usuarios desde aquí.</string>
+    <string name="verification_status_verified">Verificado por Arelove</string>
+    <string name="verification_status_pending">Selfie en revisión</string>
+    <string name="verification_status_empty">Sin verificar · Pulsa para verificar</string>
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_account">Cuenta</string>
+    <string name="settings_delete_account">Eliminar cuenta</string>
+    <string name="settings_delete_account_msg">Para eliminar tu cuenta escríbenos a soporte@arelove.app y la gestionamos en 48 horas.</string>
+    <string name="settings_version">Versión</string>
+    <string name="settings_version_value">1.0</string>
+    <string name="verification_done_title">Identidad verificada</string>
+    <string name="verification_done_msg">Tu perfil ya muestra el sello de verificado por Arelove.</string>
+    <string name="verification_rejected_title">Verificación rechazada</string>
+    <string name="verification_rejected_msg">Tu selfie no pudo validarse. Puedes volver a tomarla cuando quieras.</string>
+
+    <!-- ==================== PANEL DE ADMINISTRACIÓN ==================== -->
+    <!-- Cabecera y tarjetas de acceso -->
+    <string name="admin_panel_title">Panel de administración</string>
+    <string name="admin_card_verifications">Verificaciones pendientes</string>
+    <string name="admin_card_users">Usuarios</string>
+    <string name="admin_card_reports">Reportes</string>
+    <string name="admin_card_stats">Estadísticas</string>
+    <!-- Contadores dinámicos de las tarjetas (los pinta AdminActivity) -->
+    <string name="admin_card_verifications_count">%1$d pendientes</string>
+    <string name="admin_card_users_count">%1$d usuarios</string>
+    <string name="admin_card_reports_count">%1$d pendientes</string>
+    <string name="admin_card_stats_hint">Ver métricas</string>
+    <!-- Verificaciones pendientes -->
+    <string name="admin_verify_title">Verificaciones pendientes</string>
+    <string name="admin_verify_empty">No hay verificaciones pendientes</string>
+    <string name="admin_selfie_desc">Selfie de verificación</string>
+    <string name="admin_approve">Aprobar</string>
+    <string name="admin_reject">Rechazar</string>
+    <string name="admin_approved_msg">Usuario verificado</string>
+    <string name="admin_rejected_msg">Verificación rechazada</string>
+    <!-- Usuarios y reportes (placeholders) -->
+    <string name="admin_users_title">Usuarios</string>
+    <string name="admin_users_empty">Próximamente</string>
+    <string name="admin_reports_title">Reportes</string>
+    <string name="admin_reports_empty">No hay reportes pendientes</string>
+    <string name="admin_reports_coming_soon">Próximamente: gestión de reportes</string>
+    <string name="admin_coming_soon">Próximamente</string>
+    <string name="admin_load_error">No se pudieron cargar los datos</string>
+    <!-- Métricas del panel (valores los pinta AdminActivity) -->
+    <string name="admin_stat_total_users">Usuarios totales</string>
+    <string name="admin_stat_completed_profiles">Perfiles completados</string>
+    <string name="admin_stat_matches">Matches</string>
+    <string name="admin_stat_messages">Mensajes</string>
+    <string name="admin_stat_verified">Verificados</string>
+
+</resources>

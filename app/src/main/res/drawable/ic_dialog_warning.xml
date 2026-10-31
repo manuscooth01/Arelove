@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Triángulo naranja -->
+    <path
+        android:fillColor="@color/dialog_warning"
+        android:pathData="M12,2.5L22.5,20.5L1.5,20.5z" />
+
+    <!-- Admiración blanca: tallo -->
+    <path
+        android:pathData="M12,9.5L12,14.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="2" />
+
+    <!-- Admiración blanca: punto -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12.875,17.4a0.875,0.875 0,1 1,-1.75 0a0.875,0.875 0,1 1,1.75 0z" />
+
+</vector>

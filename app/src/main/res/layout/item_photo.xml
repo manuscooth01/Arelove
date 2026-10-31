@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Celda de la rejilla de fotos del paso 3.
+    Contiene las dos variantes (foto subida / celda "+") y el fragmento
+    alterna la visibilidad según el tipo de vista del adaptador.
+
+    Los hijos son match_parent porque quien fija la altura es el FrameLayout
+    raíz (ItemViewBinding.root): fijarProporcion() le asigna una altura
+    fija con proporción 3:4 y los hijos tienen que llenarla.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Foto subida (o previsualización local mientras sube) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/photo_placeholder"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp">
+
+        <ImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/photo_placeholder"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_launcher" />
+
+        <ImageButton
+            android:id="@+id/btnPhotoRemove"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/photo_remove"
+            android:padding="4dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:tint="@color/on_surface" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Celda "+" (solo si no se llegó al máximo de fotos) -->
+    <LinearLayout
+        android:id="@+id/photoAdd"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_photo_add"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="@string/photo_add"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</FrameLayout>

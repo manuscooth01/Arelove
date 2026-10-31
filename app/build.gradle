@@ -1,0 +1,118 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.arelove.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.arelove.app"
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("KEYSTORE_FILE") ?: "arelove.keystore")
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias System.getenv("KEY_ALIAS") ?: "arelove"
+            keyPassword System.getenv("KEY_PASSWORD") ?: ""
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+
+    // Cargar credenciales de Supabase desde secrets.properties (no subir a git)
+    def secretsFile = file('secrets.properties')
+    def secrets = new Properties()
+    if (secretsFile.exists()) {
+        secrets.load(new FileInputStream(secretsFile))
+    }
+
+    // Inyectar como BuildConfig para uso en Kotlin
+    buildConfigField "String", "SUPABASE_URL", "\"${secrets.getProperty('SUPABASE_URL', 'https://tu-proyecto.supabase.co')}\""
+    buildConfigField "String", "SUPABASE_ANON_KEY", "\"${secrets.getProperty('SUPABASE_ANON_KEY', 'sb_publishable_tu_anon_key_aqui')}\""
+}
+
+dependencies {
+    // AndroidX
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+    implementation 'androidx.viewpager2:viewpager2:1.1.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // Navigation Component
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
+
+    // Material Design 3 (temas y componentes)
+    implementation 'com.google.android.material:material:1.11.0'
+
+    // Ubicación (GPS para el paso 1 del asistente de perfil)
+    implementation 'com.google.android.gms:play-services-location:21.2.0'
+
+    // uCrop - recorte de fotos profesional
+    implementation 'com.github.yalantis:ucrop:2.2.8'
+
+    // Supabase BOM (para alinear versiones de todos los módulos)
+    implementation platform('io.github.jan-tennert.supabase:bom:2.1.0')
+
+    // Módulos de Supabase (sin el de Realtime: el chat usa polling y el
+    // módulo no se instala, así que sólo añadía peso al APK)
+    implementation 'io.github.jan-tennert.supabase:postgrest-kt'
+    implementation 'io.github.jan-tennert.supabase:gotrue-kt'
+    implementation 'io.github.jan-tennert.supabase:storage-kt'
+
+    // Carga de imágenes de perfil (paso 3 del asistente)
+    implementation 'io.coil-kt:coil:2.5.0'
+
+    // Persistencia de sesión entre reinicios (SettingsSessionManager)
+    implementation 'com.russhwolf:multiplatform-settings-no-arg:1.1.1'
+
+    // Credential Manager (login nativo Google)
+    implementation 'androidx.credentials:credentials:1.3.0'
+    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
+
+    // Ktor cliente (necesario para Supabase)
+    implementation 'io.ktor:ktor-client-android:2.3.7'
+    implementation 'io.ktor:ktor-client-core:2.3.7'
+    implementation 'io.ktor:ktor-utils:2.3.7'
+
+    // Corrutinas
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+
+    // OneSignal (notificaciones push; el artifact va con mayúsculas:
+    // com.onesignal:onesignal no existe en Maven Central)
+    implementation 'com.onesignal:OneSignal:5.1.5'
+}
