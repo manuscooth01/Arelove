@@ -162,7 +162,7 @@ class MatchesListFragment : Fragment() {
                 val perfilFilas = SupabaseClient.client.postgrest["profiles_publicos"].select(
                     columns = Columns.list("id", "nickname", "age", "location", "verified")
                 ) {
-                    filter { in_("id", userIds.toList()) }
+                    filter { isIn("id", userIds.toList()) }
                     filter { eq("profile_completed", true) }
                 }.decodeList<JsonObject>()
 
@@ -170,7 +170,7 @@ class MatchesListFragment : Fragment() {
                 val mediaFilas = SupabaseClient.client.postgrest["media"].select(
                     columns = Columns.list("user_id", "url")
                 ) {
-                    filter { in_("user_id", userIds.toList()) }
+                    filter { isIn("user_id", userIds.toList()) }
                     filter { eq("type", "profile") }
                     order("created_at", Order.ASCENDING)
                 }.decodeList<JsonObject>()

@@ -255,7 +255,7 @@ class ProfileDetailActivity : AppCompatActivity() {
                 val filas = SupabaseClient.client.postgrest["interests"].select(
                     columns = Columns.list("id", "name")
                 ) {
-                    filter { in_("id", interestIds) }
+                    filter { isIn("id", interestIds) }
                 }.decodeList<JsonObject>()
 
                 val nombres = filas.mapNotNull { fila ->
