@@ -80,11 +80,7 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
             ) {
-                registerForActivityResult(
-                    ActivityResultContracts.RequestPermission()
-                ) { concedido ->
-                    // No bloquear si rechaza, solo loguear
-                }.launch(Manifest.permission.POST_NOTIFICATIONS)
+                launcherPermisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
 
