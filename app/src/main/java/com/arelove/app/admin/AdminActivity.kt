@@ -2,6 +2,7 @@ package com.arelove.app.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arelove.app.LogHelper

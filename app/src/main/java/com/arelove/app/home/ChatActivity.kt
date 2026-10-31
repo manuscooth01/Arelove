@@ -35,7 +35,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import io.github.jan.supabase.realtime.Channel
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.RealtimePostgresChangesPayload
 
 /**
@@ -55,7 +55,7 @@ class ChatActivity : AppCompatActivity() {
 
     private val messages = mutableListOf<MessageItem>()
     private lateinit var adapter: MessagesAdapter
-    private var channel: Channel? = null
+    private var channel: RealtimeChannel? = null
 
     // Flag para saber si hicimos fallback y ya cargamos datos
     private var fallbackHecho = false

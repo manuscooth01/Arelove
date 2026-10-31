@@ -160,8 +160,13 @@ class ChatsFragment : Fragment() {
                     filter { eq("profile_completed", true) }
                 }.decodeList<JsonObject>()
 
-                val nicknames = perfilFilas.associateWithNotNull { fila ->
-                    (fila["id"] as? JsonPrimitive)?.content to (fila["nickname"] as? JsonPrimitive)?.content.orEmpty()
+                val nicknames = mutableMapOf<String, String>()
+                perfilFilas.forEach { fila ->
+                    val id = (fila["id"] as? JsonPrimitive)?.content.orEmpty()
+                    val nickname = (fila["nickname"] as? JsonPrimitive)?.content.orEmpty()
+                    if (id.isNotEmpty()) {
+                        nicknames[id] = nickname
+                    }
                 }
 
                 val fotoFilas = SupabaseClient.client.postgrest["media"].select(
